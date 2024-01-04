@@ -1,6 +1,7 @@
 package com.bestbenefits.takoyaki.entity;
 
 import com.bestbenefits.takoyaki.config.properties.oauth.OAuthSocialType;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +20,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 16, unique = true) // nullable = false
+    @Column(unique = true) // nullable = false
+    @Size(min=4, max=16)
     private String nickname;
 
     @Column(length = 100, nullable = false)
