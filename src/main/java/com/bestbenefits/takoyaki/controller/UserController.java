@@ -35,9 +35,15 @@ public class UserController {
     private final Map<String, OAuthURL> oAuthURL;
 
     @GetMapping("/login-check")
-    public ApiResponse<?> checkLogin(HttpSession session){
+    public ApiResponse<?> checkLogin(@Session(attribute = SessionConst.ID, nullable = true) Long id,
+            @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication){
         Map<String, Boolean> data = new HashMap<>();
-        data.put("login", session.getAttribute(SessionConst.AUTHENTICATION) != null);
+        boolean login;
+        if (id != null && authentication != null && authentication)
+            login = userService.getUser(id) != null;
+        else
+            login = false;
+        data.put("login", login);
         return ApiResponseCreator.success(data);
     }
 

@@ -25,7 +25,11 @@ public class SessionMethodArgumentResolver implements HandlerMethodArgumentResol
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         HttpSession session = request.getSession();
+        boolean nullable = parameter.getParameterAnnotation(Session.class).nullable();
         String attribute = parameter.getParameterAnnotation(Session.class).attribute();
+        if (nullable)
+            return session.getAttribute(attribute);
+        else
             return Optional.ofNullable(session.getAttribute(attribute))
                     .orElseThrow(() -> new NullPointerException("Invalid session attribute"));
         //TODO: 로그인 안되어있어도 세션 예외가 발생하지 않도록 임시 조치하기
