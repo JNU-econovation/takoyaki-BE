@@ -7,15 +7,17 @@ import java.util.List;
 
 @Getter
 public enum DurationUnit {
-    일(1), 주(7), 개월(30), 년(365);
+    DAY("일", 1), WEEK("주", 7), MONTH("개월", 30), YEAR("년", 365);
 
+    private final String name;
     private final int day;
-    DurationUnit(int day){
+    DurationUnit(String name, int day){
+        this.name = name;
         this.day = day;
     }
-    public static DurationUnit fromValue(String durationUnitName) {
+    public static DurationUnit fromName(String durationUnitName) {
         for (DurationUnit durationUnit : DurationUnit.values()) {
-            if (durationUnit.name().equals(durationUnitName))
+            if (durationUnit.getName().equals(durationUnitName))
                 return durationUnit;
         }
         throw new IllegalArgumentException("Invalid duration unit name.");
