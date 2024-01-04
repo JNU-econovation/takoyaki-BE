@@ -4,6 +4,7 @@ import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 public enum DurationUnit {
@@ -21,5 +22,10 @@ public enum DurationUnit {
                 return durationUnit;
         }
         throw new IllegalArgumentException("Invalid duration unit name.");
+    }
+    public static List<String> toNameList(){
+        return Arrays.stream(DurationUnit.values())
+                .map(DurationUnit::getName)
+                .collect(Collectors.toList());
     }
 }
