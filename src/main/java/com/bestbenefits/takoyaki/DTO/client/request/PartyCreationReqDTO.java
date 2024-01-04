@@ -37,7 +37,7 @@ public class PartyCreationReqDTO {
     @EnumName(enumClass = Category.class)
     private String category;
 
-    @EnumValue(enumClass = ActivityLocation.class)
+    @EnumName(enumClass = ActivityLocation.class)
     private String activityLocation;
 
     @EnumName(enumClass = ContactMethod.class)
@@ -75,9 +75,9 @@ public class PartyCreationReqDTO {
 
     public Party toEntity(User user){
         return Party.builder()
-                .category(Category.valueOf(category))
-                .activityLocation(ActivityLocation.valueOf(activityLocation))
-                .contactMethod(ContactMethod.valueOf(contactMethod))
+                .category(Category.fromName(category))
+                .activityLocation(ActivityLocation.fromName(activityLocation))
+                .contactMethod(ContactMethod.fromName(contactMethod))
                 .title(title)
                 .body(body)
                 .recruitNumber(recruitNumber)

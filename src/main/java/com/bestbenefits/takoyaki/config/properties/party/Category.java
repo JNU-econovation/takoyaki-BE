@@ -9,13 +9,13 @@ import java.util.stream.Collectors;
 
 @Getter
 public enum Category {
-    대외활동("대외활동"),
-    취업_스터디("취업/스터디"),
+    EXTERNAL_ACTIVITIES("대외활동"),
+    JOB_STUDY("취업/스터디"),
     OTT("OTT"),
-    습관챌린지("습관 챌린지"),
-    게임("게임"),
-    소모임("소모임"),
-    기타("기타");
+    HABIT_CHALLENGE("습관 챌린지"),
+    GAME("게임"),
+    SMALL_GROUP("소모임"),
+    ETC("기타");
 
     private final String name;
 
@@ -23,9 +23,9 @@ public enum Category {
         this.name = name;
     }
 
-    public static Category fromValue(String categoryName) {
+    public static Category fromName(String categoryName) {
         for (Category category : Category.values()) {
-            if (category.name().equals(categoryName))
+            if (category.getName().equals(categoryName))
                 return category;
         }
         throw new IllegalArgumentException("Invalid category name.");

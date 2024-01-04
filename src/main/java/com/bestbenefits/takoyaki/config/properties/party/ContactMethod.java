@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
 
 @Getter
 public enum ContactMethod {
-    KAKAO_OPENCHAT( "카카오톡 오픈채팅"),
+    KAKAO_OPENCHATTING( "카카오톡 오픈채팅"),
     EMAIL("이메일"),
-    CELLPHONE_NUM("전화번호");
+    CELLPHONE_NUMBER("전화번호");
 
     private final String name;
     ContactMethod(String name){

@@ -1,19 +1,18 @@
 package com.bestbenefits.takoyaki.config.annotation;
 
-import com.bestbenefits.takoyaki.config.constraint_validator.EnumValueValidator;
+import com.bestbenefits.takoyaki.config.constraint_validator.EnumNameValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = EnumValueValidator.class)
+@Constraint(validatedBy = EnumNameValidator.class)
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface EnumValue {
-    String message() default "enum value값이 잘못되었습니다.";
+public @interface EnumName {
+    String message() default "enum의 name값이 잘못되었습니다.";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
-
     Class<? extends Enum> enumClass();
 }
