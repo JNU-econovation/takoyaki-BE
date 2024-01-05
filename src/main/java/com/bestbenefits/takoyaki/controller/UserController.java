@@ -28,7 +28,7 @@ import java.util.Map;
 @RestController
 //@Validated
 @RequiredArgsConstructor
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
     private final UserService userService;
     private final Map<String, OAuthWebClient> oAuthWebClient;

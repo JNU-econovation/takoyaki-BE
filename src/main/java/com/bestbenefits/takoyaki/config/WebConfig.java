@@ -14,16 +14,16 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new AuthenticationCheckInterceptor())
-                .addPathPatterns("/user/**")
+                .addPathPatterns("/users/**")
 //                .addPathPatterns("/parties/**")
 //                .addPathPatterns("/party/**")
                 .excludePathPatterns(
                         "/js/**", "/oauth_example", "/oauth", "/favicon.ico", //실험용이니 나중에 삭제하기
-                        "/user/login-check",
-                        "/user/oauth/login-url/**",
-                        "/user/oauth/login/**",
-                        "/user/duplicate-nickname",
-                        "/user/oauth/login/additional-info"
+                        "/users/login-check",
+                        "/users/oauth/login-url/**",
+                        "/users/oauth/login/**",
+                        "/users/duplicate-nickname",
+                        "/users/oauth/login/additional-info"
                 );
     }
 
