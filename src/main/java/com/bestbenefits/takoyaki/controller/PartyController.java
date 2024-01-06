@@ -1,8 +1,6 @@
 package com.bestbenefits.takoyaki.controller;
 
 import com.bestbenefits.takoyaki.DTO.client.request.PartyCreationReqDTO;
-import com.bestbenefits.takoyaki.DTO.client.response.PartyCreationResDTO;
-import com.bestbenefits.takoyaki.DTO.client.response.PartyListForLoginUserResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyListResDTO;
 import com.bestbenefits.takoyaki.config.annotation.Session;
 import com.bestbenefits.takoyaki.config.apiresponse.ApiMessage;
@@ -12,10 +10,8 @@ import com.bestbenefits.takoyaki.config.properties.SessionConst;
 import com.bestbenefits.takoyaki.config.properties.party.*;
 import com.bestbenefits.takoyaki.service.PartyService;
 import com.bestbenefits.takoyaki.service.UserService;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -26,11 +22,6 @@ import java.util.*;
 public class PartyController {
     private final PartyService partyService;
     private final UserService userService;
-
-    @PostMapping("/party")
-    public ApiResponse<?> createParty(@Session(attribute = SessionConst.ID) Long id, @RequestBody @Valid PartyCreationReqDTO dto) {
-        return ApiResponseCreator.success(partyService.createParty(id, dto));
-    }
 
     @GetMapping("/party/activity-location")
     public ApiResponse<?> getActivityLocation() {
@@ -60,6 +51,11 @@ public class PartyController {
         return ApiResponseCreator.success(data);
     }
 
+    @PostMapping("/party")
+    public ApiResponse<?> createParty(@Session(attribute = SessionConst.ID) Long id, @RequestBody @Valid PartyCreationReqDTO dto) {
+        return ApiResponseCreator.success(partyService.createParty(id, dto));
+    }
+
     @DeleteMapping("/parties/{partyId}")
     public ApiResponse<?> deleteParty(@Session(attribute = SessionConst.ID) Long id, @PathVariable Long partyId) {
         partyService.deleteParty(id, partyId);
@@ -85,15 +81,23 @@ public class PartyController {
 
         boolean isLogin = (id != null && authentication != null && authentication);
 
-        if (loginField) { //프론트가 로그인된 기준으로 카드 리스트를 원할 때
-            if (isLogin) partyDTOList = partyService.getParties(id, number, pageNumber, category, activityLocation);
-            else throw new IllegalArgumentException("로그인 되어있지 않습니다.");
-        }else { //로그인 안된 기준
-            if (isLogin) throw new IllegalArgumentException("로그인이 되어있습니다.");
-            else partyDTOList = partyService.getParties(number, pageNumber, category, activityLocation);
-        }
+        if (loginField == isLogin)
+            partyDTOList = partyService.getParties(isLogin, id, number, pageNumber, category, activityLocation);
+        else
+            throw new IllegalArgumentException("로그인 상태와 요청이 일치하지 않습니다.");
 
         return ApiResponseCreator.success(partyDTOList);
+    }
+
+    @GetMapping("/parties/{party-id}")
+    public ApiResponse<?> getParty(@Session(attribute = SessionConst.ID, nullable = true) Long id,
+                                   @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
+                                   @RequestParam(name = "login") boolean loginField,
+                                   @PathVariable(name = "party-id") Long partyId
+                                   ){
+        //삭제된 게시글인 경우 예외 발생
+
+        return ApiResponseCreator.success("s");
     }
 
 }

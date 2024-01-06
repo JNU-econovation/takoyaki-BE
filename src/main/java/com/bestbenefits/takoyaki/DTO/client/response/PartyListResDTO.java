@@ -1,5 +1,6 @@
 package com.bestbenefits.takoyaki.DTO.client.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
@@ -9,8 +10,8 @@ import lombok.experimental.SuperBuilder;
 import java.time.LocalDate;
 
 @Getter
-@SuperBuilder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PartyListResDTO {
     private Long partyId;
     private String title;
@@ -21,9 +22,10 @@ public class PartyListResDTO {
     private int waitingNumber;
     private int acceptedNumber;
     private float competitionRate;
+    private Boolean bookmarked;
 
-
-    public PartyListResDTO(Long partyId, String title, String category, int waitingNumber, int acceptedNumber, int recruitNumber, float competitionRate, String activityLocation, LocalDate plannedClosingDate) {
+    @Builder
+    public PartyListResDTO(Long partyId, String title, String category, int waitingNumber, int acceptedNumber, int recruitNumber, float competitionRate, String activityLocation, LocalDate plannedClosingDate, Boolean bookmarked) {
         this.partyId = partyId;
         this.title = title;
         this.category = category;
@@ -33,5 +35,6 @@ public class PartyListResDTO {
         this.competitionRate = competitionRate;
         this.activityLocation = activityLocation;
         this.plannedClosingDate = plannedClosingDate;
+        this.bookmarked = bookmarked;
     }
 }
