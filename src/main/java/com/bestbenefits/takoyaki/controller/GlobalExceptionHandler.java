@@ -81,4 +81,6 @@ public class GlobalExceptionHandler {
     public ApiResponse<?> handleJsonProcessingException(JsonProcessingException e){
         return ApiResponseCreator.fail(e.getMessage());
     }
+
+    //TODO: DataIntegrityException, InvalidDataAccessApiUsageException
 }

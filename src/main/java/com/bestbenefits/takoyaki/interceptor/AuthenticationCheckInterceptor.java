@@ -17,6 +17,7 @@ public class AuthenticationCheckInterceptor implements HandlerInterceptor {
 
         if (authentication == null || !authentication)
             throw new IllegalStateException("you need login.");
+            //TODO: 커스텀 예외 작성 후 상태 코드 401
         return true;
     }
 }

@@ -1,7 +1,5 @@
 package com.bestbenefits.takoyaki.config.properties.oauth;
 
-import org.springframework.web.util.UriComponentsBuilder;
-
 public final class OAuthKakaoConst {
     public static final String URL1 = "https://kauth.kakao.com";
     public static final String URL2 = "https://kapi.kakao.com";
