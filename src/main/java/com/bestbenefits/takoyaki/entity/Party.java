@@ -44,6 +44,9 @@ public class Party {
     private LocalDate plannedClosingDate;
 
     @Column
+    private LocalDate plannedStartDate;
+
+    @Column
     private int activityDuration;
 
     @Column
@@ -63,11 +66,9 @@ public class Party {
 
     @Column
     private LocalDateTime modifiedAt;
-    //    @CreatedDate
-    //    @LastModifiedDate
 
     @Builder
-    public Party(User user, Category category, ActivityLocation activityLocation, ContactMethod contactMethod, String title, String body, int recruitNumber, LocalDate plannedClosingDate, int activityDuration, String contact) {
+    public Party(User user, Category category, ActivityLocation activityLocation, ContactMethod contactMethod, String title, String body, int recruitNumber, LocalDate plannedClosingDate, LocalDate plannedStartDate, int activityDuration, String contact) {
         this.user = user;
         this.category = category;
         this.activityLocation = activityLocation;
@@ -76,6 +77,7 @@ public class Party {
         this.body = body;
         this.recruitNumber = recruitNumber;
         this.plannedClosingDate = plannedClosingDate;
+        this.plannedStartDate = plannedStartDate;
         this.activityDuration = activityDuration;
         this.contact = contact;
         this.closedAt = LocalDateTime.now();
@@ -88,4 +90,5 @@ public class Party {
     public void updateDeleteAt(LocalDateTime deletedAt) {
         this.deletedAt = deletedAt;
     }
+    //TODO: 게시글 수정에서 이용할 setter
 }

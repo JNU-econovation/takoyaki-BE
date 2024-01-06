@@ -49,8 +49,14 @@ public class PartyCreationReqDTO {
     private Integer activityDuration;
 
     //마감 예정 일시
-    @Future(message = "마감 예정 일시는 미래여야 합니다.")
+    @NotNull
+    @Future(message = "마감 예정 날짜는 미래여야 합니다.")
+    //TODO: 6개월까지만 받도록 수정
     private LocalDate plannedClosingDate;
+
+    @NotNull
+    @Future(message = "시작 예정 날짜는 미래여야 합니다.")
+    private LocalDate plannedStartDate;
 
     //연락처
     @NotBlank
@@ -66,6 +72,7 @@ public class PartyCreationReqDTO {
                 .recruitNumber(recruitNumber)
                 .contact(contact)
                 .plannedClosingDate(plannedClosingDate)
+                .plannedStartDate(plannedStartDate)
                 .activityDuration(activityDuration * DurationUnit.fromName(activityDurationUnit).getDay())
                 .user(user)
                 .build();
