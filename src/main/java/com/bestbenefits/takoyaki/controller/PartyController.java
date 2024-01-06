@@ -35,7 +35,7 @@ public class PartyController {
     @GetMapping("/party/activity-location")
     public ApiResponse<?> getActivityLocation() {
         Map<String, Object> data = new HashMap<>();
-        data.put("activity-location", ActivityLocation.toNameList());
+        data.put("activity_location", ActivityLocation.toNameList());
         return ApiResponseCreator.success(data);
     }
 
@@ -49,14 +49,14 @@ public class PartyController {
     @GetMapping("/party/contact-method")
     public ApiResponse<?> getContactMethod() {
         Map<String, Object> data = new HashMap<>();
-        data.put("contact-method", ContactMethod.toNameList());
+        data.put("contact_method", ContactMethod.toNameList());
         return ApiResponseCreator.success(data);
     }
 
     @GetMapping("/party/activity-duration-unit")
     public ApiResponse<?> getActivityDurationUnit() {
         Map<String, Object> data = new HashMap<>();
-        data.put("activity-duration-unit", DurationUnit.toNameList());
+        data.put("activity_duration_unit", DurationUnit.toNameList());
         return ApiResponseCreator.success(data);
     }
 
