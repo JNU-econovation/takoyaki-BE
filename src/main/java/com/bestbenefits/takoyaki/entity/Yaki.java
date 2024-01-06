@@ -27,7 +27,7 @@ public class Yaki {
 
     @Column
     @Enumerated(EnumType.STRING)
-    private YakiStatus yakiStatus;
+    private YakiStatus status;
 
     @Column
     private LocalDateTime appliedAt;
@@ -36,7 +36,7 @@ public class Yaki {
     public Yaki(Long id, User user, Party party) {
         this.user = user;
         this.party = party;
-        this.yakiStatus = YakiStatus.ACCEPTED;
+        this.status = YakiStatus.WAITING;
         this.appliedAt = LocalDateTime.now();
     }
 }
