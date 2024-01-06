@@ -1,6 +1,6 @@
 package com.bestbenefits.takoyaki.entity;
 
-import com.bestbenefits.takoyaki.config.properties.yaki.YakiStatus;
+import com.bestbenefits.takoyaki.config.properties.user.YakiStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
