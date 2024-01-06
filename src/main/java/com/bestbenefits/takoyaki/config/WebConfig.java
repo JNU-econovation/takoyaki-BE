@@ -23,7 +23,8 @@ public class WebConfig implements WebMvcConfigurer {
                         "/users/oauth/login-url/**",
                         "/users/oauth/login/**",
                         "/users/duplicate-nickname",
-                        "/users/oauth/login/additional-info"
+                        "/users/oauth/login/additional-info",
+                        "/parties/all"
                 );
     }
 
