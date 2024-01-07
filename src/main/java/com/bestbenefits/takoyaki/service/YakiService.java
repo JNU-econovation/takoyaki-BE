@@ -21,7 +21,7 @@ public class YakiService {
         User user = userService.getUserOrThrow(id);
         Party party = partyService.getPartyOrThrow(partyId);
         if (party.isDeleted() || party.isClosed())
-            throw new IllegalArgumentException("존재하지 않거나 삭제된 팟입니다.");
+            throw new IllegalArgumentException("삭제되었거나 마감된 팟입니다.");
 
         if (party.getUser() == user)
             throw new IllegalArgumentException("타코는 신청할 수 없습니다.");
@@ -35,7 +35,7 @@ public class YakiService {
         User user = userService.getUserOrThrow(id);
         Party party = partyService.getPartyOrThrow(partyId);
         if (party.isDeleted() || party.isClosed())
-            throw new IllegalArgumentException("존재하지 않거나 삭제된 팟입니다.");
+            throw new IllegalArgumentException("삭제되었거나 마감된 팟입니다.");
 
         Yaki yaki = getYakiOrThrow(party, user);
         if (yaki.getStatus() != YakiStatus.WAITING)
@@ -48,7 +48,7 @@ public class YakiService {
         User yakiUser = userService.getUserOrThrow(yakiId);
         Party party = partyService.getPartyOrThrow(partyId);
         if (party.isDeleted() || party.isClosed())
-            throw new IllegalArgumentException("존재하지 않거나 삭제된 팟입니다.");
+            throw new IllegalArgumentException("삭제되었거나 마감된 팟입니다.");
 
         if (!party.isAuthor(id))
             throw new IllegalArgumentException("타코만 요청을 수락할 수 있습니다.");
@@ -67,7 +67,7 @@ public class YakiService {
         User yakiUser = userService.getUserOrThrow(yakiId);
         Party party = partyService.getPartyOrThrow(partyId);
         if (party.isDeleted() || party.isClosed())
-            throw new IllegalArgumentException("존재하지 않거나 삭제된 팟입니다.");
+            throw new IllegalArgumentException("삭제되었거나 마감된 팟입니다.");
 
         if (!party.isAuthor(id))
             throw new IllegalArgumentException("타코만 요청을 거절할 수 있습니다.");
@@ -83,7 +83,7 @@ public class YakiService {
         User user = userService.getUserOrThrow(id);
         Party party = partyService.getPartyOrThrow(partyId);
         if (party.isDeleted() || party.isClosed())
-            throw new IllegalArgumentException("존재하지 않거나 삭제된 팟입니다.");
+            throw new IllegalArgumentException("삭제되었거나 마감된 팟입니다.");
 
         Yaki yaki = getYakiOrThrow(party, user);
         if (yaki.getStatus() != YakiStatus.ACCEPTED)
