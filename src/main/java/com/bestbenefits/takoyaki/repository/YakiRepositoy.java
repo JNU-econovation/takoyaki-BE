@@ -18,10 +18,10 @@ public interface YakiRepositoy extends JpaRepository<Yaki, Long> {
     Optional<Yaki> findYakiById(Long id);
     Optional<Yaki> findYakiByPartyAndUser(Party party, User user);
 
-    @Query("SELECT y.user.id, y.user.nickname FROM Yaki y WHERE y.party = :party AND y.status = 'WAITING'")
+    @Query("SELECT new com.bestbenefits.takoyaki.DTO.client.response.PartyYakiListResDTO(y.user.id, y.user.nickname) FROM Yaki y WHERE y.party = :party AND y.status = 'WAITING'")
     List<PartyYakiListResDTO> findWaitingList(Party party);
 
-    @Query("SELECT y.user.id, y.user.nickname FROM Yaki y WHERE y.party = :party AND y.status = 'ACCEPTED'")
+    @Query("SELECT new com.bestbenefits.takoyaki.DTO.client.response.PartyYakiListResDTO(y.user.id, y.user.nickname) FROM Yaki y WHERE y.party = :party AND y.status = 'ACCEPTED'")
     List<PartyYakiListResDTO> findAcceptedList(Party party);
 
     boolean existsYakiByPartyAndUser(Party party, User user);
