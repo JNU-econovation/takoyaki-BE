@@ -69,6 +69,7 @@ public class Party {
 
     @Builder
     public Party(User user, Category category, ActivityLocation activityLocation, ContactMethod contactMethod, String title, String body, int recruitNumber, LocalDate plannedClosingDate, LocalDate plannedStartDate, int activityDuration, String contact) {
+        LocalDateTime timestamp = LocalDateTime.now();
         this.user = user;
         this.category = category;
         this.activityLocation = activityLocation;
@@ -80,9 +81,9 @@ public class Party {
         this.plannedStartDate = plannedStartDate;
         this.activityDuration = activityDuration;
         this.contact = contact;
-        this.closedAt = LocalDateTime.now();
-        this.createdAt = LocalDateTime.now();
-        this.modifiedAt = LocalDateTime.now();
+        this.closedAt = timestamp;
+        this.createdAt = timestamp;
+        this.modifiedAt = timestamp;
         this.viewCount = 0L;
         this.deletedAt = null;
     }

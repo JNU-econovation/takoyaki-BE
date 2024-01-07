@@ -40,10 +40,11 @@ public class User {
     @Builder
     public User(String email, OAuthSocialType social){
 //        this.nickname = ;
+        LocalDateTime timestamp = LocalDateTime.now();
         this.email = email;
         this.social = social;
-        this.createdAt = LocalDateTime.now();
-        this.nicknameUpdatedAt = LocalDate.now().minusDays(1);
+        this.createdAt = timestamp;
+        this.nicknameUpdatedAt = timestamp.toLocalDate().minusDays(1);
     }
 
     public void updateNickname(String nickname){
