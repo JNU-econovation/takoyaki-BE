@@ -112,8 +112,11 @@ public class PartyController {
 
     @DeleteMapping("/parties/{partyId}")
     public ApiResponse<?> deleteParty(@Session(attribute = SessionConst.ID) Long id, @PathVariable Long partyId) {
-        partyService.deleteParty(id, partyId);
-        return ApiResponseCreator.success(new ApiMessage(String.format("파티 id: %d번이 삭제되었습니다.", partyId)));
+        return ApiResponseCreator.success(partyService.deleteParty(id, partyId));
+    }
+    @PostMapping("/parties/{partyId}/closing")
+    ApiResponse<?> closeParty(@Session(attribute = SessionConst.ID) Long id, @PathVariable Long partyId) {
+        return ApiResponseCreator.success(partyService.closeParty(id, partyId));
     }
 
     @PostMapping("/parties/{party-id}/apply")

@@ -111,6 +111,29 @@ public class PartyService {
                 .build();
     }
 
+    @Transactional
+    public PartyIdResDTO closeParty(Long id, Long partyId) {
+        Party p = partyRepository.findById(partyId).orElseThrow(
+                () -> new IllegalArgumentException("Party ID가 잘못되었습니다."));
+
+        if (!p.isAuthor(id))
+            throw new IllegalArgumentException(String.format("해당 Party가 유저 ID: %d에 의해 생성되지 않았습니다.", id));
+
+        if (p.isDeleted())
+            throw new IllegalArgumentException("이미 삭제된 Party입니다.");
+
+        if (p.isClosed())
+            throw new IllegalArgumentException("이미 마감된 Party입니다.");
+
+        //TODO: 마감된 파티에 대한 조건 추가
+
+        p.updateModifiedAt().updateClosedAt();
+
+        return PartyIdResDTO.builder()
+                .partyId(p.getId())
+                .build();
+    }
+
     @Transactional(readOnly = true)
     public List<PartyListResDTO> getParties(boolean isLogin, Long id, int number, int pageNumber, Category category, ActivityLocation activityLocation){
 
