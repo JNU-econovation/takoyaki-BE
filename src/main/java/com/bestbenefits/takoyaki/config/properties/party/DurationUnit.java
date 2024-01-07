@@ -3,6 +3,7 @@ package com.bestbenefits.takoyaki.config.properties.party;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,5 +28,13 @@ public enum DurationUnit {
         return Arrays.stream(DurationUnit.values())
                 .map(DurationUnit::getName)
                 .collect(Collectors.toList());
+    }
+    public static String calculateDuration(int days){
+        return Arrays.stream(DurationUnit.values())
+                .sorted(Collections.reverseOrder())
+                .filter(unit -> days % unit.getDay() == 0)
+                .findFirst()
+                .map(unit -> (days / unit.getDay()) + unit.getName())
+                .orElseThrow(() -> new IllegalStateException("유효한 날짜가 아닙니다."));
     }
 }
