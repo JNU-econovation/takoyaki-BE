@@ -1,6 +1,6 @@
 package com.bestbenefits.takoyaki.controller;
 
-import com.bestbenefits.takoyaki.DTO.client.request.PartyCreationReqDTO;
+import com.bestbenefits.takoyaki.DTO.client.request.PartyReqDTO;
 import com.bestbenefits.takoyaki.config.annotation.Session;
 import com.bestbenefits.takoyaki.config.apiresponse.ApiResponse;
 import com.bestbenefits.takoyaki.config.apiresponse.ApiResponseCreator;
@@ -21,7 +21,7 @@ public class PartyController2 {
     private final UserService userService;
 
     @PatchMapping("parties/{partyId}")
-    public ApiResponse<?> patchParty(@Session(attribute = SessionConst.ID) Long id, @PathVariable Long partyId, @RequestBody @Valid PartyCreationReqDTO dto) {
+    public ApiResponse<?> patchParty(@Session(attribute = SessionConst.ID) Long id, @PathVariable Long partyId, @RequestBody @Valid PartyReqDTO dto) {
         return ApiResponseCreator.success(partyService.patchParty(id, partyId, dto));
     }
 

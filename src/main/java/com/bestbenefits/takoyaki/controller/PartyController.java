@@ -1,6 +1,6 @@
 package com.bestbenefits.takoyaki.controller;
 
-import com.bestbenefits.takoyaki.DTO.client.request.PartyCreationReqDTO;
+import com.bestbenefits.takoyaki.DTO.client.request.PartyReqDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyInfoResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyListResDTO;
 import com.bestbenefits.takoyaki.config.annotation.Session;
@@ -9,7 +9,6 @@ import com.bestbenefits.takoyaki.config.apiresponse.ApiResponse;
 import com.bestbenefits.takoyaki.config.apiresponse.ApiResponseCreator;
 import com.bestbenefits.takoyaki.config.properties.SessionConst;
 import com.bestbenefits.takoyaki.config.properties.party.*;
-import com.bestbenefits.takoyaki.repository.YakiRepositoy;
 import com.bestbenefits.takoyaki.service.PartyService;
 import com.bestbenefits.takoyaki.service.UserService;
 import com.bestbenefits.takoyaki.service.YakiService;
@@ -17,7 +16,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.*;
 
 @RestController
@@ -56,7 +54,7 @@ public class PartyController {
     }
 
     @PostMapping("/party")
-    public ApiResponse<?> createParty(@Session(attribute = SessionConst.ID) Long id, @RequestBody @Valid PartyCreationReqDTO dto) {
+    public ApiResponse<?> createParty(@Session(attribute = SessionConst.ID) Long id, @RequestBody @Valid PartyReqDTO dto) {
         return ApiResponseCreator.success(partyService.createParty(id, dto));
     }
 

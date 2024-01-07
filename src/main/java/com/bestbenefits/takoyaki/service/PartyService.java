@@ -1,6 +1,6 @@
 package com.bestbenefits.takoyaki.service;
 
-import com.bestbenefits.takoyaki.DTO.client.request.PartyCreationReqDTO;
+import com.bestbenefits.takoyaki.DTO.client.request.PartyReqDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyCreationResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyInfoResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyListResDTO;
@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,10 +32,10 @@ public class PartyService {
     private final YakiRepositoy yakiRepository;
 
     @Transactional //
-    public PartyCreationResDTO createParty(Long id, PartyCreationReqDTO partyCreationReqDTO) {
+    public PartyCreationResDTO createParty(Long id, PartyReqDTO partyReqDTO) {
         User user = userRepository.findUserById(id).orElseThrow(
                 () -> new IllegalArgumentException("유저가 존재하지 않습니다."));
-        Party party = partyRepository.save(partyCreationReqDTO.toEntity(user));
+        Party party = partyRepository.save(partyReqDTO.toEntity(user));
 
         return PartyCreationResDTO.builder()
                 .partyId(party.getId())
@@ -44,7 +43,7 @@ public class PartyService {
     }
 
     @Transactional
-    public PartyCreationResDTO patchParty(Long id, Long partyId, PartyCreationReqDTO partyCreationReqDTO) {
+    public PartyCreationResDTO patchParty(Long id, Long partyId, PartyReqDTO partyReqDTO) {
         //ID 유효성 검사
         User user = userRepository.findUserById(id).orElseThrow(
                 () -> new IllegalArgumentException("유저가 존재하지 않습니다."));
@@ -62,7 +61,7 @@ public class PartyService {
             throw new IllegalArgumentException("이미 마감된 파티는 수정할 수 없습니다.");
         }
 
-        Party newParty = partyCreationReqDTO.toEntity(user);
+        Party newParty = partyReqDTO.toEntity(user);
 
         //정책에 의한 파티 수정 조건검사
         if (!party.getCategory().equals(newParty.getCategory())) {
