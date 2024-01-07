@@ -48,7 +48,7 @@ public class PartyCreationReqDTO {
     @Positive(message = "활동 기간은 1 이상이어야 합니다.")
     private Integer activityDuration;
 
-    //마감 예정 일시
+    //마감 예정 일자
     @NotNull
     @Future(message = "마감 예정 날짜는 미래여야 합니다.")
     //TODO: 6개월까지만 받도록 수정
@@ -56,6 +56,7 @@ public class PartyCreationReqDTO {
 
     @NotNull
     @Future(message = "시작 예정 날짜는 미래여야 합니다.")
+    //TODO: 시작일자는 마감 예정 일자보다 더 뒤여야 함
     private LocalDate plannedStartDate;
 
     //연락처
