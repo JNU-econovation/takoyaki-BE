@@ -189,7 +189,7 @@ public class PartyController {
     }
 
     @PostMapping("/parties/{partyId}/comment")
-    public ApiResponse<?> addComment(@PathVariable Long partyId, @RequestBody CommentReqDTO) {
+    public ApiResponse<?> addComment(@PathVariable Long partyId, @RequestBody CommentReqDTO commentReqDTO) {
         //TODO: 댓글 작성 구현하기
         return ApiResponseCreator.success(null);
     }
