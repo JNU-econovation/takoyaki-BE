@@ -12,6 +12,14 @@ public class AuthenticationCheckInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler){
 
+        String httpMethod = request.getMethod();
+        String requestURI = request.getRequestURI();
+
+        //TODO: 여러 요청 추가해도 깔끔하도록 리팩토링
+        if (requestURI.matches("/parties/\\d+") && httpMethod.equals("GET")) {
+            return true;
+        }
+
         HttpSession session = request.getSession();
         Boolean authentication = (Boolean) session.getAttribute(SessionConst.AUTHENTICATION);
 
