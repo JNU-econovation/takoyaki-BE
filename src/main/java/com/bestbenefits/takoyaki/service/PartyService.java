@@ -30,11 +30,11 @@ public class PartyService {
     private final PartyRepository partyRepository;
     private final UserRepository userRepository;
     private final YakiRepositoy yakiRepository;
+    private final UserService userService;
 
     @Transactional //
     public PartyCreationResDTO createParty(Long id, PartyReqDTO partyReqDTO) {
-        User user = userRepository.findUserById(id).orElseThrow(
-                () -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+        User user = userService.getUserOrThrow(id);
         Party party = partyRepository.save(partyReqDTO.toEntity(user));
 
         return PartyCreationResDTO.builder()
@@ -45,8 +45,7 @@ public class PartyService {
     @Transactional
     public PartyCreationResDTO patchParty(Long id, Long partyId, PartyReqDTO partyReqDTO) {
         //ID 유효성 검사
-        User user = userRepository.findUserById(id).orElseThrow(
-                () -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+        User user = userService.getUserOrThrow(id);
         Party party = partyRepository.findById(partyId).orElseThrow(
                 () -> new IllegalArgumentException("잘못된 파티 ID입니다."));
 
@@ -113,8 +112,7 @@ public class PartyService {
 
         List<Object[]> partyList;
 
-        User user = isLogin ?
-                userRepository.findUserById(id).orElseThrow(() -> new IllegalArgumentException("유저가 없습니다.")) : null;
+        User user = isLogin ? userService.getUserOrThrow(id) : null;
         partyList = partyRepository.getPartiesByFiltering(PageRequest.of(pageNumber, number), user, category, activityLocation).getContent();
 
         List<PartyListResDTO> partyDTOList = new ArrayList<>();
@@ -147,7 +145,7 @@ public class PartyService {
                 .filter(p -> p.getDeletedAt() == null)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 팟입니다."));
 
-        User user = isLogin ? userRepository.findUserById(id).orElseThrow(() -> new IllegalArgumentException("유저가 없습니다.")) : null;
+        User user = isLogin ? userService.getUserOrThrow(id) : null;
 
         PartyInfoResDTO.PartyInfoResDTOBuilder builder =
                 PartyInfoResDTO.builder().partyId(partyId)
