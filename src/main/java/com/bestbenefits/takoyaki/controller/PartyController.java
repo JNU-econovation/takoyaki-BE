@@ -1,6 +1,8 @@
 package com.bestbenefits.takoyaki.controller;
 
+import com.bestbenefits.takoyaki.DTO.client.request.CommentReqDTO;
 import com.bestbenefits.takoyaki.DTO.client.request.PartyReqDTO;
+import com.bestbenefits.takoyaki.DTO.client.response.CommentListResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyInfoResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyListResDTO;
 import com.bestbenefits.takoyaki.config.annotation.Session;
@@ -178,5 +180,17 @@ public class PartyController {
         //야끼 삭제 처리
 
         return ApiResponseCreator.success(new ApiMessage("성공"));
+    }
+
+    @GetMapping("/parties/{partyId}/comment")
+    public ApiResponse<?> getComment(@PathVariable Long partyId) {
+        //TODO: 댓글 리스트 반환 필요
+        return ApiResponseCreator.success(new CommentListResDTO(null));
+    }
+
+    @PostMapping("/parties/{partyId}/comment")
+    public ApiResponse<?> addComment(@PathVariable Long partyId, @RequestBody CommentReqDTO) {
+        //TODO: 댓글 작성 구현하기
+        return ApiResponseCreator.success(null);
     }
 }
