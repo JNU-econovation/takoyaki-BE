@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Repository
 public interface YakiRepositoy extends JpaRepository<Yaki, Long> {
-    Optional<Yaki> findYakiById(Long id);
+    Optional<Yaki> findYakiByUser(User user);
     Optional<Yaki> findYakiByPartyAndUser(Party party, User user);
 
     @Query("SELECT new com.bestbenefits.takoyaki.DTO.client.response.PartyYakiListResDTO(y.user.id, y.user.nickname) FROM Yaki y WHERE y.party = :party AND y.status = 'WAITING'")
