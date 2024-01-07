@@ -20,7 +20,7 @@ public class Party {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private User user;
+    private User user; //타코
 
     @Enumerated(EnumType.STRING)
     private Category category;
@@ -38,16 +38,16 @@ public class Party {
     private String body;
 
     @Column
-    private int recruitNumber;
+    private int recruitNumber; //모집 인원
 
     @Column
-    private LocalDate plannedClosingDate;
+    private LocalDate plannedClosingDate; //마감 날짜
 
     @Column
-    private LocalDate plannedStartDate;
+    private LocalDate plannedStartDate; //활동 시작 날짜
 
     @Column
-    private int activityDuration;
+    private int activityDuration; //활동 기간
 
     @Column
     private String contact;
@@ -56,16 +56,16 @@ public class Party {
     private Long viewCount;
 
     @Column
-    private LocalDateTime deletedAt;
+    private LocalDateTime deletedAt; //삭제 일시
 
     @Column
-    private LocalDateTime closedAt;
+    private LocalDateTime closedAt; //마감 일시
 
     @Column
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt; //글 작성 일시
 
     @Column
-    private LocalDateTime modifiedAt;
+    private LocalDateTime modifiedAt; //글 수정 일시
 
     @Builder
     public Party(User user, Category category, ActivityLocation activityLocation, ContactMethod contactMethod, String title, String body, int recruitNumber, LocalDate plannedClosingDate, LocalDate plannedStartDate, int activityDuration, String contact) {
@@ -88,8 +88,88 @@ public class Party {
         this.deletedAt = null;
     }
 
-    public void updateDeleteAt(LocalDateTime deletedAt) {
-        this.deletedAt = deletedAt;
+
+    /**** 조건 검사  ****/
+    //삭제된 파티인지 확인
+    public boolean isDeleted() {
+        return deletedAt != null;
     }
-    //TODO: 게시글 수정에서 이용할 setter
+
+    //마감된 파티인지 확인
+    public boolean isClosed() {
+        return !closedAt.equals(createdAt);
+    }
+
+    //글 작성자인지 확인
+    public boolean isAuthor(Long userId) {
+        return user.getId().equals(userId);
+    }
+
+
+
+    /**** 필드 업데이트  ****/
+    //팟 수정 시 호출 필요
+    public Party updateModifiedAt() {
+        this.modifiedAt = LocalDateTime.now();
+        return this;
+    }
+
+
+    //팟 삭제에서 사용됨
+    public void updateDeleteAt() {
+        this.deletedAt = LocalDateTime.now();
+    }
+
+
+    //팟 마감에서 사용됨
+    public void updateClosedAt() {
+        this.closedAt = LocalDateTime.now();
+    }
+
+
+    //팟 수정에서 사용됨
+    public Party updateActivityLocation(ActivityLocation activityLocation) {
+        this.activityLocation = activityLocation;
+        return this;
+    }
+
+    public Party updateContactMethod(ContactMethod contactMethod) {
+        this.contactMethod = contactMethod;
+        return this;
+    }
+
+    public Party updateTitle(String title) {
+        this.title = title;
+        return this;
+    }
+
+    public Party updateBody(String body) {
+        this.body = body;
+        return this;
+    }
+
+    public Party updateRecruitNumber(int recruitNumber) {
+        this.recruitNumber = recruitNumber;
+        return this;
+    }
+
+    public Party updatePlannedClosingDate(LocalDate plannedClosingDate) {
+        this.plannedClosingDate = plannedClosingDate;
+        return this;
+    }
+
+    public Party updatePlannedStartDate(LocalDate plannedStartDate) {
+        this.plannedStartDate = plannedStartDate;
+        return this;
+    }
+
+    public Party updateActivityDuration(int activityDuration) {
+        this.activityDuration = activityDuration;
+        return this;
+    }
+
+    public Party updateContact(String contact) {
+        this.contact = contact;
+        return this;
+    }
 }

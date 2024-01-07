@@ -44,17 +44,69 @@ public class PartyService {
     }
 
     @Transactional
+    public PartyCreationResDTO patchParty(Long id, Long partyId, PartyCreationReqDTO partyCreationReqDTO) {
+        //ID 유효성 검사
+        User user = userRepository.findUserById(id).orElseThrow(
+                () -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+        Party party = partyRepository.findById(partyId).orElseThrow(
+                () -> new IllegalArgumentException("잘못된 파티 ID입니다."));
+
+        //party 상태 검사
+        if (!party.isAuthor(id)) {
+            throw new IllegalArgumentException(String.format("해당 Party가 유저 ID: %d에 의해 생성되지 않았습니다.", id));
+        }
+        if (party.isDeleted()) {
+            throw new IllegalArgumentException("이미 삭제된 파티는 수정할 수 없습니다.");
+        }
+        if (party.isClosed()) {
+            throw new IllegalArgumentException("이미 마감된 파티는 수정할 수 없습니다.");
+        }
+
+        Party newParty = partyCreationReqDTO.toEntity(user);
+
+        //정책에 의한 파티 수정 조건검사
+        if (!party.getCategory().equals(newParty.getCategory())) {
+            throw new IllegalArgumentException("카테고리는 수정할 수 없습니다.");
+        }
+        if (party.getRecruitNumber() > newParty.getRecruitNumber()) {
+            throw new IllegalArgumentException("수정 후 모집인원은 기존보다 같거나 커야 합니다.");
+        }
+        //TODO: 예상 마감일시와 예상 시작일시 비교 로직 정밀화 필요
+        if (newParty.getPlannedClosingDate().isAfter(newParty.getPlannedClosingDate())) {
+            throw new IllegalArgumentException("예상 마감 일시는 예상 시작 일시보다 이전이어야 합니다.");
+        }
+
+        //영속성 컨텍스트 수정
+        party.updateModifiedAt().
+                updateActivityLocation(newParty.getActivityLocation())
+                .updateContactMethod(newParty.getContactMethod())
+                .updateTitle(newParty.getTitle())
+                .updateBody(newParty.getBody())
+                .updateRecruitNumber(newParty.getRecruitNumber())
+                .updatePlannedClosingDate(newParty.getPlannedClosingDate())
+                .updatePlannedStartDate(newParty.getPlannedStartDate())
+                .updateActivityDuration(newParty.getActivityDuration())
+                .updateContact(newParty.getContact());
+
+        return PartyCreationResDTO.builder()
+                .partyId(party.getId())
+                .build();
+    }
+
+    @Transactional
     public void deleteParty(Long id, Long partyId) {
         Party p = partyRepository.findById(partyId).orElseThrow(
                 () -> new IllegalArgumentException("Party ID가 잘못되었습니다."));
 
-        if (!p.getUser().getId().equals(id))
+        if (!p.isAuthor(id))
             throw new IllegalArgumentException(String.format("해당 Party가 유저 ID: %d에 의해 생성되지 않았습니다.", id));
 
-        if (p.getDeletedAt() != null)
+        if (p.isDeleted())
             throw new IllegalArgumentException("이미 삭제된 Party입니다.");
 
-        p.updateDeleteAt(LocalDateTime.now());
+        //TODO: 마감된 파티에 대한 조건 추가
+
+        p.updateModifiedAt().updateDeleteAt();
     }
 
     @Transactional(readOnly = true)
