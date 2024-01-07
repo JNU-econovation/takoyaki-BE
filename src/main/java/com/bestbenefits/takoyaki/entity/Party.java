@@ -97,7 +97,7 @@ public class Party {
 
     //마감된 파티인지 확인
     public boolean isClosed() {
-        return !closedAt.equals(createdAt);
+        return !closedAt.isEqual(createdAt);
     }
 
     //글 작성자인지 확인
