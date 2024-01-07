@@ -87,4 +87,10 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
 
+    @Transactional(readOnly = true)
+    public User getUserOrThrow(Long id) {
+        return userRepository.findUserById(id).orElseThrow(() -> new IllegalArgumentException("유저가 없습니다."));
+    }
+
+
 }
