@@ -40,7 +40,7 @@ public class UserController {
         Map<String, Boolean> data = new HashMap<>();
         boolean login;
         if (id != null && authentication != null && authentication)
-            login = userService.getUser(id) != null;
+            login = userService.getUserOrNull(id) != null;
         else
             login = false;
         data.put("login", login);

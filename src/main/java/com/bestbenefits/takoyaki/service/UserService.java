@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -83,7 +82,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public User getUser(Long id) {
+    public User getUserOrNull(Long id) {
         return userRepository.findById(id).orElse(null);
     }
 
