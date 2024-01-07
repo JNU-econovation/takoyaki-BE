@@ -67,6 +67,23 @@ public class YakiService {
             party.updateClosedAt();
     }
 
+    @Transactional
+    public void denyYaki(Long id, Long partyId, Long yakiId){
+        User yakiUser = userService.getUserOrThrow(yakiId); //TODO: boolean으로 확인
+        Party party = partyService.getPartyOrThrow(partyId);
+        if (party.isDeleted() || party.isClosed())
+            throw new IllegalArgumentException("존재하지 않거나 삭제된 팟입니다.");
+
+        if (!party.isAuthor(id))
+            throw new IllegalArgumentException("타코만 요청을 거절할 수 있습니다.");
+        Yaki yaki = getYakiOrThrow(party, yakiUser);
+        if (yaki.getStatus() != YakiStatus.WAITING)
+            throw new IllegalArgumentException("대기중인 야끼만 거절할 수 있습니다.");
+        yakiRepository.delete(yaki);
+    }
+
+
+
     @Transactional(readOnly = true)
     public Yaki getYakiOrThrow(Party party, User user){
         return yakiRepository.findYakiByPartyAndUser(party, user).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 야끼입니다."));

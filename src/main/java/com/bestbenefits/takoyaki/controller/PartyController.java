@@ -150,14 +150,10 @@ public class PartyController {
     public ApiResponse<?> denyYaki(@Session(attribute = SessionConst.ID) Long id,
                                    @PathVariable(name = "party-id") Long partyId,
                                    @PathVariable(name = "user-id") Long yakiId){
-        //유저가 있는지 확인
-        //파티가 있는지, 삭제된거 아닌지 확인
-        //마감됐는지 확인
 
-        //야끼 waiting인지 확인
-        //야끼 삭제 처리
+        yakiService.denyYaki(id, partyId, yakiId);
 
-        return ApiResponseCreator.success(new ApiMessage("성공"));
+        return ApiResponseCreator.success(new ApiMessage("야끼가 거절되었습니다."));
     }
 
     @DeleteMapping("/parties/{party-id}/leaving")
