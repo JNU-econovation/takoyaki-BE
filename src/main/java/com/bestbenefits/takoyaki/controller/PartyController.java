@@ -9,8 +9,10 @@ import com.bestbenefits.takoyaki.config.apiresponse.ApiResponse;
 import com.bestbenefits.takoyaki.config.apiresponse.ApiResponseCreator;
 import com.bestbenefits.takoyaki.config.properties.SessionConst;
 import com.bestbenefits.takoyaki.config.properties.party.*;
+import com.bestbenefits.takoyaki.repository.YakiRepositoy;
 import com.bestbenefits.takoyaki.service.PartyService;
 import com.bestbenefits.takoyaki.service.UserService;
+import com.bestbenefits.takoyaki.service.YakiService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class PartyController {
     private final PartyService partyService;
+    private final YakiService yakiService;
     private final UserService userService;
 
     @GetMapping("/party/activity-location")
@@ -114,16 +117,9 @@ public class PartyController {
     public ApiResponse<?> applyToParty(@Session(attribute = SessionConst.ID) Long id,
                                        @PathVariable(name = "party-id") Long partyId){
 
-        //유저가 있는지 확인
-        //파티가 있는지, 삭제된거 아닌지 확인
-        //마감됐는지 확인
+        yakiService.applyToParty(id, partyId);
 
-        //이미 신청했는지 확인
-
-        //자리 확인
-        //야끼 생성
-
-        return ApiResponseCreator.success(new ApiMessage("성공"));
+        return ApiResponseCreator.success(new ApiMessage("신청이 완료되었습니다."));
     }
     @DeleteMapping("/parties/{party-id}/apply")
     public ApiResponse<?> cancelApplication(@Session(attribute = SessionConst.ID) Long id,

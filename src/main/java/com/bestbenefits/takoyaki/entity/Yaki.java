@@ -33,7 +33,7 @@ public class Yaki {
     private LocalDateTime appliedAt;
 
     @Builder
-    public Yaki(Long id, User user, Party party) {
+    public Yaki(User user, Party party) {
         this.user = user;
         this.party = party;
         this.status = YakiStatus.WAITING;

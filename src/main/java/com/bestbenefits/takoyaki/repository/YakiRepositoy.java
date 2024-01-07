@@ -20,4 +20,12 @@ public interface YakiRepositoy extends JpaRepository<Yaki, Long> {
 
     @Query("SELECT y.user.id, y.user.nickname FROM Yaki y WHERE y.party = :party AND y.status = 'ACCEPTED'")
     List<PartyYakiListResDTO> findAcceptedList(Party party);
+
+    boolean existsYakiByPartyAndUser(Party party, User user);
+
+//    @Query("")
+//    long countAcceptedYaki(Party party);
+
+
+
 }
