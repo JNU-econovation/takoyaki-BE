@@ -24,7 +24,7 @@ public class YakiService {
     public void applyToParty(Long id, Long partyId){
         User user = userService.getUserOrThrow(id);
         Party party = partyService.getPartyOrThrow(partyId);
-        if (party.isDeleted() && party.isClosed())
+        if (party.isDeleted() || party.isClosed())
             throw new IllegalArgumentException("존재하지 않거나 삭제된 팟입니다.");
 
         if (yakiRepositoy.existsYakiByPartyAndUser(party, user))
