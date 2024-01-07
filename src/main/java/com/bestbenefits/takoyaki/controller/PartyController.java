@@ -141,17 +141,9 @@ public class PartyController {
     public ApiResponse<?> acceptYaki(@Session(attribute = SessionConst.ID) Long id,
                                      @PathVariable(name = "party-id") Long partyId,
                                      @PathVariable(name = "user-id") Long yakiId){
-        //유저가 있는지 확인
-        //파티가 있는지, 삭제된거 아닌지 확인
-        //마감됐는지 확인
+        yakiService.acceptYaki(id, partyId, yakiId);
 
-        //야끼 waiting인지 확인
-        //accepted로 변경
-
-        //자리 확인
-        //꽉차면 마감 처리
-
-        return ApiResponseCreator.success(new ApiMessage("성공"));
+        return ApiResponseCreator.success(new ApiMessage("야끼가 수락되었습니다."));
     }
 
     @DeleteMapping("/parties/{party-id}/applicant/{user-id}")

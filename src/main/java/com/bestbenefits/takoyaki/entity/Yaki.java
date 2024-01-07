@@ -32,6 +32,10 @@ public class Yaki {
     @Column
     private LocalDateTime appliedAt;
 
+    public void updateStatus(YakiStatus status) {
+        this.status = status;
+    }
+
     @Builder
     public Yaki(User user, Party party) {
         this.user = user;
