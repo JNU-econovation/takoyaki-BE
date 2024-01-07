@@ -184,4 +184,12 @@ public class PartyService {
         return builder.build();
     }
 
+    @Transactional(readOnly = true)
+    public Party getAvailableParty(Long partyId){
+        return partyRepository.findById(partyId)
+                .filter(p -> p.getDeletedAt() == null)
+                .filter(p -> p.getCreatedAt().isEqual(p.getClosedAt()))
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않거나 마감된 팟입니다."));
+    }
+
 }
