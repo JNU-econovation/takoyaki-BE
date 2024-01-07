@@ -32,8 +32,8 @@ public class PartyInfoResDTO {
 
     private UserType userType; //로그인 유저
     //타코
-    private List<PartyYakiListResDTO> waitingList; //마감 전
-    private List<PartyYakiListResDTO> acceptedList; //마감 전, 마감 후
+    private List<PartyYakiListResDTO> waitingList;
+    private List<PartyYakiListResDTO> acceptedList;
     //야끼
     private YakiStatus yakiStatus;
     private String contact; //수락, 마감

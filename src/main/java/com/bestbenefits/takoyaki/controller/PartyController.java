@@ -1,6 +1,7 @@
 package com.bestbenefits.takoyaki.controller;
 
 import com.bestbenefits.takoyaki.DTO.client.request.PartyCreationReqDTO;
+import com.bestbenefits.takoyaki.DTO.client.response.PartyInfoResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyListResDTO;
 import com.bestbenefits.takoyaki.config.annotation.Session;
 import com.bestbenefits.takoyaki.config.apiresponse.ApiMessage;
@@ -95,9 +96,18 @@ public class PartyController {
                                    @RequestParam(name = "login") boolean loginField,
                                    @PathVariable(name = "party-id") Long partyId
                                    ){
-        //삭제된 게시글인 경우 예외 발생
+        //삭제된 게시글인 경우 404 예외 발생
 
-        return ApiResponseCreator.success("s");
+        boolean isLogin = (id != null && authentication != null && authentication);
+
+        PartyInfoResDTO partyInfoResDTO;
+
+        if (loginField == isLogin)
+            partyInfoResDTO = partyService.getParty(isLogin, id, partyId);
+        else
+            throw new IllegalArgumentException("로그인 상태와 요청이 일치하지 않습니다.");
+
+        return ApiResponseCreator.success(partyInfoResDTO);
     }
 
 }

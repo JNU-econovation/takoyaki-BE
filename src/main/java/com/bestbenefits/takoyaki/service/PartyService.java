@@ -2,13 +2,19 @@ package com.bestbenefits.takoyaki.service;
 
 import com.bestbenefits.takoyaki.DTO.client.request.PartyCreationReqDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyCreationResDTO;
+import com.bestbenefits.takoyaki.DTO.client.response.PartyInfoResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyListResDTO;
 import com.bestbenefits.takoyaki.config.properties.party.ActivityLocation;
 import com.bestbenefits.takoyaki.config.properties.party.Category;
+import com.bestbenefits.takoyaki.config.properties.party.DurationUnit;
+import com.bestbenefits.takoyaki.config.properties.user.UserType;
+import com.bestbenefits.takoyaki.config.properties.user.YakiStatus;
 import com.bestbenefits.takoyaki.entity.Party;
 import com.bestbenefits.takoyaki.entity.User;
+import com.bestbenefits.takoyaki.entity.Yaki;
 import com.bestbenefits.takoyaki.repository.PartyRepository;
 import com.bestbenefits.takoyaki.repository.UserRepository;
+import com.bestbenefits.takoyaki.repository.YakiRepositoy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -24,6 +30,8 @@ import java.util.List;
 public class PartyService {
     private final PartyRepository partyRepository;
     private final UserRepository userRepository;
+    private final YakiRepositoy yakiRepository;
+
     @Transactional //
     public PartyCreationResDTO createParty(Long id, PartyCreationReqDTO partyCreationReqDTO) {
         User user = userRepository.findUserById(id).orElseThrow(
@@ -54,7 +62,8 @@ public class PartyService {
 
         List<Object[]> partyList;
 
-        User user = isLogin ? userRepository.findUserById(id).orElseThrow(() -> new IllegalArgumentException("유저가 없습니다.")) : null;
+        User user = isLogin ?
+                userRepository.findUserById(id).orElseThrow(() -> new IllegalArgumentException("유저가 없습니다.")) : null;
         partyList = partyRepository.getPartiesByFiltering(PageRequest.of(pageNumber, number), user, category, activityLocation).getContent();
 
         List<PartyListResDTO> partyDTOList = new ArrayList<>();
@@ -80,4 +89,48 @@ public class PartyService {
 
         return partyDTOList;
     }
+
+    @Transactional(readOnly = true)
+    public PartyInfoResDTO getParty(boolean isLogin, Long id, Long partyId){
+        Party party = partyRepository.findById(id)
+                .filter(p -> p.getDeletedAt() == null)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 팟입니다."));
+
+        User user = isLogin ? userRepository.findUserById(id).orElseThrow(() -> new IllegalArgumentException("유저가 없습니다.")) : null;
+
+        PartyInfoResDTO.PartyInfoResDTOBuilder builder =
+                PartyInfoResDTO.builder().partyId(partyId)
+                        .title(party.getTitle())
+                        .nickname(party.getUser().getNickname())
+                        .body(party.getBody())
+                        .category(party.getCategory().getName())
+                        .activityLocation(party.getActivityLocation().getName())
+                        .plannedStartDate(party.getPlannedStartDate())
+                        .activityDuration(DurationUnit.calculateDuration(party.getActivityDuration()))
+                        .contactMethod(party.getContactMethod().getName())
+                        .viewCount(party.getViewCount().intValue())
+                        .closedDate(party.getClosedAt().toLocalDate())
+                        .recruitNumber(party.getRecruitNumber())
+                        .plannedClosingDate(party.getPlannedClosingDate());
+
+        if (isLogin){
+            UserType userType;
+            if (party.getUser() == user) {
+                userType = UserType.TAKO;
+                builder.waitingList(yakiRepository.findWaitingList(party))
+                        .acceptedList(yakiRepository.findAcceptedList(party))
+                        .contact(party.getContact());
+            }else{
+                Yaki yaki = yakiRepository.findYakiByPartyAndUser(party, user).orElse(null);
+                userType = (yaki != null) ? UserType.YAKI : UserType.OTHER;
+                builder.yakiStatus(yaki.getStatus());
+                if (party.getClosedAt() != null && yaki.getStatus() == YakiStatus.ACCEPTED)
+                    builder.contact(party.getContact());
+            }
+            builder.userType(userType);
+        }
+
+        return builder.build();
+    }
+
 }

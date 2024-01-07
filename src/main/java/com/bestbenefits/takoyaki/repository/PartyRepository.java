@@ -11,6 +11,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface PartyRepository extends JpaRepository<Party, Long> {
     @Query("SELECT p.id, p.title, p.category, p.activityLocation, p.recruitNumber, p.plannedClosingDate, " +
@@ -24,5 +26,4 @@ public interface PartyRepository extends JpaRepository<Party, Long> {
             "AND (:activityLocation IS NULL OR p.activityLocation = :activityLocation)" +
             "ORDER BY p.id DESC")
     Page<Object[]> getPartiesByFiltering(Pageable pageable, @Nullable User user, Category category, ActivityLocation activityLocation);
-
 }
