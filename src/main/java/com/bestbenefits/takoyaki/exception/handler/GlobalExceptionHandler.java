@@ -1,4 +1,4 @@
-package com.bestbenefits.takoyaki.controller;
+package com.bestbenefits.takoyaki.exception.handler;
 
 import com.bestbenefits.takoyaki.config.apiresponse.ApiResponse;
 import com.bestbenefits.takoyaki.config.apiresponse.ApiResponseCreator;
