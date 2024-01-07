@@ -47,8 +47,7 @@ public class UserService {
     @Transactional
     public void insertAdditionalInfo(Long id, UserAdditionalInfoReqDTO userAdditionalInfoReqDTO){
         String nickname = userAdditionalInfoReqDTO.getNickname();
-        User user = userRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("User not found"));
+        User user = getUserOrThrow(id);
         if (user.getNickname() != null)
             throw new IllegalArgumentException("User already has additional information");
 //        if(userRepository.findUserByNickname(nickname).isPresent())
@@ -60,8 +59,7 @@ public class UserService {
 
     @Transactional
     public void changeNickname(Long id, UserNicknameUpdateReqDTO userNicknameUpdateReqDTO){
-        User user = userRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("User not found"));
+        User user = getUserOrThrow(id);
 
         if (user.getNicknameUpdatedAt().isEqual(LocalDate.now()))
             throw new IllegalArgumentException("닉네임은 하루에 한 번만 바꿀 수 있습니다.");
@@ -72,8 +70,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserInfoResDTO getUserInfo(Long id){
-        User user = userRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("User not found"));
+        User user = getUserOrThrow(id);
         return UserInfoResDTO.builder()
                 .nickname(user.getNickname())
                 .social(user.getSocial())
