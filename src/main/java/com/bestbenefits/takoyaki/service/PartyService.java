@@ -1,7 +1,7 @@
 package com.bestbenefits.takoyaki.service;
 
 import com.bestbenefits.takoyaki.DTO.client.request.PartyReqDTO;
-import com.bestbenefits.takoyaki.DTO.client.response.PartyCreationResDTO;
+import com.bestbenefits.takoyaki.DTO.client.response.PartyIdResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyInfoResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyListResDTO;
 import com.bestbenefits.takoyaki.config.properties.party.ActivityLocation;
@@ -33,17 +33,17 @@ public class PartyService {
     private final UserService userService;
 
     @Transactional //
-    public PartyCreationResDTO createParty(Long id, PartyReqDTO partyReqDTO) {
+    public PartyIdResDTO createParty(Long id, PartyReqDTO partyReqDTO) {
         User user = userService.getUserOrThrow(id);
         Party party = partyRepository.save(partyReqDTO.toEntity(user));
 
-        return PartyCreationResDTO.builder()
+        return PartyIdResDTO.builder()
                 .partyId(party.getId())
                 .build();
     }
 
     @Transactional
-    public PartyCreationResDTO patchParty(Long id, Long partyId, PartyReqDTO partyReqDTO) {
+    public PartyIdResDTO patchParty(Long id, Long partyId, PartyReqDTO partyReqDTO) {
         //ID 유효성 검사
         User user = userService.getUserOrThrow(id);
         Party party = partyRepository.findById(partyId).orElseThrow(
@@ -86,7 +86,7 @@ public class PartyService {
                 .updateActivityDuration(newParty.getActivityDuration())
                 .updateContact(newParty.getContact());
 
-        return PartyCreationResDTO.builder()
+        return PartyIdResDTO.builder()
                 .partyId(party.getId())
                 .build();
     }
