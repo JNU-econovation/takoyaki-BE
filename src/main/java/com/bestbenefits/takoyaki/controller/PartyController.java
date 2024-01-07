@@ -58,12 +58,6 @@ public class PartyController {
         return ApiResponseCreator.success(partyService.createParty(id, dto));
     }
 
-    @DeleteMapping("/parties/{partyId}")
-    public ApiResponse<?> deleteParty(@Session(attribute = SessionConst.ID) Long id, @PathVariable Long partyId) {
-        partyService.deleteParty(id, partyId);
-        return ApiResponseCreator.success(new ApiMessage(String.format("파티 id: %d번이 삭제되었습니다.", partyId)));
-    }
-
     @GetMapping("/parties/all")
     public ApiResponse<List<? extends PartyListResDTO>> getParties(@Session(attribute = SessionConst.ID, nullable = true) Long id,
                                                    @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
@@ -111,6 +105,17 @@ public class PartyController {
         return ApiResponseCreator.success(partyInfoResDTO);
     }
 
+    @PatchMapping("parties/{partyId}")
+    public ApiResponse<?> patchParty(@Session(attribute = SessionConst.ID) Long id, @PathVariable Long partyId, @RequestBody @Valid PartyReqDTO dto) {
+        return ApiResponseCreator.success(partyService.patchParty(id, partyId, dto));
+    }
+
+    @DeleteMapping("/parties/{partyId}")
+    public ApiResponse<?> deleteParty(@Session(attribute = SessionConst.ID) Long id, @PathVariable Long partyId) {
+        partyService.deleteParty(id, partyId);
+        return ApiResponseCreator.success(new ApiMessage(String.format("파티 id: %d번이 삭제되었습니다.", partyId)));
+    }
+
     @PostMapping("/parties/{party-id}/apply")
     public ApiResponse<?> applyToParty(@Session(attribute = SessionConst.ID) Long id,
                                        @PathVariable(name = "party-id") Long partyId){
@@ -119,6 +124,7 @@ public class PartyController {
 
         return ApiResponseCreator.success(new ApiMessage("신청이 완료되었습니다."));
     }
+
     @DeleteMapping("/parties/{party-id}/apply")
     public ApiResponse<?> cancelApplication(@Session(attribute = SessionConst.ID) Long id,
                                             @PathVariable(name = "party-id") Long partyId){
@@ -132,6 +138,7 @@ public class PartyController {
 
         return ApiResponseCreator.success(new ApiMessage("성공"));
     }
+
     @PostMapping("/parties/{party-id}/applicant/{user-id}")
     public ApiResponse<?> acceptYaki(@Session(attribute = SessionConst.ID) Long id,
                                      @PathVariable(name = "party-id") Long partyId,
@@ -148,6 +155,7 @@ public class PartyController {
 
         return ApiResponseCreator.success(new ApiMessage("성공"));
     }
+
     @DeleteMapping("/parties/{party-id}/applicant/{user-id}")
     public ApiResponse<?> denyYaki(@Session(attribute = SessionConst.ID) Long id,
                                    @PathVariable(name = "party-id") Long partyId,
@@ -161,6 +169,7 @@ public class PartyController {
 
         return ApiResponseCreator.success(new ApiMessage("성공"));
     }
+
     @DeleteMapping("/parties/{party-id}/leaving")
     public ApiResponse<?> leaveParty(@Session(attribute = SessionConst.ID) Long id,
                                             @PathVariable(name = "party-id") Long partyId){
