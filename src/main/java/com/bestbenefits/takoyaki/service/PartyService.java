@@ -32,7 +32,7 @@ public class PartyService {
     private final YakiRepositoy yakiRepository;
     private final UserService userService;
 
-    @Transactional //
+    @Transactional
     public PartyIdResDTO createParty(Long id, PartyReqDTO partyReqDTO) {
         User user = userService.getUserOrThrow(id);
         Party party = partyRepository.save(partyReqDTO.toEntity(user));
@@ -92,7 +92,7 @@ public class PartyService {
     }
 
     @Transactional
-    public void deleteParty(Long id, Long partyId) {
+    public PartyIdResDTO deleteParty(Long id, Long partyId) {
         Party p = partyRepository.findById(partyId).orElseThrow(
                 () -> new IllegalArgumentException("Party ID가 잘못되었습니다."));
 
@@ -105,6 +105,10 @@ public class PartyService {
         //TODO: 마감된 파티에 대한 조건 추가
 
         p.updateModifiedAt().updateDeleteAt();
+
+        return PartyIdResDTO.builder()
+                .partyId(p.getId())
+                .build();
     }
 
     @Transactional(readOnly = true)
