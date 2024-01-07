@@ -90,13 +90,13 @@ public class PartyController {
         return ApiResponseCreator.success(partyDTOList);
     }
 
+    //TODO: 로그인 필요 없이도 접근할 수 있게 만들어야 함
     @GetMapping("/parties/{party-id}")
     public ApiResponse<PartyInfoResDTO> getParty(@Session(attribute = SessionConst.ID, nullable = true) Long id,
                                    @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
                                    @RequestParam(name = "login") boolean loginField,
                                    @PathVariable(name = "party-id") Long partyId
                                    ){
-        //삭제된 게시글인 경우 404 예외 발생
 
         boolean isLogin = (id != null && authentication != null && authentication);
 
@@ -110,4 +110,74 @@ public class PartyController {
         return ApiResponseCreator.success(partyInfoResDTO);
     }
 
+    @PostMapping("/parties/{party-id}/apply")
+    public ApiResponse<?> applyToParty(@Session(attribute = SessionConst.ID) Long id,
+                                       @PathVariable(name = "party-id") Long partyId){
+
+        //유저가 있는지 확인
+        //파티가 있는지, 삭제된거 아닌지 확인
+        //마감됐는지 확인
+
+        //이미 신청했는지 확인
+
+        //자리 확인
+        //야끼 생성
+
+        return ApiResponseCreator.success(new ApiMessage("성공"));
+    }
+    @DeleteMapping("/parties/{party-id}/apply")
+    public ApiResponse<?> cancelApplication(@Session(attribute = SessionConst.ID) Long id,
+                                            @PathVariable(name = "party-id") Long partyId){
+        //유저가 있는지 확인
+        //파티가 있는지, 삭제된거 아닌지 확인
+        //마감됐는지 확인
+
+        //야끼 - waiting인지 확인
+        //삭제 처리
+
+
+        return ApiResponseCreator.success(new ApiMessage("성공"));
+    }
+    @PostMapping("/parties/{party-id}/applicant/{user-id}")
+    public ApiResponse<?> acceptYaki(@Session(attribute = SessionConst.ID) Long id,
+                                     @PathVariable(name = "party-id") Long partyId,
+                                     @PathVariable(name = "user-id") Long yakiId){
+        //유저가 있는지 확인
+        //파티가 있는지, 삭제된거 아닌지 확인
+        //마감됐는지 확인
+
+        //야끼 waiting인지 확인
+        //accepted로 변경
+
+        //자리 확인
+        //꽉차면 마감 처리
+
+        return ApiResponseCreator.success(new ApiMessage("성공"));
+    }
+    @DeleteMapping("/parties/{party-id}/applicant/{user-id}")
+    public ApiResponse<?> denyYaki(@Session(attribute = SessionConst.ID) Long id,
+                                   @PathVariable(name = "party-id") Long partyId,
+                                   @PathVariable(name = "user-id") Long yakiId){
+        //유저가 있는지 확인
+        //파티가 있는지, 삭제된거 아닌지 확인
+        //마감됐는지 확인
+
+        //야끼 waiting인지 확인
+        //야끼 삭제 처리
+
+        return ApiResponseCreator.success(new ApiMessage("성공"));
+    }
+    @DeleteMapping("/parties/{party-id}/leaving")
+    public ApiResponse<?> leaveParty(@Session(attribute = SessionConst.ID) Long id,
+                                            @PathVariable(name = "party-id") Long partyId){
+
+        //유저가 있는지 확인
+        //파티가 있는지, 삭제된거 아닌지 확인
+        //마감됐는지 확인
+
+        //야끼 accepted인지 확인
+        //야끼 삭제 처리
+
+        return ApiResponseCreator.success(new ApiMessage("성공"));
+    }
 }
