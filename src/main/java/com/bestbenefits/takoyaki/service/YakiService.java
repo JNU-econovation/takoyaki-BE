@@ -4,15 +4,10 @@ import com.bestbenefits.takoyaki.config.properties.user.YakiStatus;
 import com.bestbenefits.takoyaki.entity.Party;
 import com.bestbenefits.takoyaki.entity.User;
 import com.bestbenefits.takoyaki.entity.Yaki;
-import com.bestbenefits.takoyaki.repository.PartyRepository;
-import com.bestbenefits.takoyaki.repository.UserRepository;
 import com.bestbenefits.takoyaki.repository.YakiRepositoy;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -50,7 +45,7 @@ public class YakiService {
 
     @Transactional
     public void acceptYaki(Long id, Long partyId, Long yakiId){
-        User yakiUser = userService.getUserOrThrow(yakiId); //TODO: boolean으로 확인
+        User yakiUser = userService.getUserOrThrow(yakiId);
         Party party = partyService.getPartyOrThrow(partyId);
         if (party.isDeleted() || party.isClosed())
             throw new IllegalArgumentException("존재하지 않거나 삭제된 팟입니다.");
@@ -69,7 +64,7 @@ public class YakiService {
 
     @Transactional
     public void denyYaki(Long id, Long partyId, Long yakiId){
-        User yakiUser = userService.getUserOrThrow(yakiId); //TODO: boolean으로 확인
+        User yakiUser = userService.getUserOrThrow(yakiId);
         Party party = partyService.getPartyOrThrow(partyId);
         if (party.isDeleted() || party.isClosed())
             throw new IllegalArgumentException("존재하지 않거나 삭제된 팟입니다.");
@@ -81,6 +76,22 @@ public class YakiService {
             throw new IllegalArgumentException("대기중인 야끼만 거절할 수 있습니다.");
         yakiRepository.delete(yaki);
     }
+
+
+    @Transactional
+    public void leaveParty(Long id, Long partyId){
+        User user = userService.getUserOrThrow(id);
+        Party party = partyService.getPartyOrThrow(partyId);
+        if (party.isDeleted() || party.isClosed())
+            throw new IllegalArgumentException("존재하지 않거나 삭제된 팟입니다.");
+
+        Yaki yaki = getYakiOrThrow(party, user);
+        if (yaki.getStatus() != YakiStatus.ACCEPTED)
+            throw new IllegalArgumentException("수락된 상태가 아닙니다.");
+        yakiRepository.delete(yaki);
+    }
+
+
 
 
 

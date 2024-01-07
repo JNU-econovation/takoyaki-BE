@@ -160,14 +160,9 @@ public class PartyController {
     public ApiResponse<?> leaveParty(@Session(attribute = SessionConst.ID) Long id,
                                             @PathVariable(name = "party-id") Long partyId){
 
-        //유저가 있는지 확인
-        //파티가 있는지, 삭제된거 아닌지 확인
-        //마감됐는지 확인
+        yakiService.leaveParty(id, partyId);
 
-        //야끼 accepted인지 확인
-        //야끼 삭제 처리
-
-        return ApiResponseCreator.success(new ApiMessage("성공"));
+        return ApiResponseCreator.success(new ApiMessage("팟에서 나가졌습니다."));
     }
 
     @GetMapping("/parties/{partyId}/comment")
