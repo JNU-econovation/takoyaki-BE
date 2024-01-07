@@ -23,9 +23,4 @@ public interface YakiRepositoy extends JpaRepository<Yaki, Long> {
 
     boolean existsYakiByPartyAndUser(Party party, User user);
 
-//    @Query("")
-//    long countAcceptedYaki(Party party);
-
-
-
 }

@@ -119,7 +119,6 @@ public class PartyController {
     @PostMapping("/parties/{party-id}/apply")
     public ApiResponse<?> applyToParty(@Session(attribute = SessionConst.ID) Long id,
                                        @PathVariable(name = "party-id") Long partyId){
-
         yakiService.applyToParty(id, partyId);
 
         return ApiResponseCreator.success(new ApiMessage("신청이 완료되었습니다."));
@@ -128,15 +127,9 @@ public class PartyController {
     @DeleteMapping("/parties/{party-id}/apply")
     public ApiResponse<?> cancelApplication(@Session(attribute = SessionConst.ID) Long id,
                                             @PathVariable(name = "party-id") Long partyId){
-        //유저가 있는지 확인
-        //파티가 있는지, 삭제된거 아닌지 확인
-        //마감됐는지 확인
+        yakiService.cancelApplication(id, partyId);
 
-        //야끼 - waiting인지 확인
-        //삭제 처리
-
-
-        return ApiResponseCreator.success(new ApiMessage("성공"));
+        return ApiResponseCreator.success(new ApiMessage("신청이 취소되었습니다."));
     }
 
     @PostMapping("/parties/{party-id}/applicant/{user-id}")
