@@ -140,7 +140,7 @@ public class PartyService {
     }
 
     @Transactional(readOnly = true)
-    public PartyInfoResDTO getParty(boolean isLogin, Long id, Long partyId){
+    public PartyInfoResDTO getPartyInfo(boolean isLogin, Long id, Long partyId){
         Party party = partyRepository.findById(partyId)
                 .filter(p -> p.getDeletedAt() == null)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 팟입니다."));
@@ -183,11 +183,8 @@ public class PartyService {
     }
 
     @Transactional(readOnly = true)
-    public Party getAvailableParty(Long partyId){
-        return partyRepository.findById(partyId)
-                .filter(p -> p.getDeletedAt() == null)
-                .filter(p -> p.getCreatedAt().isEqual(p.getClosedAt()))
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않거나 마감된 팟입니다."));
+    public Party getPartyOrThrow(Long partyId){
+        return partyRepository.findById(partyId).orElseThrow(() -> new IllegalArgumentException("존재하지 않거나 마감된 팟입니다."));
     }
 
 }

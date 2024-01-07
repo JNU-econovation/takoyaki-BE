@@ -98,7 +98,7 @@ public class PartyController {
         PartyInfoResDTO partyInfoResDTO;
 
         if (loginField == isLogin)
-            partyInfoResDTO = partyService.getParty(isLogin, id, partyId);
+            partyInfoResDTO = partyService.getPartyInfo(isLogin, id, partyId);
         else
             throw new IllegalArgumentException("로그인 상태와 요청이 일치하지 않습니다.");
 
