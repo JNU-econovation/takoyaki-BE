@@ -92,7 +92,7 @@ public class PartyService {
 
     @Transactional(readOnly = true)
     public PartyInfoResDTO getParty(boolean isLogin, Long id, Long partyId){
-        Party party = partyRepository.findById(id)
+        Party party = partyRepository.findById(partyId)
                 .filter(p -> p.getDeletedAt() == null)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 팟입니다."));
 
@@ -109,7 +109,7 @@ public class PartyService {
                         .activityDuration(DurationUnit.calculateDuration(party.getActivityDuration()))
                         .contactMethod(party.getContactMethod().getName())
                         .viewCount(party.getViewCount().intValue())
-                        .closedDate(party.getClosedAt().toLocalDate())
+                        .closedDate(party.getClosedAt().isEqual(party.getCreatedAt()) ? null : party.getClosedAt().toLocalDate() ) //
                         .recruitNumber(party.getRecruitNumber())
                         .plannedClosingDate(party.getPlannedClosingDate());
 

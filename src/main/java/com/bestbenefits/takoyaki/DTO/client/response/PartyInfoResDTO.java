@@ -23,6 +23,7 @@ public class PartyInfoResDTO {
     private String category;
     private String activityLocation;
     private String contactMethod;
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     private LocalDate closedDate;
     private LocalDate plannedStartDate;
     private String activityDuration;
