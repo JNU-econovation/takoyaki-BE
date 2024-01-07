@@ -91,7 +91,7 @@ public class PartyController {
     }
 
     @GetMapping("/parties/{party-id}")
-    public ApiResponse<?> getParty(@Session(attribute = SessionConst.ID, nullable = true) Long id,
+    public ApiResponse<PartyInfoResDTO> getParty(@Session(attribute = SessionConst.ID, nullable = true) Long id,
                                    @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
                                    @RequestParam(name = "login") boolean loginField,
                                    @PathVariable(name = "party-id") Long partyId
