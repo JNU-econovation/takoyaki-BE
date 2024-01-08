@@ -33,7 +33,7 @@ public class BookmarkService {
             throw new IllegalArgumentException("이미 북마크 되었습니다.");
 
         //타코가 자신의 게시물 북마크하는 경우
-        if (party.getUser() == user)
+        if (party.isAuthor(user))
             throw new IllegalArgumentException("자신의 글을 북마크할 수 없습니다.");
 
         //북마크 개수 20개 초과시 북마크 안됨(정책에 의거)

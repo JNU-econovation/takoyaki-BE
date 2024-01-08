@@ -23,7 +23,7 @@ public class YakiService {
         if (party.isDeleted() || party.isClosed())
             throw new IllegalArgumentException("삭제되었거나 마감된 팟입니다.");
 
-        if (party.getUser() == user)
+        if (party.isAuthor(id))
             throw new IllegalArgumentException("타코는 신청할 수 없습니다.");
         if (yakiRepository.existsYakiByPartyAndUser(party, user))
             throw new IllegalArgumentException("이미 신청한 팟입니다.");

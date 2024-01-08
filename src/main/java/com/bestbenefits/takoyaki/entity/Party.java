@@ -104,7 +104,9 @@ public class Party {
     public boolean isAuthor(Long userId) {
         return user.getId().equals(userId);
     }
-
+    public boolean isAuthor(User user) {
+        return this.user == user;
+    }
 
 
     /**** 필드 업데이트  ****/
