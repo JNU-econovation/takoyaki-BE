@@ -1,7 +1,6 @@
 package com.bestbenefits.takoyaki.exception;
 
-public class NotLoginException extends IllegalStateException{
-    public NotLoginException() {
-        super("you need login.");
-    }
-}
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+public class NotLoginException extends RuntimeException{}
