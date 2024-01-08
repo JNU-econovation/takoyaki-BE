@@ -66,11 +66,11 @@ public class PartyController {
 
     /************ /parties ************/
     @GetMapping("/parties/")
-    public ApiResponse<List<? extends PartyListResDTO>> getPartyCardListForMainPage(
-             @Session(attribute = SessionConst.ID, nullable = true) Long id,
-             @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
-             @ModelAttribute @Valid PartyListReqDTO dto){
-        List<? extends PartyListResDTO> partyDTOList = new ArrayList<>();
+
+    public ApiResponse<List<? extends PartyListResDTO>> getPartyCardListForMainPage(@Session(attribute = SessionConst.ID, nullable = true) Long id,
+                                                   @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
+                                                   @ModelAttribute @Valid PartyListReqDTO dto){
+        List<? extends PartyListResDTO> partyDTOList;
 
         boolean isLogin = (id != null && authentication != null && authentication);
 
@@ -87,15 +87,18 @@ public class PartyController {
                 else
                     throw new IllegalArgumentException("로그인 상태와 요청이 일치하지 않습니다.");
             }
-            //case WAITING -> { }
+            default -> {
+                if (!isLogin)
+                    throw new IllegalArgumentException("you need login.");
+                partyDTOList = partyService.getPartiesInfoForLoginUser(id, dto.getPartyListType());
+            }
         }
 
         return ApiResponseCreator.success(partyDTOList);
     }
 
-    //TODO: 로그인 필요 없이도 접근할 수 있게 만들어야 함
     @GetMapping("/parties/{party-id}")
-    public ApiResponse<PartyInfoResDTO> getParty(@Session(attribute = SessionConst.ID, nullable = true) Long id,
+    public ApiResponse<PartyInfoResDTO> getPartyInfo(@Session(attribute = SessionConst.ID, nullable = true) Long id,
                                    @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
                                    @RequestParam(name = "login") boolean loginField,
                                    @PathVariable(name = "party-id") Long partyId){

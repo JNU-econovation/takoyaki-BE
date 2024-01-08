@@ -7,6 +7,7 @@ import com.bestbenefits.takoyaki.DTO.client.response.PartyListResDTO;
 import com.bestbenefits.takoyaki.config.properties.party.ActivityLocation;
 import com.bestbenefits.takoyaki.config.properties.party.Category;
 import com.bestbenefits.takoyaki.config.properties.party.DurationUnit;
+import com.bestbenefits.takoyaki.config.properties.party.PartyListTypeEnum;
 import com.bestbenefits.takoyaki.config.properties.user.UserType;
 import com.bestbenefits.takoyaki.config.properties.user.YakiStatus;
 import com.bestbenefits.takoyaki.entity.Party;
@@ -163,6 +164,15 @@ public class PartyService {
             if (isLogin) builder.bookmarked((boolean) row[8]);
             partyDTOList.add(builder.build());
         }
+
+        return partyDTOList;
+    }
+
+    @Transactional(readOnly = true)
+    public List<PartyListResDTO> getPartiesInfoForLoginUser(Long id, PartyListTypeEnum partyListType){
+        User user = userService.getUserOrThrow(id);
+
+
 
         return partyDTOList;
     }
