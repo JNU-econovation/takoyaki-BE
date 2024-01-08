@@ -19,7 +19,7 @@ public class WebConfig implements WebMvcConfigurer {
 //                .addPathPatterns("/parties/**")
 //                .addPathPatterns("/party/**")
                 .excludePathPatterns(
-                        "/js/**", "/oauth_example", "/oauth", "/favicon.ico", //실험용이니 나중에 삭제하기
+                        "/js/**", "/oauth_example", "/oauth", "/favicon.ico", "/users/temp/**", //실험용이니 나중에 삭제하기
                         "/users/login-check",
                         "/users/oauth/login-url/**",
                         "/users/oauth/login/**",

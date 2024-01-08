@@ -38,9 +38,9 @@ public class User {
     private LocalDateTime createdAt;
 
     @Builder
-    public User(String email, OAuthSocialType social){
-//        this.nickname = ;
+    public User(String nickname, String email, OAuthSocialType social){
         LocalDateTime timestamp = LocalDateTime.now();
+        this.nickname = nickname;
         this.email = email;
         this.social = social;
         this.createdAt = timestamp;

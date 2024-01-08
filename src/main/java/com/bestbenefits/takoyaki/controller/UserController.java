@@ -13,6 +13,7 @@ import com.bestbenefits.takoyaki.config.apiresponse.ApiResponseCreator;
 import com.bestbenefits.takoyaki.config.properties.SessionConst;
 import com.bestbenefits.takoyaki.config.properties.auth.OAuthSocialType;
 import com.bestbenefits.takoyaki.config.properties.auth.OAuthURL;
+import com.bestbenefits.takoyaki.entity.User;
 import com.bestbenefits.takoyaki.service.UserService;
 import com.bestbenefits.takoyaki.util.webclient.oauth.OAuthWebClient;
 import jakarta.servlet.http.HttpSession;
@@ -33,6 +34,22 @@ public class UserController {
     private final UserService userService;
     private final Map<String, OAuthWebClient> oAuthWebClient;
     private final Map<String, OAuthURL> oAuthURL;
+
+
+    @PostMapping("/temp/login/{id}")
+    public ApiResponse<?> tempLogin(HttpSession session, @PathVariable Long id){
+        User user = userService.tempLogin(id);
+        session.setAttribute(SessionConst.ID, id);
+        session.setAttribute(SessionConst.AUTHENTICATION, true);
+        return ApiResponseCreator.success(user);
+    }
+    @PostMapping("/temp/signup")
+    public ApiResponse<?> tempSignUp(HttpSession session){
+        User user = userService.tempSignUp();
+        session.setAttribute(SessionConst.ID, user.getId());
+        session.setAttribute(SessionConst.AUTHENTICATION, true);
+        return ApiResponseCreator.success(user);
+    }
 
     @GetMapping("/login-check")
     public ApiResponse<?> checkLogin(@Session(attribute = SessionConst.ID, nullable = true) Long id,

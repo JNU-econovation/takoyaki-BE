@@ -13,11 +13,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+
+    @Transactional(readOnly = true)
+    public User tempLogin(Long id){
+        return getUserOrThrow(id);
+    }
+
+    @Transactional
+    public User tempSignUp(){
+        Random random = new Random();
+        User user = userRepository.save(User.builder()
+                .email("temp_email"+ (random.nextInt(990000) + 9999) +"@temp.com")
+                .social(OAuthSocialType.NONE)
+                .build());
+        user.updateNickname("임시닉네임"+user.getId());
+        return user;
+    }
 
     @Transactional(readOnly = true)
     public boolean checkDuplicateNickname(String nickname){
