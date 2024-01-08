@@ -27,6 +27,13 @@ public class PartyController {
     private final YakiService yakiService;
     private final UserService userService;
 
+    /************ /party ************/
+    @PostMapping("/party")
+    public ApiResponse<?> createParty(@Session(attribute = SessionConst.ID) Long id,
+                                      @RequestBody @Valid PartyCreationEditReqDTO dto) {
+        return ApiResponseCreator.success(partyService.createParty(id, dto));
+    }
+
     @GetMapping("/party/activity-location")
     public ApiResponse<?> getActivityLocation() {
         Map<String, Object> data = new HashMap<>();
@@ -55,11 +62,9 @@ public class PartyController {
         return ApiResponseCreator.success(data);
     }
 
-    @PostMapping("/party")
-    public ApiResponse<?> createParty(@Session(attribute = SessionConst.ID) Long id, @RequestBody @Valid PartyCreationEditReqDTO dto) {
-        return ApiResponseCreator.success(partyService.createParty(id, dto));
-    }
 
+
+    /************ /parties ************/
     @GetMapping("/parties/all")
     public ApiResponse<List<? extends PartyListResDTO>> getParties(@Session(attribute = SessionConst.ID, nullable = true) Long id,
                                                    @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
@@ -92,8 +97,7 @@ public class PartyController {
     public ApiResponse<PartyInfoResDTO> getParty(@Session(attribute = SessionConst.ID, nullable = true) Long id,
                                    @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
                                    @RequestParam(name = "login") boolean loginField,
-                                   @PathVariable(name = "party-id") Long partyId
-                                   ){
+                                   @PathVariable(name = "party-id") Long partyId){
 
         boolean isLogin = (id != null && authentication != null && authentication);
 
@@ -108,16 +112,21 @@ public class PartyController {
     }
 
     @PatchMapping("parties/{partyId}")
-    public ApiResponse<?> patchParty(@Session(attribute = SessionConst.ID) Long id, @PathVariable Long partyId, @RequestBody @Valid PartyCreationEditReqDTO dto) {
+
+    public ApiResponse<?> patchParty(@Session(attribute = SessionConst.ID) Long id,
+                                     @PathVariable Long partyId,
+                                     @RequestBody @Valid PartyCreationEditReqDTO dto) {
         return ApiResponseCreator.success(partyService.patchParty(id, partyId, dto));
     }
 
     @DeleteMapping("/parties/{partyId}")
-    public ApiResponse<?> deleteParty(@Session(attribute = SessionConst.ID) Long id, @PathVariable Long partyId) {
+    public ApiResponse<?> deleteParty(@Session(attribute = SessionConst.ID) Long id,
+                                      @PathVariable Long partyId) {
         return ApiResponseCreator.success(partyService.deleteParty(id, partyId));
     }
     @PostMapping("/parties/{partyId}/closing")
-    ApiResponse<?> closeParty(@Session(attribute = SessionConst.ID) Long id, @PathVariable Long partyId) {
+    ApiResponse<?> closeParty(@Session(attribute = SessionConst.ID) Long id,
+                              @PathVariable Long partyId) {
         return ApiResponseCreator.success(partyService.closeParty(id, partyId));
     }
 
@@ -158,7 +167,7 @@ public class PartyController {
 
     @DeleteMapping("/parties/{party-id}/leaving")
     public ApiResponse<?> leaveParty(@Session(attribute = SessionConst.ID) Long id,
-                                            @PathVariable(name = "party-id") Long partyId){
+                                     @PathVariable(name = "party-id") Long partyId){
 
         yakiService.leaveParty(id, partyId);
 
@@ -172,7 +181,8 @@ public class PartyController {
     }
 
     @PostMapping("/parties/{partyId}/comment")
-    public ApiResponse<?> addComment(@PathVariable Long partyId, @RequestBody CommentReqDTO commentReqDTO) {
+    public ApiResponse<?> addComment(@PathVariable Long partyId,
+                                     @RequestBody CommentReqDTO commentReqDTO) {
         //TODO: 댓글 작성 구현하기
         return ApiResponseCreator.success(null);
     }
