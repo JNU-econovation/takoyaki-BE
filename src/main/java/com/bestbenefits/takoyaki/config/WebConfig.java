@@ -34,6 +34,7 @@ public class WebConfig implements WebMvcConfigurer {
         resolvers.add(new SessionMethodArgumentResolver());
     }
 
+    //TODO: CORS 범위 지정
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
