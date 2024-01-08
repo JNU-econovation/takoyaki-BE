@@ -28,7 +28,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PartyService {
     private final PartyRepository partyRepository;
-    private final UserRepository userRepository;
     private final YakiRepositoy yakiRepository;
     private final UserService userService;
 
@@ -134,7 +133,7 @@ public class PartyService {
     }
 
     @Transactional(readOnly = true)
-    public List<PartyListResDTO> getParties(boolean isLogin, Long id, int number, int pageNumber, Category category, ActivityLocation activityLocation){
+    public List<PartyListResDTO> getPartiesInfoForPagination(boolean isLogin, Long id, int number, int pageNumber, Category category, ActivityLocation activityLocation){
 
         List<Object[]> partyList;
 

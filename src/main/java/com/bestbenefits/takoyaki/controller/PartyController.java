@@ -26,7 +26,6 @@ import java.util.*;
 public class PartyController {
     private final PartyService partyService;
     private final YakiService yakiService;
-    private final UserService userService;
 
     /************ /party ************/
     @PostMapping("/party")
@@ -74,21 +73,24 @@ public class PartyController {
                                                    @ModelAttribute @Valid PartyListReqDTO dto){
         List<? extends PartyListResDTO> partyDTOList = new ArrayList<>();
 
-        if (dto.getPartyListType() == PartyListTypeEnum.ALL){
-            if (dto.getNumber() >= PartyConst.MAX_PARTY_NUMBER_OF_REQUEST) {
-                throw new IllegalArgumentException("한 번에 요청할 수 있는 팟의 개수는 "+ PartyConst.MAX_PARTY_NUMBER_OF_REQUEST+"개입니다.");
+        boolean isLogin = (id != null && authentication != null && authentication);
+
+        switch (dto.getPartyListType()) {
+            case ALL -> {
+                if (dto.getNumber() >= PartyConst.MAX_PARTY_NUMBER_OF_REQUEST)
+                    throw new IllegalArgumentException("한 번에 요청할 수 있는 팟의 개수는 " + PartyConst.MAX_PARTY_NUMBER_OF_REQUEST + "개입니다.");
+
+                Category category = Optional.ofNullable(dto.getCategoryName()).map(Category::fromName).orElse(null);
+                ActivityLocation activityLocation = Optional.ofNullable(dto.getActivityLocationName()).map(ActivityLocation::fromName).orElse(null);
+
+                if (dto.getLoginField() == isLogin)
+                    partyDTOList = partyService.getPartiesInfoForPagination(isLogin, id, dto.getNumber(), dto.getPageNumber(), category, activityLocation);
+                else
+                    throw new IllegalArgumentException("로그인 상태와 요청이 일치하지 않습니다.");
             }
+            case WAITING -> {
 
-            Category category = Optional.ofNullable(dto.getCategoryName()).map(Category::fromName).orElse(null);
-            ActivityLocation activityLocation = Optional.ofNullable(dto.getActivityLocationName()).map(ActivityLocation::fromName).orElse(null);
-
-
-            boolean isLogin = (id != null && authentication != null && authentication);
-
-            if (dto.getLoginField() == isLogin)
-                partyDTOList = partyService.getParties(isLogin, id, dto.getNumber(), dto.getPageNumber(), category, activityLocation);
-            else
-                throw new IllegalArgumentException("로그인 상태와 요청이 일치하지 않습니다.");
+            }
         }
 
         return ApiResponseCreator.success(partyDTOList);
