@@ -15,24 +15,31 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new AuthenticationCheckInterceptor())
-                .addPathPatterns("/users/**")
-//                .addPathPatterns("/parties/**")
-//                .addPathPatterns("/party/**")
+                .addPathPatterns("/test/**", "/users/**", "/parties/**", "/party/**")
+
+                //로그인 필요없는 URI들
                 .excludePathPatterns(
-                        "/js/**", "/oauth_example", "/oauth", "/favicon.ico", "/users/temp/**", //실험용이니 나중에 삭제하기
+                        //실험용이니 나중에 삭제 필요
+                        "/js/**", "/oauth_example", "/oauth", "/favicon.ico",
+
+                        "/test/users/signup",
+                        "/test/users/login/**",
+                        "/test/party/get-random",
 
                         "/users/login-check",
                         "/users/oauth/login-url/**",
                         "/users/oauth/login/**",
-                        "/users/duplicate-nickname",
                         "/users/oauth/login/additional-info",
+                        "/users/duplicate-nickname",
+
+                        "/parties/",
+                        //"/parties/{party-id:\\d+}", //GET만 exclude 해야됨
+                        //"/parties/{party-id:\\d+}/comment", //GET만 exclude 해야됨
 
                         "/party/category",
                         "/party/activity-location",
                         "/party/activity-duration-unit",
-                        "/party/contact-method",
-
-                        "/parties/all"
+                        "/party/contact-method"
                 );
     }
 

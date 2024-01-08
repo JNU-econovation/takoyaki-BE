@@ -13,7 +13,7 @@ import com.bestbenefits.takoyaki.config.apiresponse.ApiResponseCreator;
 import com.bestbenefits.takoyaki.config.properties.SessionConst;
 import com.bestbenefits.takoyaki.config.properties.auth.OAuthSocialType;
 import com.bestbenefits.takoyaki.config.properties.auth.OAuthURL;
-import com.bestbenefits.takoyaki.entity.User;
+import com.bestbenefits.takoyaki.interceptor.AuthenticationCheckInterceptor;
 import com.bestbenefits.takoyaki.service.UserService;
 import com.bestbenefits.takoyaki.util.webclient.oauth.OAuthWebClient;
 import jakarta.servlet.http.HttpSession;
@@ -34,15 +34,9 @@ public class UserController {
     private final Map<String, OAuthURL> oAuthURL;
 
     @GetMapping("/login-check")
-    public ApiResponse<?> checkLogin(@Session(attribute = SessionConst.ID, nullable = true) Long id,
-            @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication){
+    public ApiResponse<?> checkLogin(HttpSession session){
         Map<String, Boolean> data = new HashMap<>();
-        boolean login;
-        if (id != null && authentication != null && authentication)
-            login = userService.getUserOrNull(id) != null;
-        else
-            login = false;
-        data.put("login", login);
+        data.put("login", AuthenticationCheckInterceptor.isLogin(session));
         return ApiResponseCreator.success(data);
     }
 
@@ -79,6 +73,7 @@ public class UserController {
         SocialUserInfoResDTO socialUserInfoResDTO = oAuthSocialWebClient.requestUserInfo(tokensResDTO.getAccessToken());
         //check whether this user exists in DataBase by using email & social type
         OAuthAuthResDTO oAuthAuthResDTO = userService.loginByOAuth(socialUserInfoResDTO.getEmail(), oAuthSocialType);
+
         if (oAuthAuthResDTO != null) { //등록된 유저고,
             if(!oAuthAuthResDTO.isInfoNeeded()) //추가 정보 있으면 로그인 완료
                 session.setAttribute(SessionConst.AUTHENTICATION, true);
