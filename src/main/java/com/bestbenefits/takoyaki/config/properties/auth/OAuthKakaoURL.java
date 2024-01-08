@@ -1,4 +1,4 @@
-package com.bestbenefits.takoyaki.config.properties.oauth;
+package com.bestbenefits.takoyaki.config.properties.auth;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;

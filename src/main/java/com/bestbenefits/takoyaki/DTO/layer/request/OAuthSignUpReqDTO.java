@@ -1,7 +1,7 @@
 package com.bestbenefits.takoyaki.DTO.layer.request;
 
 import com.bestbenefits.takoyaki.DTO.server.response.SocialUserInfoResDTO;
-import com.bestbenefits.takoyaki.config.properties.oauth.OAuthSocialType;
+import com.bestbenefits.takoyaki.config.properties.auth.OAuthSocialType;
 import com.bestbenefits.takoyaki.entity.User;
 import lombok.Builder;
 import lombok.Getter;

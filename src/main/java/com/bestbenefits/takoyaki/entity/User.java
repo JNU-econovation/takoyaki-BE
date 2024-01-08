@@ -1,6 +1,6 @@
 package com.bestbenefits.takoyaki.entity;
 
-import com.bestbenefits.takoyaki.config.properties.oauth.OAuthSocialType;
+import com.bestbenefits.takoyaki.config.properties.auth.OAuthSocialType;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Builder;

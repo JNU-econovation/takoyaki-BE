@@ -2,7 +2,7 @@ package com.bestbenefits.takoyaki.util.webclient.oauth;
 
 import com.bestbenefits.takoyaki.DTO.server.response.TokensResDTO;
 import com.bestbenefits.takoyaki.DTO.server.response.SocialUserInfoResDTO;
-import com.bestbenefits.takoyaki.config.properties.oauth.OAuthKakaoConst;
+import com.bestbenefits.takoyaki.config.properties.auth.OAuthKakaoConst;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpHeaders;

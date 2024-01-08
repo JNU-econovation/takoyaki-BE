@@ -1,4 +1,4 @@
-package com.bestbenefits.takoyaki.config.properties.oauth;
+package com.bestbenefits.takoyaki.config.properties.auth;
 
 public final class OAuthKakaoConst {
     public static final String URL1 = "https://kauth.kakao.com";

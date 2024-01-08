@@ -1,9 +1,10 @@
-package com.bestbenefits.takoyaki.config.properties.oauth;
+package com.bestbenefits.takoyaki.config.properties.auth;
 
 import lombok.Getter;
 
 @Getter
 public enum OAuthSocialType{
+    NONE("none", -1),
     KAKAO("Kakao", 0),
     GOOGLE("Google", 1),
     NAVER("Naver", 2);

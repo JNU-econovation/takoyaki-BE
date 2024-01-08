@@ -5,7 +5,7 @@ import com.bestbenefits.takoyaki.DTO.client.request.UserNicknameUpdateReqDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.UserInfoResDTO;
 import com.bestbenefits.takoyaki.DTO.layer.request.OAuthSignUpReqDTO;
 import com.bestbenefits.takoyaki.DTO.layer.response.OAuthAuthResDTO;
-import com.bestbenefits.takoyaki.config.properties.oauth.OAuthSocialType;
+import com.bestbenefits.takoyaki.config.properties.auth.OAuthSocialType;
 import com.bestbenefits.takoyaki.entity.User;
 import com.bestbenefits.takoyaki.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

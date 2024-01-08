@@ -1,9 +1,8 @@
 package com.bestbenefits.takoyaki.repository;
 
-import com.bestbenefits.takoyaki.config.properties.oauth.OAuthSocialType;
+import com.bestbenefits.takoyaki.config.properties.auth.OAuthSocialType;
 import com.bestbenefits.takoyaki.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

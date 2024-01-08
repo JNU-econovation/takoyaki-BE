@@ -1,6 +1,5 @@
 package com.bestbenefits.takoyaki.config.properties.party;
 
-import com.bestbenefits.takoyaki.config.properties.oauth.OAuthSocialType;
 import lombok.Getter;
 
 import java.util.Arrays;
