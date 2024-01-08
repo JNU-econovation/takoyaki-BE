@@ -25,5 +25,6 @@ public interface PartyRepository extends JpaRepository<Party, Long> {
             "AND (:category IS NULL OR p.category = :category) " +
             "AND (:activityLocation IS NULL OR p.activityLocation = :activityLocation)" +
             "ORDER BY p.id DESC")
-    Page<Object[]> getPartiesByFiltering(Pageable pageable, @Nullable User user, Category category, ActivityLocation activityLocation);
+    Page<Object[]> getPartiesByFilteringAndPagination(Pageable pageable, @Nullable User user, Category category, ActivityLocation activityLocation);
+
 }

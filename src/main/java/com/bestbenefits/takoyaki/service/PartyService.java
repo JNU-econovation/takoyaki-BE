@@ -138,7 +138,7 @@ public class PartyService {
         List<Object[]> partyList;
 
         User user = isLogin ? userService.getUserOrThrow(id) : null;
-        partyList = partyRepository.getPartiesByFiltering(PageRequest.of(pageNumber, number), user, category, activityLocation).getContent();
+        partyList = partyRepository.getPartiesByFilteringAndPagination(PageRequest.of(pageNumber, number), user, category, activityLocation).getContent();
 
         List<PartyListResDTO> partyDTOList = new ArrayList<>();
 
@@ -206,6 +206,8 @@ public class PartyService {
 
         return builder.build();
     }
+
+
 
     @Transactional(readOnly = true)
     public Party getPartyOrThrow(Long partyId){
