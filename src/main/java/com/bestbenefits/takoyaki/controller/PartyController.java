@@ -11,6 +11,8 @@ import com.bestbenefits.takoyaki.config.apiresponse.ApiResponse;
 import com.bestbenefits.takoyaki.config.apiresponse.ApiResponseCreator;
 import com.bestbenefits.takoyaki.config.properties.SessionConst;
 import com.bestbenefits.takoyaki.config.properties.party.*;
+import com.bestbenefits.takoyaki.exception.NotLoginException;
+import com.bestbenefits.takoyaki.interceptor.AuthenticationCheckInterceptor;
 import com.bestbenefits.takoyaki.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -64,13 +66,15 @@ public class PartyController {
 
 
     /************ /parties ************/
-    @GetMapping("/parties/")
+    @GetMapping("/parties/") //로그인 필요 X
+    public ApiResponse<List<? extends PartyListResDTO>> getPartyCardListForMainPage(
+            @Session(attribute = SessionConst.ID, nullable = true) Long id,
+            @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
+            @ModelAttribute @Valid PartyListReqDTO dto){
+        //TODO: 로그인 여부 확인 필요 없게 수정 필요...? 쿼리 param에서 login빼고 응답에서 로그인 여부 반환하게 하기
 
-    public ApiResponse<List<? extends PartyListResDTO>> getPartyCardListForMainPage(@Session(attribute = SessionConst.ID, nullable = true) Long id,
-                                                   @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
-                                                   @ModelAttribute @Valid PartyListReqDTO dto){
         List<? extends PartyListResDTO> partyDTOList;
-        boolean isLogin = (id != null && authentication != null && authentication);
+        boolean isLogin = AuthenticationCheckInterceptor.isLogin(id, authentication);
 
         switch (dto.getPartyListType()) {
             case ALL -> {
@@ -86,8 +90,8 @@ public class PartyController {
                     throw new IllegalArgumentException("로그인 상태와 요청이 일치하지 않습니다.");
             }
             default -> {
-                if (!isLogin)
-                    throw new IllegalArgumentException("you need login.");
+                if (!AuthenticationCheckInterceptor.isLogin(id, authentication))
+                    throw new NotLoginException();
                 partyDTOList = partyService.getPartiesInfoForLoginUser(id, dto.getPartyListType());
             }
         }
@@ -95,12 +99,14 @@ public class PartyController {
         return ApiResponseCreator.success(partyDTOList);
     }
 
-    @GetMapping("/parties/{party-id}")
+    @GetMapping("/parties/{party-id}") //로그인 필요 X
     public ApiResponse<PartyInfoResDTO> getPartyInfo(@Session(attribute = SessionConst.ID, nullable = true) Long id,
                                    @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
                                    @RequestParam(name = "login") boolean loginField,
-                                   @PathVariable(name = "party-id") Long partyId){
-        boolean isLogin = (id != null && authentication != null && authentication);
+                                   @PathVariable(name = "party-id") Long partyId) {
+        //TODO: 로그인 여부 확인 필요 없게 수정 필요...? 쿼리 param에서 login빼고 응답에서 로그인 여부 반환하게 하기
+
+        boolean isLogin = AuthenticationCheckInterceptor.isLogin(id, authentication);
 
         PartyInfoResDTO partyInfoResDTO;
 
@@ -112,22 +118,22 @@ public class PartyController {
         return ApiResponseCreator.success(partyInfoResDTO);
     }
 
-    @PatchMapping("parties/{partyId}")
+    @PatchMapping("parties/{party-id}")
     public ApiResponse<?> editParty(@Session(attribute = SessionConst.ID) Long id,
-                                    @PathVariable Long partyId,
+                                    @PathVariable(name = "party-id") Long partyId,
                                     @RequestBody @Valid PartyCreationEditReqDTO dto) {
         return ApiResponseCreator.success(partyService.editParty(id, partyId, dto));
     }
 
-    @DeleteMapping("/parties/{partyId}")
+    @DeleteMapping("/parties/{party-id}")
     public ApiResponse<?> deleteParty(@Session(attribute = SessionConst.ID) Long id,
-                                      @PathVariable Long partyId) {
+                                      @PathVariable(name = "party-id") Long partyId) {
         return ApiResponseCreator.success(partyService.deleteParty(id, partyId));
     }
 
-    @PostMapping("/parties/{partyId}/closing")
+    @PostMapping("/parties/{party-id}/closing")
     ApiResponse<?> closeParty(@Session(attribute = SessionConst.ID) Long id,
-                              @PathVariable Long partyId) {
+                              @PathVariable(name = "party-id") Long partyId) {
         return ApiResponseCreator.success(partyService.closeParty(id, partyId));
     }
 
@@ -175,8 +181,8 @@ public class PartyController {
         return ApiResponseCreator.success(new ApiMessage("팟에서 나가졌습니다."));
     }
 
-    @GetMapping("/parties/{partyId}/comment")
-    public ApiResponse<?> getComment(@PathVariable Long partyId) {
+    @GetMapping("/parties/{party-id}/comment") //로그인 필요 X
+    public ApiResponse<?> getComment(@PathVariable(name = "party-id") Long partyId) {
         Map<String, Object> response = new HashMap<>();
         List<?> commentList = commentService.getComments(partyId);
 
@@ -185,23 +191,23 @@ public class PartyController {
         return ApiResponseCreator.success(response);
     }
 
-    @PostMapping("/parties/{partyId}/comment")
+    @PostMapping("/parties/{party-id}/comment")
     public ApiResponse<?> addComment(@Session(attribute = SessionConst.ID) Long id,
-                                     @PathVariable Long partyId,
+                                     @PathVariable(name = "party-id") Long partyId,
                                      @RequestBody @Valid CommentReqDTO dto) {
         return ApiResponseCreator.success(commentService.createComment(id, partyId, dto));
     }
 
-    @PostMapping("/parties/{partyId}/bookmark")
+    @PostMapping("/parties/{party-id}/bookmark")
     public ApiResponse<?> addBookmark(@Session(attribute = SessionConst.ID) Long id,
-                                      @PathVariable Long partyId) {
+                                      @PathVariable(name = "party-id") Long partyId) {
         bookmarkService.addBookmark(id, partyId);
         return ApiResponseCreator.success(new ApiMessage("북마크되었습니다."));
     }
 
-    @DeleteMapping("/parties/{partyId}/bookmark")
+    @DeleteMapping("/parties/{party-id}/bookmark")
     public ApiResponse<?> deleteBookmark(@Session(attribute = SessionConst.ID) Long id,
-                                         @PathVariable Long partyId) {
+                                         @PathVariable(name = "party-id") Long partyId) {
         bookmarkService.deleteBookmark(id, partyId);
         return ApiResponseCreator.success(new ApiMessage("북마크 제거되었습니다."));
     }
