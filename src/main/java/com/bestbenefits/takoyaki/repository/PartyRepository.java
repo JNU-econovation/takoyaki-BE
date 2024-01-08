@@ -56,8 +56,6 @@ public interface PartyRepository extends JpaRepository<Party, Long> {
             "FROM Party p " +
             "INNER JOIN Bookmark b ON b.party = p AND b.user = :user " +
             "WHERE p.deletedAt IS NULL " +
-            "AND (:category IS NULL OR p.category = :category)" +
-            "AND (:activityLocation IS NULL OR p.activityLocation = :activityLocation)" +
             "ORDER BY p.id DESC")
     List<Object[]> getBookmarkedParties(User user);
     @Query("SELECT p.id, p.title, p.category, p.activityLocation, p.recruitNumber, p.plannedClosingDate, " +
