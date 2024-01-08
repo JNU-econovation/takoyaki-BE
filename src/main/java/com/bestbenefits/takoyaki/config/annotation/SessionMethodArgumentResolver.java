@@ -26,7 +26,8 @@ public class SessionMethodArgumentResolver implements HandlerMethodArgumentResol
             return session.getAttribute(attribute);
         else
             return Optional.ofNullable(session.getAttribute(attribute))
-                    .orElseThrow(() -> new NullPointerException("Invalid session attribute"));
+                    //TODO: attribute 제거
+                    .orElseThrow(() -> new NullPointerException("Invalid session attribute: "+attribute));
         //TODO: 로그인 안되어있어도 세션 예외가 발생하지 않도록 임시 조치하기
     }
 }
