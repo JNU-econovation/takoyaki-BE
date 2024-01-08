@@ -30,6 +30,7 @@ public class PartyService {
     private final PartyRepository partyRepository;
     private final YakiRepositoy yakiRepository;
     private final UserService userService;
+    private final BookmarkService bookmarkService;
 
     @Transactional
     public PartyIdResDTO createParty(Long id, PartyCreationEditReqDTO partyCreationEditReqDTO) {
@@ -105,6 +106,7 @@ public class PartyService {
             throw new IllegalArgumentException("이미 마감된 Party는 삭제할 수 없습니다.");
 
         p.updateModifiedAt().updateDeleteAt();
+        bookmarkService.deleteBookmarksByParty(partyId); //북마크 제거
 
         return PartyIdResDTO.builder()
                 .partyId(p.getId())
@@ -126,6 +128,7 @@ public class PartyService {
             throw new IllegalArgumentException("이미 마감된 Party입니다.");
 
         p.updateModifiedAt().updateClosedAt();
+        bookmarkService.deleteBookmarksByParty(partyId); //북마크 제거
 
         return PartyIdResDTO.builder()
                 .partyId(p.getId())

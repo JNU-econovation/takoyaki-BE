@@ -12,10 +12,7 @@ import com.bestbenefits.takoyaki.config.apiresponse.ApiResponse;
 import com.bestbenefits.takoyaki.config.apiresponse.ApiResponseCreator;
 import com.bestbenefits.takoyaki.config.properties.SessionConst;
 import com.bestbenefits.takoyaki.config.properties.party.*;
-import com.bestbenefits.takoyaki.service.CommentService;
-import com.bestbenefits.takoyaki.service.PartyService;
-import com.bestbenefits.takoyaki.service.UserService;
-import com.bestbenefits.takoyaki.service.YakiService;
+import com.bestbenefits.takoyaki.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +25,7 @@ public class PartyController {
     private final PartyService partyService;
     private final YakiService yakiService;
     private final CommentService commentService;
+    private final BookmarkService bookmarkService;
 
     /************ /party ************/
     @PostMapping("/party")
@@ -66,13 +64,12 @@ public class PartyController {
 
 
 
-
     /************ /parties ************/
     @GetMapping("/parties/")
-//
-    public ApiResponse<List<? extends PartyListResDTO>> getPartyCardListForMainPage(@Session(attribute = SessionConst.ID, nullable = true) Long id,
-                                                   @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
-                                                   @ModelAttribute @Valid PartyListReqDTO dto){
+    public ApiResponse<List<? extends PartyListResDTO>> getPartyCardListForMainPage(
+             @Session(attribute = SessionConst.ID, nullable = true) Long id,
+             @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
+             @ModelAttribute @Valid PartyListReqDTO dto){
         List<? extends PartyListResDTO> partyDTOList = new ArrayList<>();
 
         boolean isLogin = (id != null && authentication != null && authentication);
@@ -90,9 +87,7 @@ public class PartyController {
                 else
                     throw new IllegalArgumentException("로그인 상태와 요청이 일치하지 않습니다.");
             }
-            case WAITING -> {
-
-            }
+            //case WAITING -> { }
         }
 
         return ApiResponseCreator.success(partyDTOList);
@@ -195,5 +190,19 @@ public class PartyController {
                                      @PathVariable Long partyId,
                                      @RequestBody @Valid CommentReqDTO dto) {
         return ApiResponseCreator.success(commentService.createComment(id, partyId, dto));
+    }
+
+    @PostMapping("/parties/{partyId}/bookmark")
+    public ApiResponse<?> addBookmark(@Session(attribute = SessionConst.ID) Long id,
+                                      @PathVariable Long partyId) {
+        bookmarkService.addBookmark(id, partyId);
+        return ApiResponseCreator.success(new ApiMessage("북마크되었습니다."));
+    }
+
+    @DeleteMapping("/parties/{partyId}/bookmark")
+    public ApiResponse<?> deleteBookmark(@Session(attribute = SessionConst.ID) Long id,
+                                         @PathVariable Long partyId) {
+        bookmarkService.deleteBookmark(id, partyId);
+        return ApiResponseCreator.success(new ApiMessage("북마크 제거되었습니다."));
     }
 }
