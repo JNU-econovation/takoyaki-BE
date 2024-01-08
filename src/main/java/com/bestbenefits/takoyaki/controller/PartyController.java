@@ -2,6 +2,7 @@ package com.bestbenefits.takoyaki.controller;
 
 import com.bestbenefits.takoyaki.DTO.client.request.CommentReqDTO;
 import com.bestbenefits.takoyaki.DTO.client.request.PartyCreationEditReqDTO;
+import com.bestbenefits.takoyaki.DTO.client.request.PartyListReqDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.CommentListResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyInfoResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyListResDTO;
@@ -64,30 +65,31 @@ public class PartyController {
 
 
 
+
     /************ /parties ************/
-    @GetMapping("/parties/all")
-    public ApiResponse<List<? extends PartyListResDTO>> getParties(@Session(attribute = SessionConst.ID, nullable = true) Long id,
+    @GetMapping("/parties/")
+//
+    public ApiResponse<List<? extends PartyListResDTO>> getPartyCardListForMainPage(@Session(attribute = SessionConst.ID, nullable = true) Long id,
                                                    @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
-                                                   @RequestParam(name = "login") boolean loginField,
-                                                   @RequestParam int number,
-                                                   @RequestParam(name = "page_number") int pageNumber,
-                                                   @RequestParam(required = false) String categoryName,
-                                                   @RequestParam(name = "activity_location", required = false) String activityLocationName){
+                                                   @ModelAttribute @Valid PartyListReqDTO dto){
+        List<? extends PartyListResDTO> partyDTOList = new ArrayList<>();
 
-        if (number >= PartyConst.MAX_PARTY_NUMBER_OF_REQUEST)
-            throw new IllegalArgumentException("한 번에 요청할 수 있는 팟의 개수는 "+PartyConst.MAX_PARTY_NUMBER_OF_REQUEST+"개입니다.");
+        if (dto.getPartyListType() == PartyListTypeEnum.ALL){
+            if (dto.getNumber() >= PartyConst.MAX_PARTY_NUMBER_OF_REQUEST) {
+                throw new IllegalArgumentException("한 번에 요청할 수 있는 팟의 개수는 "+ PartyConst.MAX_PARTY_NUMBER_OF_REQUEST+"개입니다.");
+            }
 
-        Category category = Optional.ofNullable(categoryName).map(Category::fromName).orElse(null);
-        ActivityLocation activityLocation = Optional.ofNullable(activityLocationName).map(ActivityLocation::fromName).orElse(null);
+            Category category = Optional.ofNullable(dto.getCategoryName()).map(Category::fromName).orElse(null);
+            ActivityLocation activityLocation = Optional.ofNullable(dto.getActivityLocationName()).map(ActivityLocation::fromName).orElse(null);
 
-        List<? extends PartyListResDTO> partyDTOList;
 
-        boolean isLogin = (id != null && authentication != null && authentication);
+            boolean isLogin = (id != null && authentication != null && authentication);
 
-        if (loginField == isLogin)
-            partyDTOList = partyService.getParties(isLogin, id, number, pageNumber, category, activityLocation);
-        else
-            throw new IllegalArgumentException("로그인 상태와 요청이 일치하지 않습니다.");
+            if (dto.getLoginField() == isLogin)
+                partyDTOList = partyService.getParties(isLogin, id, dto.getNumber(), dto.getPageNumber(), category, activityLocation);
+            else
+                throw new IllegalArgumentException("로그인 상태와 요청이 일치하지 않습니다.");
+        }
 
         return ApiResponseCreator.success(partyDTOList);
     }

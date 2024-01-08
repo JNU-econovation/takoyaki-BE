@@ -67,6 +67,7 @@ public class UserController {
         return ApiResponseCreator.success(data);
     }
 
+    //TODO: 여러 소셜 받기
     @PostMapping("/oauth/login/{social}")
     public ApiResponse<?> login(HttpSession session, @PathVariable String social, @RequestParam String code){
         //get social-type enum
