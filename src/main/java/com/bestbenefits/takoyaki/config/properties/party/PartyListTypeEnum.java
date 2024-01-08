@@ -4,7 +4,8 @@ public enum PartyListTypeEnum {
     ALL,
     WAITING,
     ACCEPTED,
-    WROTE;
+    WROTE,
+    BOOKMARKED;
     public static PartyListTypeEnum fromValue(String typeName) {
         for (PartyListTypeEnum partyListTypeEnum : PartyListTypeEnum.values()) {
             if (partyListTypeEnum.name().equalsIgnoreCase(typeName))
