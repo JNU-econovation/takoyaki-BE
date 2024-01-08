@@ -70,7 +70,6 @@ public class PartyController {
                                                    @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
                                                    @ModelAttribute @Valid PartyListReqDTO dto){
         List<? extends PartyListResDTO> partyDTOList;
-
         boolean isLogin = (id != null && authentication != null && authentication);
 
         switch (dto.getPartyListType()) {
@@ -101,7 +100,6 @@ public class PartyController {
                                    @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
                                    @RequestParam(name = "login") boolean loginField,
                                    @PathVariable(name = "party-id") Long partyId){
-
         boolean isLogin = (id != null && authentication != null && authentication);
 
         PartyInfoResDTO partyInfoResDTO;

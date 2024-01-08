@@ -76,8 +76,8 @@ public class PartyService {
         }
 
         //영속성 컨텍스트 수정
-        party.updateModifiedAt().
-                updateActivityLocation(newParty.getActivityLocation())
+        party.updateModifiedAt()
+                .updateActivityLocation(newParty.getActivityLocation())
                 .updateContactMethod(newParty.getContactMethod())
                 .updateTitle(newParty.getTitle())
                 .updateBody(newParty.getBody())
@@ -85,7 +85,8 @@ public class PartyService {
                 .updatePlannedClosingDate(newParty.getPlannedClosingDate())
                 .updatePlannedStartDate(newParty.getPlannedStartDate())
                 .updateActivityDuration(newParty.getActivityDuration())
-                .updateContact(newParty.getContact());
+                .updateContact(newParty.getContact())
+                .modify();
 
         return PartyIdResDTO.builder()
                 .partyId(party.getId())
@@ -236,7 +237,6 @@ public class PartyService {
         return partyRepository.findById(partyId).orElseThrow(() -> new IllegalArgumentException("존재하지 않거나 마감된 팟입니다."));
     }
 
-
     private PartyListResDTO.PartyListResDTOBuilder initializePartyListBuilder(Object[] row) {
         int recruitNumber = (int) row[4];
         int waitingNumber = ((Long) row[6]).intValue();
@@ -253,5 +253,4 @@ public class PartyService {
                 .acceptedNumber(acceptedNumber)
                 .competitionRate(competitionRate);
     }
-
 }

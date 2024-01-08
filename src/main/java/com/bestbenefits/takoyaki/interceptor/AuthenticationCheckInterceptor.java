@@ -11,7 +11,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class AuthenticationCheckInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler){
-
         String httpMethod = request.getMethod();
         String requestURI = request.getRequestURI();
 

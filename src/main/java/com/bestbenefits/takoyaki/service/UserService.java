@@ -104,6 +104,4 @@ public class UserService {
     public User getUserOrThrow(Long id) {
         return userRepository.findUserById(id).orElseThrow(() -> new IllegalArgumentException("유저가 없습니다."));
     }
-
-
 }

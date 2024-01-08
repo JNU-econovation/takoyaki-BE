@@ -16,26 +16,14 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true) // nullable = false
-    @Size(min=4, max=16)
-    private String nickname;
-
-    @Column(length = 100, nullable = false)
-    private String email;
-
-    @Column
-    @Enumerated(value = EnumType.STRING)
-    private OAuthSocialType social;
-
-    @Column(nullable = false)
-    private LocalDate nicknameUpdatedAt;
-
-    @Column
-    private LocalDateTime createdAt;
+    @Column(unique = true) @Size(min=4, max=16)  private String nickname; // nullable = false
+    @Column(length = 100, nullable = false)      private String email;
+    @Column @Enumerated(value = EnumType.STRING) private OAuthSocialType social;
+    @Column(nullable = false)                    private LocalDate nicknameUpdatedAt;
+    @Column                                      private LocalDateTime createdAt;
 
     @Builder
     public User(String nickname, String email, OAuthSocialType social){
@@ -53,5 +41,4 @@ public class User {
     public void updateNicknameUpdatedAt(){
         this.nicknameUpdatedAt = LocalDate.now();
     }
-
 }

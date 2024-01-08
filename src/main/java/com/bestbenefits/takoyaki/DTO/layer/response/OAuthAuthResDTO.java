@@ -7,6 +7,7 @@ import lombok.Getter;
 public class OAuthAuthResDTO {
     private Long id;
     private boolean isInfoNeeded;
+
     @Builder
     OAuthAuthResDTO(Long id, boolean isInfoNeeded){
         this.id= id;

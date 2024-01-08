@@ -1,5 +1,6 @@
 package com.bestbenefits.takoyaki.service;
 
+import com.bestbenefits.takoyaki.config.properties.BookmarkConst;
 import com.bestbenefits.takoyaki.entity.Bookmark;
 import com.bestbenefits.takoyaki.entity.Party;
 import com.bestbenefits.takoyaki.entity.User;
@@ -36,9 +37,9 @@ public class BookmarkService {
         if (party.isAuthor(user))
             throw new IllegalArgumentException("자신의 글을 북마크할 수 없습니다.");
 
-        //북마크 개수 20개 초과시 북마크 안됨(정책에 의거)
-        if (getBookmarkedPartiesByUser(userId).size() >= 20)
-            throw new IllegalStateException("북마크는 최대 20개까지 가능합니다.");
+        //북마크 개수 초과시 북마크 안됨(정책에 의거)
+        if (getBookmarkedPartiesByUser(userId).size() >= BookmarkConst.MAX_BOOKMARK_NUMBER_PER_USER)
+            throw new IllegalStateException("북마크는 최대 " + BookmarkConst.MAX_BOOKMARK_NUMBER_PER_USER + "개까지 가능합니다.");
 
         //마감된 글 북마크하는 경우
         if (party.isClosed())
@@ -63,10 +64,5 @@ public class BookmarkService {
             bookmarkRepository.delete(byUserAndParty.get());
         else
             throw new IllegalArgumentException("북마크가 존재하지 않습니다.");
-    }
-
-    public void deleteBookmarksByParty(Long partyId) {
-        Party party = partyService.getPartyOrThrow(partyId);
-        bookmarkRepository.deleteAllByParty(party);
     }
 }

@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users")
@@ -33,7 +32,6 @@ public class UserController {
     private final UserService userService;
     private final Map<String, OAuthWebClient> oAuthWebClient;
     private final Map<String, OAuthURL> oAuthURL;
-
 
     @PostMapping("/temp/login/{id}")
     public ApiResponse<?> tempLogin(HttpSession session, @PathVariable Long id){
@@ -138,5 +136,4 @@ public class UserController {
     public ApiResponse<?> getInfo(@Session(attribute = SessionConst.ID) Long id){
         return ApiResponseCreator.success(userService.getUserInfo(id));
     }
-
 }

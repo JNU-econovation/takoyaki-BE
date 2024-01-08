@@ -77,7 +77,6 @@ public class YakiService {
         yakiRepository.delete(yaki);
     }
 
-
     @Transactional
     public void leaveParty(Long id, Long partyId){
         User user = userService.getUserOrThrow(id);
@@ -91,13 +90,8 @@ public class YakiService {
         yakiRepository.delete(yaki);
     }
 
-
-
-
-
     @Transactional(readOnly = true)
     public Yaki getYakiOrThrow(Party party, User user){
         return yakiRepository.findYakiByPartyAndUser(party, user).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 야끼입니다."));
     }
-
 }

@@ -12,17 +12,17 @@ import java.time.LocalDate;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PartyListResDTO {
-    private Long partyId;
-    private String title;
-    private String category;
-    private String activityLocation;
-    private int recruitNumber;
-    private LocalDate plannedClosingDate;
-    private int waitingNumber;
-    private int acceptedNumber;
-    private float competitionRate;
-    private Boolean bookmarked;
-    private Boolean closed;
+    private final Long partyId;
+    private final String title;
+    private final String category;
+    private final String activityLocation;
+    private final int recruitNumber;
+    private final LocalDate plannedClosingDate;
+    private final int waitingNumber;
+    private final int acceptedNumber;
+    private final float competitionRate;
+    private final Boolean bookmarked;
+    private final Boolean closed;
 
     @Builder
     public PartyListResDTO(Long partyId, String title, String category, int waitingNumber, int acceptedNumber, int recruitNumber, float competitionRate, String activityLocation, LocalDate plannedClosingDate, Boolean bookmarked, Boolean closed) {

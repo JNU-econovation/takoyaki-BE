@@ -7,6 +7,7 @@ public enum PartyListTypeEnum {
     CLOSED, //마감된 수락 팟
     WROTE, //작성한 팟
     BOOKMARKED; //북마크 팟
+
     public static PartyListTypeEnum fromValue(String typeName) {
         for (PartyListTypeEnum partyListTypeEnum : PartyListTypeEnum.values()) {
             if (partyListTypeEnum.name().equalsIgnoreCase(typeName))
