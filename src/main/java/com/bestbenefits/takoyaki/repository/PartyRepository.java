@@ -60,7 +60,8 @@ public interface PartyRepository extends JpaRepository<Party, Long> {
     List<Object[]> getBookmarkedParties(User user);
     @Query("SELECT p.id, p.title, p.category, p.activityLocation, p.recruitNumber, p.plannedClosingDate, " +
             "(SELECT COUNT(*) FROM Yaki y WHERE y.party = p AND y.status = 'WAITING') AS waitingNumber, " +
-            "(SELECT COUNT(*) FROM Yaki y WHERE y.party = p AND y.status = 'ACCEPTED') AS acceptedNumber " +
+            "(SELECT COUNT(*) FROM Yaki y WHERE y.party = p AND y.status = 'ACCEPTED') AS acceptedNumber, " +
+            "CASE WHEN p.closedAt != p.createdAt THEN true ELSE false END AS closed " +
             "FROM Party p " +
             "WHERE p.deletedAt IS NULL " +
             "AND p.user = :user " +

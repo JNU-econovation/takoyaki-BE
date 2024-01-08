@@ -22,9 +22,10 @@ public class PartyListResDTO {
     private int acceptedNumber;
     private float competitionRate;
     private Boolean bookmarked;
+    private Boolean closed;
 
     @Builder
-    public PartyListResDTO(Long partyId, String title, String category, int waitingNumber, int acceptedNumber, int recruitNumber, float competitionRate, String activityLocation, LocalDate plannedClosingDate, Boolean bookmarked) {
+    public PartyListResDTO(Long partyId, String title, String category, int waitingNumber, int acceptedNumber, int recruitNumber, float competitionRate, String activityLocation, LocalDate plannedClosingDate, Boolean bookmarked, Boolean closed) {
         this.partyId = partyId;
         this.title = title;
         this.category = category;
@@ -35,5 +36,6 @@ public class PartyListResDTO {
         this.activityLocation = activityLocation;
         this.plannedClosingDate = plannedClosingDate;
         this.bookmarked = bookmarked;
+        this.closed = closed;
     }
 }

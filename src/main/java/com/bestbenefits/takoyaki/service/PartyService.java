@@ -162,6 +162,8 @@ public class PartyService {
         List<Object[]> partyList;
         List<PartyListResDTO> partyDTOList = new ArrayList<>();
 
+        //TODO: row[] 인덱스 하드코딩 개선
+
         switch (partyListType){
             case NOT_CLOSED_WAITING ->
                 partyList = partyRepository.getNotClosedParties(user, YakiStatus.WAITING);
@@ -179,6 +181,7 @@ public class PartyService {
         for (Object[] row : partyList) {
             PartyListResDTO.PartyListResDTOBuilder builder = initializePartyListBuilder(row);
             if (PartyListTypeEnum.NOT_CLOSED_ACCEPTED == partyListType || PartyListTypeEnum.NOT_CLOSED_WAITING == partyListType) builder.bookmarked((boolean) row[8]);
+            if (PartyListTypeEnum.WROTE == partyListType) builder.closed((boolean) row[8]);
             partyDTOList.add(builder.build());
         }
 
