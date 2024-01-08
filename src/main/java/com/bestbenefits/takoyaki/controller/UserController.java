@@ -33,21 +33,6 @@ public class UserController {
     private final Map<String, OAuthWebClient> oAuthWebClient;
     private final Map<String, OAuthURL> oAuthURL;
 
-    @PostMapping("/temp/login/{id}")
-    public ApiResponse<?> tempLogin(HttpSession session, @PathVariable Long id){
-        User user = userService.tempLogin(id);
-        session.setAttribute(SessionConst.ID, id);
-        session.setAttribute(SessionConst.AUTHENTICATION, true);
-        return ApiResponseCreator.success(user);
-    }
-    @PostMapping("/temp/signup")
-    public ApiResponse<?> tempSignUp(HttpSession session){
-        User user = userService.tempSignUp();
-        session.setAttribute(SessionConst.ID, user.getId());
-        session.setAttribute(SessionConst.AUTHENTICATION, true);
-        return ApiResponseCreator.success(user);
-    }
-
     @GetMapping("/login-check")
     public ApiResponse<?> checkLogin(@Session(attribute = SessionConst.ID, nullable = true) Long id,
             @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication){
