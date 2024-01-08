@@ -3,7 +3,6 @@ package com.bestbenefits.takoyaki.controller;
 import com.bestbenefits.takoyaki.DTO.client.request.CommentReqDTO;
 import com.bestbenefits.takoyaki.DTO.client.request.PartyCreationEditReqDTO;
 import com.bestbenefits.takoyaki.DTO.client.request.PartyListReqDTO;
-import com.bestbenefits.takoyaki.DTO.client.response.CommentListResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyInfoResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyListResDTO;
 import com.bestbenefits.takoyaki.config.annotation.Session;

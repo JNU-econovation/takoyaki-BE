@@ -2,7 +2,6 @@ package com.bestbenefits.takoyaki.config.properties.party;
 
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;

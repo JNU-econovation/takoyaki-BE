@@ -5,7 +5,6 @@ import com.bestbenefits.takoyaki.config.properties.user.YakiStatus;
 import com.bestbenefits.takoyaki.entity.Party;
 import com.bestbenefits.takoyaki.entity.User;
 import com.bestbenefits.takoyaki.entity.Yaki;
-import com.bestbenefits.takoyaki.service.YakiService;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
