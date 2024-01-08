@@ -15,7 +15,6 @@ public class AuthenticationCheckInterceptor implements HandlerInterceptor {
         String httpMethod = request.getMethod();
         String requestURI = request.getRequestURI();
 
-        //TODO: 여러 요청 추가해도 깔끔하도록 리팩토링
         //로그인 필요 없는 URI들
         if (requestURI.matches("/parties/\\d+") && httpMethod.equals("GET")) {
             return true;
@@ -23,9 +22,8 @@ public class AuthenticationCheckInterceptor implements HandlerInterceptor {
         if (requestURI.matches("/parties/\\d+/comment") && httpMethod.equals("GET")) {
             return true;
         }
-        if (!isLogin(request.getSession()))
-            throw new NotLoginException();
-            //TODO: 커스텀 예외 작성 후(완료) 상태 코드 401(해야됨)
+
+        if (!isLogin(request.getSession())) throw new NotLoginException();
 
         return true;
     }
