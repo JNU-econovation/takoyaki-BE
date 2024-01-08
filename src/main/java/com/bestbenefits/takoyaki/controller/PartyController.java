@@ -112,11 +112,10 @@ public class PartyController {
     }
 
     @PatchMapping("parties/{partyId}")
-
-    public ApiResponse<?> patchParty(@Session(attribute = SessionConst.ID) Long id,
-                                     @PathVariable Long partyId,
-                                     @RequestBody @Valid PartyCreationEditReqDTO dto) {
-        return ApiResponseCreator.success(partyService.patchParty(id, partyId, dto));
+    public ApiResponse<?> editParty(@Session(attribute = SessionConst.ID) Long id,
+                                    @PathVariable Long partyId,
+                                    @RequestBody @Valid PartyCreationEditReqDTO dto) {
+        return ApiResponseCreator.success(partyService.editParty(id, partyId, dto));
     }
 
     @DeleteMapping("/parties/{partyId}")
@@ -124,6 +123,7 @@ public class PartyController {
                                       @PathVariable Long partyId) {
         return ApiResponseCreator.success(partyService.deleteParty(id, partyId));
     }
+
     @PostMapping("/parties/{partyId}/closing")
     ApiResponse<?> closeParty(@Session(attribute = SessionConst.ID) Long id,
                               @PathVariable Long partyId) {

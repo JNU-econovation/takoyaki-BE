@@ -43,7 +43,7 @@ public class PartyService {
     }
 
     @Transactional
-    public PartyIdResDTO patchParty(Long id, Long partyId, PartyCreationEditReqDTO partyCreationEditReqDTO) {
+    public PartyIdResDTO editParty(Long id, Long partyId, PartyCreationEditReqDTO partyCreationEditReqDTO) {
         //ID 유효성 검사
         User user = userService.getUserOrThrow(id);
         Party party = partyRepository.findById(partyId).orElseThrow(
@@ -102,7 +102,8 @@ public class PartyService {
         if (p.isDeleted())
             throw new IllegalArgumentException("이미 삭제된 Party입니다.");
 
-        //TODO: 마감된 파티에 대한 조건 추가
+        if (p.isClosed())
+            throw new IllegalArgumentException("이미 마감된 Party는 삭제할 수 없습니다.");
 
         p.updateModifiedAt().updateDeleteAt();
 
@@ -120,12 +121,10 @@ public class PartyService {
             throw new IllegalArgumentException(String.format("해당 Party가 유저 ID: %d에 의해 생성되지 않았습니다.", id));
 
         if (p.isDeleted())
-            throw new IllegalArgumentException("이미 삭제된 Party입니다.");
+            throw new IllegalArgumentException("이미 삭제된 Party는 마감할 수 없습니다.");
 
         if (p.isClosed())
             throw new IllegalArgumentException("이미 마감된 Party입니다.");
-
-        //TODO: 마감된 파티에 대한 조건 추가
 
         p.updateModifiedAt().updateClosedAt();
 
