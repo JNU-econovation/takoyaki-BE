@@ -1,7 +1,7 @@
 package com.bestbenefits.takoyaki.controller;
 
 import com.bestbenefits.takoyaki.DTO.client.request.CommentReqDTO;
-import com.bestbenefits.takoyaki.DTO.client.request.PartyReqDTO;
+import com.bestbenefits.takoyaki.DTO.client.request.PartyCreationEditReqDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.CommentListResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyInfoResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyListResDTO;
@@ -56,7 +56,7 @@ public class PartyController {
     }
 
     @PostMapping("/party")
-    public ApiResponse<?> createParty(@Session(attribute = SessionConst.ID) Long id, @RequestBody @Valid PartyReqDTO dto) {
+    public ApiResponse<?> createParty(@Session(attribute = SessionConst.ID) Long id, @RequestBody @Valid PartyCreationEditReqDTO dto) {
         return ApiResponseCreator.success(partyService.createParty(id, dto));
     }
 
@@ -108,7 +108,7 @@ public class PartyController {
     }
 
     @PatchMapping("parties/{partyId}")
-    public ApiResponse<?> patchParty(@Session(attribute = SessionConst.ID) Long id, @PathVariable Long partyId, @RequestBody @Valid PartyReqDTO dto) {
+    public ApiResponse<?> patchParty(@Session(attribute = SessionConst.ID) Long id, @PathVariable Long partyId, @RequestBody @Valid PartyCreationEditReqDTO dto) {
         return ApiResponseCreator.success(partyService.patchParty(id, partyId, dto));
     }
 

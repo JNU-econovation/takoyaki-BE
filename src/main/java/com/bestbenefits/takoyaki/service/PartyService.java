@@ -1,6 +1,6 @@
 package com.bestbenefits.takoyaki.service;
 
-import com.bestbenefits.takoyaki.DTO.client.request.PartyReqDTO;
+import com.bestbenefits.takoyaki.DTO.client.request.PartyCreationEditReqDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyIdResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyInfoResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyListResDTO;
@@ -33,9 +33,9 @@ public class PartyService {
     private final UserService userService;
 
     @Transactional
-    public PartyIdResDTO createParty(Long id, PartyReqDTO partyReqDTO) {
+    public PartyIdResDTO createParty(Long id, PartyCreationEditReqDTO partyCreationEditReqDTO) {
         User user = userService.getUserOrThrow(id);
-        Party party = partyRepository.save(partyReqDTO.toEntity(user));
+        Party party = partyRepository.save(partyCreationEditReqDTO.toEntity(user));
 
         return PartyIdResDTO.builder()
                 .partyId(party.getId())
@@ -43,7 +43,7 @@ public class PartyService {
     }
 
     @Transactional
-    public PartyIdResDTO patchParty(Long id, Long partyId, PartyReqDTO partyReqDTO) {
+    public PartyIdResDTO patchParty(Long id, Long partyId, PartyCreationEditReqDTO partyCreationEditReqDTO) {
         //ID 유효성 검사
         User user = userService.getUserOrThrow(id);
         Party party = partyRepository.findById(partyId).orElseThrow(
@@ -60,7 +60,7 @@ public class PartyService {
             throw new IllegalArgumentException("이미 마감된 파티는 수정할 수 없습니다.");
         }
 
-        Party newParty = partyReqDTO.toEntity(user);
+        Party newParty = partyCreationEditReqDTO.toEntity(user);
 
         //정책에 의한 파티 수정 조건검사
         if (!party.getCategory().equals(newParty.getCategory())) {

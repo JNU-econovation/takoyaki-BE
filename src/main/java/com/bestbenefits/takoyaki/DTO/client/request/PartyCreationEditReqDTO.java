@@ -16,7 +16,7 @@ import java.time.LocalDate;
 
 @Getter
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class PartyReqDTO {
+public class PartyCreationEditReqDTO {
     @EnumName(enumClass = Category.class)
     private String category;
 
