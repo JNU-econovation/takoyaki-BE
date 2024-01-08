@@ -13,8 +13,8 @@ import com.bestbenefits.takoyaki.config.properties.user.YakiStatus;
 import com.bestbenefits.takoyaki.entity.Party;
 import com.bestbenefits.takoyaki.entity.User;
 import com.bestbenefits.takoyaki.entity.Yaki;
+import com.bestbenefits.takoyaki.repository.BookmarkRepository;
 import com.bestbenefits.takoyaki.repository.PartyRepository;
-import com.bestbenefits.takoyaki.repository.UserRepository;
 import com.bestbenefits.takoyaki.repository.YakiRepositoy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -31,7 +31,7 @@ public class PartyService {
     private final PartyRepository partyRepository;
     private final YakiRepositoy yakiRepository;
     private final UserService userService;
-    private final BookmarkService bookmarkService;
+    private final BookmarkRepository bookmarkRepository;
 
     @Transactional
     public PartyIdResDTO createParty(Long id, PartyCreationEditReqDTO partyCreationEditReqDTO) {
@@ -107,7 +107,7 @@ public class PartyService {
             throw new IllegalArgumentException("이미 마감된 Party는 삭제할 수 없습니다.");
 
         p.updateModifiedAt().updateDeleteAt();
-        bookmarkService.deleteBookmarksByParty(partyId); //북마크 제거
+        bookmarkRepository.deleteAllByParty(p); //북마크 제거
 
         return PartyIdResDTO.builder()
                 .partyId(p.getId())
@@ -129,7 +129,7 @@ public class PartyService {
             throw new IllegalArgumentException("이미 마감된 Party입니다.");
 
         p.updateModifiedAt().updateClosedAt();
-        bookmarkService.deleteBookmarksByParty(partyId); //북마크 제거
+        bookmarkRepository.deleteAllByParty(p); //북마크 제거
 
         return PartyIdResDTO.builder()
                 .partyId(p.getId())
@@ -147,20 +147,7 @@ public class PartyService {
         List<PartyListResDTO> partyDTOList = new ArrayList<>();
 
         for (Object[] row : partyList) {
-            int recruitNumber = (int) row[4];
-            int waitingNumber = ((Long) row[6]).intValue();
-            int acceptedNumber = ((Long) row[7]).intValue();
-            float competitionRate = (waitingNumber != 0) ? (float) (recruitNumber - acceptedNumber)/waitingNumber : 0f;
-            PartyListResDTO.PartyListResDTOBuilder builder = PartyListResDTO.builder()
-                    .partyId((Long) row[0])
-                    .title((String) row[1])
-                    .category(((Category) row[2]).getName())
-                    .activityLocation(((ActivityLocation) row[3]).getName())
-                    .recruitNumber(recruitNumber)
-                    .plannedClosingDate((LocalDate) row[5])
-                    .waitingNumber(waitingNumber)
-                    .acceptedNumber(acceptedNumber)
-                    .competitionRate(competitionRate);
+            PartyListResDTO.PartyListResDTOBuilder builder = initializePartyListBuilder(row);
             if (isLogin) builder.bookmarked((boolean) row[8]);
             partyDTOList.add(builder.build());
         }
@@ -172,7 +159,28 @@ public class PartyService {
     public List<PartyListResDTO> getPartiesInfoForLoginUser(Long id, PartyListTypeEnum partyListType){
         User user = userService.getUserOrThrow(id);
 
+        List<Object[]> partyList;
+        List<PartyListResDTO> partyDTOList = new ArrayList<>();
 
+        switch (partyListType){
+            case NOT_CLOSED_WAITING ->
+                partyList = partyRepository.getNotClosedParties(user, YakiStatus.WAITING);
+            case NOT_CLOSED_ACCEPTED ->
+                partyList = partyRepository.getNotClosedParties(user, YakiStatus.ACCEPTED);
+            case CLOSED ->
+                partyList = partyRepository.getClosedParties(user);
+            case WROTE ->
+                partyList = partyRepository.getWroteParties(user);
+            case BOOKMARKED ->
+                partyList = partyRepository.getBookmarkedParties(user);
+            default ->
+                partyList = new ArrayList<>(); //오류 없애려고 씀, 실행될 일 절대 없음
+        }
+        for (Object[] row : partyList) {
+            PartyListResDTO.PartyListResDTOBuilder builder = initializePartyListBuilder(row);
+            if (PartyListTypeEnum.NOT_CLOSED_ACCEPTED == partyListType || PartyListTypeEnum.NOT_CLOSED_WAITING == partyListType) builder.bookmarked((boolean) row[8]);
+            partyDTOList.add(builder.build());
+        }
 
         return partyDTOList;
     }
@@ -220,11 +228,27 @@ public class PartyService {
         return builder.build();
     }
 
-
-
     @Transactional(readOnly = true)
     public Party getPartyOrThrow(Long partyId){
         return partyRepository.findById(partyId).orElseThrow(() -> new IllegalArgumentException("존재하지 않거나 마감된 팟입니다."));
+    }
+
+
+    private PartyListResDTO.PartyListResDTOBuilder initializePartyListBuilder(Object[] row) {
+        int recruitNumber = (int) row[4];
+        int waitingNumber = ((Long) row[6]).intValue();
+        int acceptedNumber = ((Long) row[7]).intValue();
+        float competitionRate = (waitingNumber != 0) ? (float) (recruitNumber - acceptedNumber)/waitingNumber : 0f;
+        return PartyListResDTO.builder()
+                .partyId((Long) row[0])
+                .title((String) row[1])
+                .category(((Category) row[2]).getName())
+                .activityLocation(((ActivityLocation) row[3]).getName())
+                .recruitNumber(recruitNumber)
+                .plannedClosingDate((LocalDate) row[5])
+                .waitingNumber(waitingNumber)
+                .acceptedNumber(acceptedNumber)
+                .competitionRate(competitionRate);
     }
 
 }
