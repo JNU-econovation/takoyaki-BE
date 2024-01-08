@@ -52,8 +52,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-//                .allowedOrigins("*") //withCredential이 true일 경우 와일드카드 안됨
-                .allowedOriginPatterns("*")
+                .allowedOrigins("http://211.48.213.75:8080") //withCredential이 true일 경우 와일드카드 안됨
+//                .allowedOriginPatterns("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
                 .allowedHeaders("*")
                 .allowCredentials(true);
