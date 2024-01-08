@@ -20,11 +20,18 @@ public class WebConfig implements WebMvcConfigurer {
 //                .addPathPatterns("/party/**")
                 .excludePathPatterns(
                         "/js/**", "/oauth_example", "/oauth", "/favicon.ico", "/users/temp/**", //실험용이니 나중에 삭제하기
+
                         "/users/login-check",
                         "/users/oauth/login-url/**",
                         "/users/oauth/login/**",
                         "/users/duplicate-nickname",
                         "/users/oauth/login/additional-info",
+
+                        "/party/category",
+                        "/party/activity-location",
+                        "/party/activity-duration-unit",
+                        "/party/contact-method",
+
                         "/parties/all"
                 );
     }
