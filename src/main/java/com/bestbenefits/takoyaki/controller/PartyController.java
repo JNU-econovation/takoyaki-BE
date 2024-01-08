@@ -12,6 +12,7 @@ import com.bestbenefits.takoyaki.config.apiresponse.ApiResponse;
 import com.bestbenefits.takoyaki.config.apiresponse.ApiResponseCreator;
 import com.bestbenefits.takoyaki.config.properties.SessionConst;
 import com.bestbenefits.takoyaki.config.properties.party.*;
+import com.bestbenefits.takoyaki.service.CommentService;
 import com.bestbenefits.takoyaki.service.PartyService;
 import com.bestbenefits.takoyaki.service.UserService;
 import com.bestbenefits.takoyaki.service.YakiService;
@@ -26,6 +27,7 @@ import java.util.*;
 public class PartyController {
     private final PartyService partyService;
     private final YakiService yakiService;
+    private final CommentService commentService;
 
     /************ /party ************/
     @PostMapping("/party")
@@ -180,14 +182,18 @@ public class PartyController {
 
     @GetMapping("/parties/{partyId}/comment")
     public ApiResponse<?> getComment(@PathVariable Long partyId) {
-        //TODO: 댓글 리스트 반환 필요
-        return ApiResponseCreator.success(new CommentListResDTO(null));
+        Map<String, Object> response = new HashMap<>();
+        List<?> commentList = commentService.getComments(partyId);
+
+        response.put("count", commentList.size());
+        response.put("comment_list", commentList);
+        return ApiResponseCreator.success(response);
     }
 
     @PostMapping("/parties/{partyId}/comment")
-    public ApiResponse<?> addComment(@PathVariable Long partyId,
-                                     @RequestBody CommentReqDTO commentReqDTO) {
-        //TODO: 댓글 작성 구현하기
-        return ApiResponseCreator.success(null);
+    public ApiResponse<?> addComment(@Session(attribute = SessionConst.ID) Long id,
+                                     @PathVariable Long partyId,
+                                     @RequestBody @Valid CommentReqDTO dto) {
+        return ApiResponseCreator.success(commentService.createComment(id, partyId, dto));
     }
 }
