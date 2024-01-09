@@ -1,6 +1,6 @@
 package com.bestbenefits.takoyaki.config.properties.auth;
 
-import com.bestbenefits.takoyaki.exception.InvalidTypeValueException;
+import com.bestbenefits.takoyaki.exception.common.InvalidTypeValueException;
 import lombok.Getter;
 
 @Getter

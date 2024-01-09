@@ -2,6 +2,7 @@ package com.bestbenefits.takoyaki.exception.handler;
 
 import com.bestbenefits.takoyaki.config.apiresponse.ResponseEntityCreator;
 import com.bestbenefits.takoyaki.exception.*;
+import com.bestbenefits.takoyaki.exception.common.InvalidTypeValueException;
 import com.bestbenefits.takoyaki.exception.user.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

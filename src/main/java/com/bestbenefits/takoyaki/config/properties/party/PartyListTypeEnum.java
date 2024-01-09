@@ -1,5 +1,7 @@
 package com.bestbenefits.takoyaki.config.properties.party;
 
+import com.bestbenefits.takoyaki.exception.common.InvalidTypeValueException;
+
 public enum PartyListTypeEnum {
     ALL, //모든 팟
     NOT_CLOSED_WAITING, //마감되지 않은 대기 팟
@@ -13,6 +15,6 @@ public enum PartyListTypeEnum {
             if (partyListTypeEnum.name().equalsIgnoreCase(typeName))
                 return partyListTypeEnum;
         }
-        throw new IllegalArgumentException("Invalid type value.");
+        throw new InvalidTypeValueException();
     }
 }

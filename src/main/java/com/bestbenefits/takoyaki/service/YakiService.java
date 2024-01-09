@@ -4,6 +4,8 @@ import com.bestbenefits.takoyaki.config.properties.user.YakiStatus;
 import com.bestbenefits.takoyaki.entity.Party;
 import com.bestbenefits.takoyaki.entity.User;
 import com.bestbenefits.takoyaki.entity.Yaki;
+import com.bestbenefits.takoyaki.exception.party.NotFoundPartyException;
+import com.bestbenefits.takoyaki.exception.party.PartyClosedException;
 import com.bestbenefits.takoyaki.repository.YakiRepositoy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,8 +22,11 @@ public class YakiService {
     public void applyToParty(Long id, Long partyId){
         User user = userService.getUserOrThrow(id);
         Party party = partyService.getPartyOrThrow(partyId);
-        if (party.isDeleted() || party.isClosed())
-            throw new IllegalArgumentException("삭제되었거나 마감된 팟입니다.");
+
+        if (party.isDeleted())
+            throw new NotFoundPartyException();
+        if (party.isClosed())
+            throw new PartyClosedException();
 
         if (party.isAuthor(id))
             throw new IllegalArgumentException("타코는 신청할 수 없습니다.");
@@ -34,8 +39,11 @@ public class YakiService {
     public void cancelApplication(Long id, Long partyId){
         User user = userService.getUserOrThrow(id);
         Party party = partyService.getPartyOrThrow(partyId);
-        if (party.isDeleted() || party.isClosed())
-            throw new IllegalArgumentException("삭제되었거나 마감된 팟입니다.");
+
+        if (party.isDeleted())
+            throw new NotFoundPartyException();
+        if (party.isClosed())
+            throw new PartyClosedException();
 
         Yaki yaki = getYakiOrThrow(party, user);
         if (yaki.getStatus() != YakiStatus.WAITING)
@@ -47,8 +55,11 @@ public class YakiService {
     public void acceptYaki(Long id, Long partyId, Long yakiId){
         User yakiUser = userService.getUserOrThrow(yakiId);
         Party party = partyService.getPartyOrThrow(partyId);
-        if (party.isDeleted() || party.isClosed())
-            throw new IllegalArgumentException("삭제되었거나 마감된 팟입니다.");
+
+        if (party.isDeleted())
+            throw new NotFoundPartyException();
+        if (party.isClosed())
+            throw new PartyClosedException();
 
         if (!party.isAuthor(id))
             throw new IllegalArgumentException("타코만 요청을 수락할 수 있습니다.");
@@ -66,8 +77,11 @@ public class YakiService {
     public void denyYaki(Long id, Long partyId, Long yakiId){
         User yakiUser = userService.getUserOrThrow(yakiId);
         Party party = partyService.getPartyOrThrow(partyId);
-        if (party.isDeleted() || party.isClosed())
-            throw new IllegalArgumentException("삭제되었거나 마감된 팟입니다.");
+
+        if (party.isDeleted())
+            throw new NotFoundPartyException();
+        if (party.isClosed())
+            throw new PartyClosedException();
 
         if (!party.isAuthor(id))
             throw new IllegalArgumentException("타코만 요청을 거절할 수 있습니다.");
@@ -81,8 +95,11 @@ public class YakiService {
     public void leaveParty(Long id, Long partyId){
         User user = userService.getUserOrThrow(id);
         Party party = partyService.getPartyOrThrow(partyId);
-        if (party.isDeleted() || party.isClosed())
-            throw new IllegalArgumentException("삭제되었거나 마감된 팟입니다.");
+
+        if (party.isDeleted())
+            throw new NotFoundPartyException();
+        if (party.isClosed())
+            throw new PartyClosedException();
 
         Yaki yaki = getYakiOrThrow(party, user);
         if (yaki.getStatus() != YakiStatus.ACCEPTED)

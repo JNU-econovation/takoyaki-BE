@@ -1,5 +1,6 @@
 package com.bestbenefits.takoyaki.config.properties.party;
 
+import com.bestbenefits.takoyaki.exception.common.InvalidTypeValueException;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -28,7 +29,7 @@ public enum ActivityLocation {
             if (activityLocation.getName().equals(activityLocationName))
                 return activityLocation;
         }
-        throw new IllegalArgumentException("Invalid activity location name.");
+        throw new InvalidTypeValueException();
     }
 
     public static List<String> toNameList(){

@@ -4,6 +4,8 @@ import com.bestbenefits.takoyaki.config.properties.BookmarkConst;
 import com.bestbenefits.takoyaki.entity.Bookmark;
 import com.bestbenefits.takoyaki.entity.Party;
 import com.bestbenefits.takoyaki.entity.User;
+import com.bestbenefits.takoyaki.exception.party.NotFoundPartyException;
+import com.bestbenefits.takoyaki.exception.party.PartyClosedException;
 import com.bestbenefits.takoyaki.repository.BookmarkRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -43,11 +45,11 @@ public class BookmarkService {
 
         //마감된 글 북마크하는 경우
         if (party.isClosed())
-            throw new IllegalStateException("마감된 글은 북마크할 수 없습니다.");
+            throw new PartyClosedException();
 
         //삭제된 글 북마크하는 경우
         if (party.isDeleted())
-            throw new IllegalStateException("삭제된 글은 북마크할 수 없습니다.");
+            throw new NotFoundPartyException();
 
         bookmarkRepository.save(Bookmark.builder()
                 .user(user)

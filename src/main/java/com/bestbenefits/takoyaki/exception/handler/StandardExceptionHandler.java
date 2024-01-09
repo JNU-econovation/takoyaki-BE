@@ -33,9 +33,9 @@ public class StandardExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e){
         FieldError error = e.getBindingResult().getFieldError();
-        String message = error == null ? ExceptionCode.INVALID_METHOD_ARGUMENT.getMsg()
+        String message = error == null ? ExceptionCode.VALIDATION_FAILED.getMsg()
                 : error.getField() + ": " + error.getDefaultMessage();
-        return ResponseEntityCreator.fail(ExceptionCode.INVALID_METHOD_ARGUMENT, message);
+        return ResponseEntityCreator.fail(ExceptionCode.VALIDATION_FAILED, message);
     }
 
     //파라미터를 입력하지 않은 경우

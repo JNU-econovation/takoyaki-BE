@@ -37,45 +37,59 @@ public class PartyController {
 
     @GetMapping("/party/activity-location")
     public ResponseEntity<?> getActivityLocation() {
+        Map<String, Integer> meta = new HashMap<>();
         Map<String, Object> data = new HashMap<>();
+        meta.put("count", ActivityLocation.toNameList().size());
         data.put("activity_location", ActivityLocation.toNameList());
-        return ResponseEntityCreator.success(data);
+        return ResponseEntityCreator.success(meta, data);
     }
 
     @GetMapping("/party/category")
     public ResponseEntity<?> getCategory() {
+        Map<String, Integer> meta = new HashMap<>();
         Map<String, Object> data = new HashMap<>();
+        meta.put("count", Category.toNameList().size());
         data.put("category", Category.toNameList());
-        return ResponseEntityCreator.success(data);
+        return ResponseEntityCreator.success(meta, data);
     }
 
     @GetMapping("/party/contact-method")
     public ResponseEntity<?> getContactMethod() {
+        Map<String, Integer> meta = new HashMap<>();
         Map<String, Object> data = new HashMap<>();
+        meta.put("count", ContactMethod.toNameList().size());
         data.put("contact_method", ContactMethod.toNameList());
-        return ResponseEntityCreator.success(data);
+        return ResponseEntityCreator.success(meta, data);
     }
 
     @GetMapping("/party/activity-duration-unit")
     public ResponseEntity<?> getActivityDurationUnit() {
+        Map<String, Integer> meta = new HashMap<>();
         Map<String, Object> data = new HashMap<>();
+        meta.put("count", DurationUnit.toNameList().size());
         data.put("activity_duration_unit", DurationUnit.toNameList());
-        return ResponseEntityCreator.success(data);
+        return ResponseEntityCreator.success(meta, data);
     }
 
 
 
     /************ /parties ************/
+
+    //TODO: 로그인 여부 확인 필요 없게 수정 필요...? 쿼리 param에서 login빼고 응답에서 로그인 여부 반환하게 하기
+    //TODO: 응답에 meta에 적절한 정보 담기
+    //TODO: 전체적으로 리팩터링 필요
+    //TODO: 로그아웃 상태인데 비인가 오류 나는거 수정 필요
     @GetMapping("/parties/") //로그인 필요 X
     public ResponseEntity<?> getPartyCardListForMainPage(
             @Session(attribute = SessionConst.ID, nullable = true) Long id,
             @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
             @ModelAttribute @Valid PartyListReqDTO dto){
-        //TODO: 로그인 여부 확인 필요 없게 수정 필요...? 쿼리 param에서 login빼고 응답에서 로그인 여부 반환하게 하기
 
         List<? extends PartyListResDTO> partyDTOList;
         boolean isLogin = LoginChecker.isLogin(id, authentication);
 
+        System.out.println("dto.getNumber() = " + dto.getNumber());
+        
         switch (dto.getPartyListType()) {
             case ALL -> {
                 if (dto.getNumber() >= PartyConst.MAX_PARTY_NUMBER_OF_REQUEST)
@@ -99,12 +113,13 @@ public class PartyController {
         return ResponseEntityCreator.success(partyDTOList);
     }
 
+
+    //TODO: 로그인 여부 확인 필요 없게 수정 필요...? 쿼리 param에서 login빼고 응답에서 로그인 여부 반환하게 하기
     @GetMapping("/parties/{party-id}") //로그인 필요 X
     public ResponseEntity<?> getPartyInfo(@Session(attribute = SessionConst.ID, nullable = true) Long id,
-                                                                 @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
-                                                                 @RequestParam(name = "login") boolean loginField,
-                                                                 @PathVariable(name = "party-id") Long partyId) {
-        //TODO: 로그인 여부 확인 필요 없게 수정 필요...? 쿼리 param에서 login빼고 응답에서 로그인 여부 반환하게 하기
+                                          @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
+                                          @RequestParam(name = "login") boolean loginField,
+                                          @PathVariable(name = "party-id") Long partyId) {
 
         boolean isLogin = LoginChecker.isLogin(id, authentication);
 
