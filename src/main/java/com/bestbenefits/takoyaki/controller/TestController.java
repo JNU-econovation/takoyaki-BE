@@ -2,8 +2,7 @@ package com.bestbenefits.takoyaki.controller;
 
 import com.bestbenefits.takoyaki.DTO.client.request.PartyCreationEditReqDTO;
 import com.bestbenefits.takoyaki.config.annotation.Session;
-import com.bestbenefits.takoyaki.config.apiresponse.DEPRECATED__ApiResponse;
-import com.bestbenefits.takoyaki.config.apiresponse.DEPRECATED__ApiResponseCreator;
+import com.bestbenefits.takoyaki.config.apiresponse.ResponseEntityCreator;
 import com.bestbenefits.takoyaki.config.properties.SessionConst;
 import com.bestbenefits.takoyaki.config.properties.party.ActivityLocation;
 import com.bestbenefits.takoyaki.config.properties.party.Category;
@@ -13,6 +12,7 @@ import com.bestbenefits.takoyaki.entity.User;
 import com.bestbenefits.takoyaki.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -26,19 +26,19 @@ public class TestController {
     private final UserService userService;
 
     @PostMapping("/users/login/{id}")
-    public DEPRECATED__ApiResponse<?> tempLogin(HttpSession session, @PathVariable Long id){
+    public ResponseEntity<?> tempLogin(HttpSession session, @PathVariable Long id){
         User user = userService.tempLogin(id);
         session.setAttribute(SessionConst.ID, id);
         session.setAttribute(SessionConst.AUTHENTICATION, true);
-        return DEPRECATED__ApiResponseCreator.success(user);
+        return ResponseEntityCreator.success(user);
     }
 
     @PostMapping("/users/signup")
-    public DEPRECATED__ApiResponse<?> tempSignUp(HttpSession session){
+    public ResponseEntity<?> tempSignUp(HttpSession session){
         User user = userService.tempSignUp();
         session.setAttribute(SessionConst.ID, user.getId());
         session.setAttribute(SessionConst.AUTHENTICATION, true);
-        return DEPRECATED__ApiResponseCreator.success(user);
+        return ResponseEntityCreator.success(user);
     }
 
     @GetMapping("/party/get-random")
@@ -68,7 +68,7 @@ public class TestController {
     }
 
     @PostMapping("/party/post-random")
-    public DEPRECATED__ApiResponse<?> postRandomParty(@Session(attribute = SessionConst.ID) Long id) {
+    public ResponseEntity<?> postRandomParty(@Session(attribute = SessionConst.ID) Long id) {
         return partyController.createParty(id, getRandomParty());
     }
 

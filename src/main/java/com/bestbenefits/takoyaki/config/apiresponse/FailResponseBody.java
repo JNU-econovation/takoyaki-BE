@@ -12,4 +12,10 @@ public class FailResponseBody {
         this.code = code.toString();
         this.msg = code.getMsg();
     }
+
+    FailResponseBody(ExceptionCode code, String msg) {
+        this.success = false;
+        this.code = code.toString();
+        this.msg = msg;
+    }
 }

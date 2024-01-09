@@ -33,7 +33,19 @@ public class ResponseEntityCreator {
         return new ResponseEntity<>(new SuccessResponseBody<>(meta, data), status);
     }
 
+    public static ResponseEntity<?> fail(ExceptionCode code) {
+        return new ResponseEntity<>(new FailResponseBody(code), HttpStatus.BAD_REQUEST);
+    }
+
     public static ResponseEntity<?> fail(ExceptionCode code, HttpStatusCode status) {
         return new ResponseEntity<>(new FailResponseBody(code), status);
+    }
+
+    public static ResponseEntity<?> fail(ExceptionCode code, String msg) {
+        return new ResponseEntity<>(new FailResponseBody(code, msg), HttpStatus.BAD_REQUEST);
+    }
+
+    public static ResponseEntity<?> fail(ExceptionCode code, String msg, HttpStatusCode status) {
+        return new ResponseEntity<>(new FailResponseBody(code, msg), status);
     }
 }

@@ -1,11 +1,9 @@
 package com.bestbenefits.takoyaki.interceptor;
 
-import com.bestbenefits.takoyaki.config.properties.SessionConst;
-import com.bestbenefits.takoyaki.exception.NeedLoginException;
+import com.bestbenefits.takoyaki.exception.UnauthorizedException;
 import com.bestbenefits.takoyaki.util.LoginChecker;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -25,7 +23,7 @@ public class AuthenticationCheckInterceptor implements HandlerInterceptor {
         }
 
         if (!LoginChecker.isLogin(request.getSession()))
-            throw new NeedLoginException();
+            throw new UnauthorizedException();
 
         return true;
     }
