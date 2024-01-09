@@ -1,6 +1,6 @@
 package com.bestbenefits.takoyaki.interceptor;
 
-import com.bestbenefits.takoyaki.exception.UnauthorizedException;
+import com.bestbenefits.takoyaki.exception.user.UnauthorizedException;
 import com.bestbenefits.takoyaki.util.LoginChecker;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

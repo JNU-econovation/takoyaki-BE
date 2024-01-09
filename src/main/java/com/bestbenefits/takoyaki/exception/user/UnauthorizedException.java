@@ -1,3 +1,3 @@
-package com.bestbenefits.takoyaki.exception;
+package com.bestbenefits.takoyaki.exception.user;
 
 public class UnauthorizedException extends RuntimeException {}

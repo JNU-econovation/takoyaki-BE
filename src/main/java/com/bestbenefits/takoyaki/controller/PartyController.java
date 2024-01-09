@@ -9,7 +9,7 @@ import com.bestbenefits.takoyaki.config.annotation.Session;
 import com.bestbenefits.takoyaki.config.apiresponse.ResponseEntityCreator;
 import com.bestbenefits.takoyaki.config.properties.SessionConst;
 import com.bestbenefits.takoyaki.config.properties.party.*;
-import com.bestbenefits.takoyaki.exception.UnauthorizedException;
+import com.bestbenefits.takoyaki.exception.user.UnauthorizedException;
 import com.bestbenefits.takoyaki.service.*;
 import com.bestbenefits.takoyaki.util.LoginChecker;
 import jakarta.validation.Valid;

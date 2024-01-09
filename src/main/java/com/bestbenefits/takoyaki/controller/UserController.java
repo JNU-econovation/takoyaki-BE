@@ -74,27 +74,36 @@ public class UserController {
         //check whether this user exists in DataBase by using email & social type
         OAuthAuthResDTO oAuthAuthResDTO = userService.loginByOAuth(socialUserInfoResDTO.getEmail(), oAuthSocialType);
 
-        if (oAuthAuthResDTO != null) { //등록된 유저고,
-            if(!oAuthAuthResDTO.isInfoNeeded()) //추가 정보 있으면 로그인 완료
-                session.setAttribute(SessionConst.AUTHENTICATION, true);
-        }else //등록되지 않은 유저면 유저 등록
+        HttpStatus status;
+        //등록된 유저고, 추가 정보 있으면 로그인 완료
+        //세션에 ID, AUTHENTICATION 등록됨
+        if (oAuthAuthResDTO != null && !oAuthAuthResDTO.isInfoNeeded()) {
+            session.setAttribute(SessionConst.AUTHENTICATION, true);
+            status = HttpStatus.OK;
+        }
+        //등록되지 않은 유저면 유저 등록 필요
+        //세션에 ID만 등록됨
+        else {
             oAuthAuthResDTO = userService.signUpByOAuth(OAuthSignUpReqDTO.builder()
-                                          .socialUserInfoResDTO(socialUserInfoResDTO)
-                                           .social(oAuthSocialType)
-                                            .build());
+                    .socialUserInfoResDTO(socialUserInfoResDTO)
+                    .social(oAuthSocialType)
+                    .build());
+            status = HttpStatus.CREATED;
+        }
 
         session.setAttribute(SessionConst.ID, oAuthAuthResDTO.getId());
         Map<String, Boolean> data = new HashMap<>();
         data.put("is_info_needed", oAuthAuthResDTO.isInfoNeeded());
 
-        return ResponseEntityCreator.success(data, HttpStatus.CREATED);
+        return ResponseEntityCreator.success(data, status);
     }
 
     @PostMapping("/oauth/login/additional-info")
     public ResponseEntity<?> signup(HttpSession session,
-                                             @Session(attribute = SessionConst.ID) Long id,
-                                             @RequestBody @Valid UserAdditionalInfoReqDTO userAdditionalInfoReqDTO) {
-        userService.insertAdditionalInfo(id, userAdditionalInfoReqDTO);
+                                    @Session(attribute = SessionConst.ID, nullable = true) Long id,
+                                    @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
+                                    @RequestBody @Valid UserAdditionalInfoReqDTO userAdditionalInfoReqDTO) {
+        userService.insertAdditionalInfo(id, authentication, userAdditionalInfoReqDTO);
         session.setAttribute(SessionConst.AUTHENTICATION, true);
         return ResponseEntityCreator.success(HttpStatus.CREATED);
     }
@@ -108,6 +117,7 @@ public class UserController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpSession session){
+        session.removeAttribute(SessionConst.ID); //로그아웃하면 세션 attribute 다 날리기
         session.removeAttribute(SessionConst.AUTHENTICATION);
         return ResponseEntityCreator.success();
     }

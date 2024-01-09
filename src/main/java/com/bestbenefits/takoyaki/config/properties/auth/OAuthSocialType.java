@@ -1,5 +1,6 @@
 package com.bestbenefits.takoyaki.config.properties.auth;
 
+import com.bestbenefits.takoyaki.exception.InvalidTypeValueException;
 import lombok.Getter;
 
 @Getter
@@ -21,14 +22,14 @@ public enum OAuthSocialType{
             if (oAuthSocialType.name().equals(socialName))
                 return oAuthSocialType;
         }
-        throw new IllegalArgumentException("Invalid social platform name.");
+        throw new InvalidTypeValueException();
     }
     public static OAuthSocialType fromValue(int index) {
         for (OAuthSocialType oAuthSocialType : OAuthSocialType.values()) {
             if (oAuthSocialType.getIndex() == index)
                 return oAuthSocialType;
         }
-        throw new IllegalArgumentException("Invalid social platform index.");
+        throw new InvalidTypeValueException();
     }
 
 }

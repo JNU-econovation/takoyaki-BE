@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -15,7 +16,7 @@ import org.springframework.web.reactive.function.client.WebClientException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class StandardExceptionHandler {
     //body가 없는 경우
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<?> handleHttpMessageNotReadableException(){
@@ -31,21 +32,19 @@ public class GlobalExceptionHandler {
     //@Vaild 검증 실패
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e){
-        String message;
-        if (e.getBindingResult().getFieldError() != null)
-            message = e.getBindingResult().getFieldError().getDefaultMessage();
-        else
-            message = "Validation error";
+        FieldError error = e.getBindingResult().getFieldError();
+        String message = error == null ? ExceptionCode.INVALID_METHOD_ARGUMENT.getMsg()
+                : error.getField() + ": " + error.getDefaultMessage();
         return ResponseEntityCreator.fail(ExceptionCode.INVALID_METHOD_ARGUMENT, message);
-
     }
+
     //파라미터를 입력하지 않은 경우
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<?> handleMissingServletRequestParameterException(MissingServletRequestParameterException e){
         return ResponseEntityCreator.fail(ExceptionCode.MISSING_SERVLET_REQUEST_PARAMETER, e.getMessage());
     }
 
-    //enum(OAuthSocialType) fromValue() -> 값이 없을 경우
+    //잘못된 Argument 제공
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException e){
         return ResponseEntityCreator.fail(ExceptionCode.ILLEGAL_ARGUMENT, e.getMessage());

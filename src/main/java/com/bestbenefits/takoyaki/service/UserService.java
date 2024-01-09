@@ -7,7 +7,9 @@ import com.bestbenefits.takoyaki.DTO.layer.request.OAuthSignUpReqDTO;
 import com.bestbenefits.takoyaki.DTO.layer.response.OAuthAuthResDTO;
 import com.bestbenefits.takoyaki.config.properties.auth.OAuthSocialType;
 import com.bestbenefits.takoyaki.entity.User;
+import com.bestbenefits.takoyaki.exception.user.*;
 import com.bestbenefits.takoyaki.repository.UserRepository;
+import com.bestbenefits.takoyaki.util.LoginChecker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,14 +64,18 @@ public class UserService {
     }
 
     @Transactional
-    public void insertAdditionalInfo(Long id, UserAdditionalInfoReqDTO userAdditionalInfoReqDTO){
-        String nickname = userAdditionalInfoReqDTO.getNickname();
+    public void insertAdditionalInfo(Long id, Boolean authentication, UserAdditionalInfoReqDTO userAdditionalInfoReqDTO){
+        if (LoginChecker.isLogout(id, authentication))
+            throw new UnauthorizedException();
+
         User user = getUserOrThrow(id);
         if (user.getNickname() != null)
-            throw new IllegalArgumentException("User already has additional information");
-//        if(userRepository.findUserByNickname(nickname).isPresent())
+            throw new AdditionalInfoProvidedException();
+
+        String nickname = userAdditionalInfoReqDTO.getNickname();
         if(checkDuplicateNickname(nickname))
-            throw new IllegalArgumentException("duplicate nickname");
+            throw new DuplicateNicknameException();
+
         user.updateNickname(nickname);
         //another info...
     }
@@ -79,7 +85,10 @@ public class UserService {
         User user = getUserOrThrow(id);
 
         if (user.getNicknameUpdatedAt().isEqual(LocalDate.now()))
-            throw new IllegalArgumentException("닉네임은 하루에 한 번만 바꿀 수 있습니다.");
+            throw new NicknameChangeTooEarlyException();
+
+        if (checkDuplicateNickname(userNicknameUpdateReqDTO.getNickname()))
+            throw new DuplicateNicknameException();
 
         user.updateNickname(userNicknameUpdateReqDTO.getNickname());
         user.updateNicknameUpdatedAt();
@@ -102,6 +111,6 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public User getUserOrThrow(Long id) {
-        return userRepository.findUserById(id).orElseThrow(() -> new IllegalArgumentException("유저가 없습니다."));
+        return userRepository.findUserById(id).orElseThrow(UserNotFoundException::new);
     }
 }

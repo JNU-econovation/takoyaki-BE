@@ -11,4 +11,8 @@ public class LoginChecker {
     public static boolean isLogin(Long id, Boolean authentication) {
         return id != null && authentication != null && authentication;
     }
+
+    public static boolean isLogout(Long id, Boolean authentication) {
+        return id == null || (authentication == null || !authentication);
+    }
 }
