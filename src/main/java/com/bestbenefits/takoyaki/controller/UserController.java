@@ -13,6 +13,7 @@ import com.bestbenefits.takoyaki.config.properties.auth.OAuthSocialType;
 import com.bestbenefits.takoyaki.config.properties.auth.OAuthURL;
 import com.bestbenefits.takoyaki.interceptor.AuthenticationCheckInterceptor;
 import com.bestbenefits.takoyaki.service.UserService;
+import com.bestbenefits.takoyaki.util.LoginChecker;
 import com.bestbenefits.takoyaki.util.webclient.oauth.OAuthWebClient;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -35,7 +36,7 @@ public class UserController {
     @GetMapping("/login-check")
     public ResponseEntity<?> checkLogin(HttpSession session){
         Map<String, Boolean> data = new HashMap<>();
-        data.put("login", AuthenticationCheckInterceptor.isLogin(session));
+        data.put("login", LoginChecker.isLogin(session));
         return ResponseEntityCreator.success(data);
     }
 

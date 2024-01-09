@@ -14,6 +14,7 @@ import com.bestbenefits.takoyaki.config.properties.party.*;
 import com.bestbenefits.takoyaki.exception.NeedLoginException;
 import com.bestbenefits.takoyaki.interceptor.AuthenticationCheckInterceptor;
 import com.bestbenefits.takoyaki.service.*;
+import com.bestbenefits.takoyaki.util.LoginChecker;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -74,7 +75,7 @@ public class PartyController {
         //TODO: 로그인 여부 확인 필요 없게 수정 필요...? 쿼리 param에서 login빼고 응답에서 로그인 여부 반환하게 하기
 
         List<? extends PartyListResDTO> partyDTOList;
-        boolean isLogin = AuthenticationCheckInterceptor.isLogin(id, authentication);
+        boolean isLogin = LoginChecker.isLogin(id, authentication);
 
         switch (dto.getPartyListType()) {
             case ALL -> {
@@ -90,7 +91,7 @@ public class PartyController {
                     throw new IllegalArgumentException("로그인 상태와 요청이 일치하지 않습니다.");
             }
             default -> {
-                if (!AuthenticationCheckInterceptor.isLogin(id, authentication))
+                if (!LoginChecker.isLogin(id, authentication))
                     throw new NeedLoginException();
                 partyDTOList = partyService.getPartiesInfoForLoginUser(id, dto.getPartyListType());
             }
@@ -106,7 +107,7 @@ public class PartyController {
                                                                  @PathVariable(name = "party-id") Long partyId) {
         //TODO: 로그인 여부 확인 필요 없게 수정 필요...? 쿼리 param에서 login빼고 응답에서 로그인 여부 반환하게 하기
 
-        boolean isLogin = AuthenticationCheckInterceptor.isLogin(id, authentication);
+        boolean isLogin = LoginChecker.isLogin(id, authentication);
 
         PartyInfoResDTO partyInfoResDTO;
 
