@@ -2,8 +2,8 @@ package com.bestbenefits.takoyaki.controller;
 
 import com.bestbenefits.takoyaki.DTO.client.request.PartyCreationEditReqDTO;
 import com.bestbenefits.takoyaki.config.annotation.Session;
-import com.bestbenefits.takoyaki.config.apiresponse.ApiResponse;
-import com.bestbenefits.takoyaki.config.apiresponse.ApiResponseCreator;
+import com.bestbenefits.takoyaki.config.apiresponse.DEPRECATED__ApiResponse;
+import com.bestbenefits.takoyaki.config.apiresponse.DEPRECATED__ApiResponseCreator;
 import com.bestbenefits.takoyaki.config.properties.SessionConst;
 import com.bestbenefits.takoyaki.config.properties.party.ActivityLocation;
 import com.bestbenefits.takoyaki.config.properties.party.Category;
@@ -26,19 +26,19 @@ public class TestController {
     private final UserService userService;
 
     @PostMapping("/users/login/{id}")
-    public ApiResponse<?> tempLogin(HttpSession session, @PathVariable Long id){
+    public DEPRECATED__ApiResponse<?> tempLogin(HttpSession session, @PathVariable Long id){
         User user = userService.tempLogin(id);
         session.setAttribute(SessionConst.ID, id);
         session.setAttribute(SessionConst.AUTHENTICATION, true);
-        return ApiResponseCreator.success(user);
+        return DEPRECATED__ApiResponseCreator.success(user);
     }
 
     @PostMapping("/users/signup")
-    public ApiResponse<?> tempSignUp(HttpSession session){
+    public DEPRECATED__ApiResponse<?> tempSignUp(HttpSession session){
         User user = userService.tempSignUp();
         session.setAttribute(SessionConst.ID, user.getId());
         session.setAttribute(SessionConst.AUTHENTICATION, true);
-        return ApiResponseCreator.success(user);
+        return DEPRECATED__ApiResponseCreator.success(user);
     }
 
     @GetMapping("/party/get-random")
@@ -68,7 +68,7 @@ public class TestController {
     }
 
     @PostMapping("/party/post-random")
-    public ApiResponse<?> postRandomParty(@Session(attribute = SessionConst.ID) Long id) {
+    public DEPRECATED__ApiResponse<?> postRandomParty(@Session(attribute = SessionConst.ID) Long id) {
         return partyController.createParty(id, getRandomParty());
     }
 

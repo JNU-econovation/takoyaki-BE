@@ -1,7 +1,7 @@
 package com.bestbenefits.takoyaki.interceptor;
 
 import com.bestbenefits.takoyaki.config.properties.SessionConst;
-import com.bestbenefits.takoyaki.exception.NotLoginException;
+import com.bestbenefits.takoyaki.exception.NeedLoginException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -23,7 +23,8 @@ public class AuthenticationCheckInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        if (!isLogin(request.getSession())) throw new NotLoginException();
+        if (!isLogin(request.getSession()))
+            throw new NeedLoginException();
 
         return true;
     }

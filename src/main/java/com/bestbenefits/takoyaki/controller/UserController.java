@@ -7,9 +7,7 @@ import com.bestbenefits.takoyaki.DTO.layer.response.OAuthAuthResDTO;
 import com.bestbenefits.takoyaki.DTO.server.response.TokensResDTO;
 import com.bestbenefits.takoyaki.DTO.server.response.SocialUserInfoResDTO;
 import com.bestbenefits.takoyaki.config.annotation.Session;
-import com.bestbenefits.takoyaki.config.apiresponse.ApiMessage;
-import com.bestbenefits.takoyaki.config.apiresponse.ApiResponse;
-import com.bestbenefits.takoyaki.config.apiresponse.ApiResponseCreator;
+import com.bestbenefits.takoyaki.config.apiresponse.*;
 import com.bestbenefits.takoyaki.config.properties.SessionConst;
 import com.bestbenefits.takoyaki.config.properties.auth.OAuthSocialType;
 import com.bestbenefits.takoyaki.config.properties.auth.OAuthURL;
@@ -20,6 +18,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -34,35 +33,35 @@ public class UserController {
     private final Map<String, OAuthURL> oAuthURL;
 
     @GetMapping("/login-check")
-    public ApiResponse<?> checkLogin(HttpSession session){
+    public ResponseEntity<?> checkLogin(HttpSession session){
         Map<String, Boolean> data = new HashMap<>();
         data.put("login", AuthenticationCheckInterceptor.isLogin(session));
-        return ApiResponseCreator.success(data);
+        return ResponseEntityCreator.success(data);
     }
 
     @GetMapping("/oauth/login-url/{social}")
-    public ApiResponse<?> getOAuthLoginUrl(@PathVariable String social){
+    public DEPRECATED__ApiResponse<?> getOAuthLoginUrl(@PathVariable String social){
         OAuthSocialType oAuthSocialType = OAuthSocialType.fromValue(social.toUpperCase());
         OAuthURL oAuthSocialURL = oAuthURL.get("OAuth" + oAuthSocialType.getPascalName() + "URL");
 
         Map<String, String> data = new HashMap<>();
         data.put("login_url", oAuthSocialURL.getLoginURL());
 
-        return ApiResponseCreator.success(data);
+        return DEPRECATED__ApiResponseCreator.success(data);
     }
 
     @GetMapping("/duplicate-nickname")
-    public ApiResponse<?> checkDuplicateNickname(@RequestParam String nickname){
+    public DEPRECATED__ApiResponse<?> checkDuplicateNickname(@RequestParam String nickname){
 
         Map<String, Boolean> data = new HashMap<>();
         data.put("duplicate-nickname", userService.checkDuplicateNickname(nickname));
 
-        return ApiResponseCreator.success(data);
+        return DEPRECATED__ApiResponseCreator.success(data);
     }
 
     //TODO: 여러 소셜 받기
     @PostMapping("/oauth/login/{social}")
-    public ApiResponse<?> login(HttpSession session, @PathVariable String social, @RequestParam String code){
+    public DEPRECATED__ApiResponse<?> login(HttpSession session, @PathVariable String social, @RequestParam String code){
         //get social-type enum
         OAuthSocialType oAuthSocialType = OAuthSocialType.fromValue(social.toUpperCase());
         //소셜 플랫폼에 따라 OAuth 요청을 수행할 객체를 가져옴
@@ -87,33 +86,33 @@ public class UserController {
         Map<String, Boolean> data = new HashMap<>();
         data.put("is_info_needed", oAuthAuthResDTO.isInfoNeeded());
 
-        return ApiResponseCreator.success(data, HttpStatus.CREATED.value());
+        return DEPRECATED__ApiResponseCreator.success(data, HttpStatus.CREATED.value());
     }
 
     @PostMapping("/oauth/login/additional-info")
-    public ApiResponse<?> signup(HttpSession session,
-                                 @Session(attribute = SessionConst.ID) Long id,
-                                 @RequestBody @Valid UserAdditionalInfoReqDTO userAdditionalInfoReqDTO) {
+    public DEPRECATED__ApiResponse<?> signup(HttpSession session,
+                                             @Session(attribute = SessionConst.ID) Long id,
+                                             @RequestBody @Valid UserAdditionalInfoReqDTO userAdditionalInfoReqDTO) {
         userService.insertAdditionalInfo(id, userAdditionalInfoReqDTO);
         session.setAttribute(SessionConst.AUTHENTICATION, true);
-        return ApiResponseCreator.success(new ApiMessage("추가 정보 입력이 완료되었습니다."), HttpStatus.CREATED.value());
+        return DEPRECATED__ApiResponseCreator.success(new DEPRECATED__ApiMessage("추가 정보 입력이 완료되었습니다."), HttpStatus.CREATED.value());
     }
 
     @PatchMapping("/nickname")
-    public ApiResponse<?> changeNickname(@Session(attribute = SessionConst.ID) Long id,
-                                         @RequestBody @Valid UserNicknameUpdateReqDTO userNicknameUpdateReqDTO){
+    public DEPRECATED__ApiResponse<?> changeNickname(@Session(attribute = SessionConst.ID) Long id,
+                                                     @RequestBody @Valid UserNicknameUpdateReqDTO userNicknameUpdateReqDTO){
         userService.changeNickname(id, userNicknameUpdateReqDTO);
-        return ApiResponseCreator.success(new ApiMessage("닉네임 변경이 완료되었습니다."));
+        return DEPRECATED__ApiResponseCreator.success(new DEPRECATED__ApiMessage("닉네임 변경이 완료되었습니다."));
     }
 
     @PostMapping("/logout")
-    public ApiResponse<?> logout(HttpSession session){
+    public DEPRECATED__ApiResponse<?> logout(HttpSession session){
         session.removeAttribute(SessionConst.AUTHENTICATION);
-        return ApiResponseCreator.success(new ApiMessage("로그아웃 되었습니다."));
+        return DEPRECATED__ApiResponseCreator.success(new DEPRECATED__ApiMessage("로그아웃 되었습니다."));
     }
 
     @GetMapping("/info")
-    public ApiResponse<?> getInfo(@Session(attribute = SessionConst.ID) Long id){
-        return ApiResponseCreator.success(userService.getUserInfo(id));
+    public DEPRECATED__ApiResponse<?> getInfo(@Session(attribute = SessionConst.ID) Long id){
+        return DEPRECATED__ApiResponseCreator.success(userService.getUserInfo(id));
     }
 }
