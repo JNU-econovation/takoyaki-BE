@@ -30,11 +30,12 @@ import java.util.Random;
 public class TestController {
     private final PartyController partyController;
     private final UserService userService;
+    private final LoginChecker loginChecker;
 
     @NeedNoAuthentication
     @PostMapping("/users/login/{id}")
     public ResponseEntity<?> tempLogin(HttpServletRequest request, @PathVariable Long id){
-        if (LoginChecker.isLogin(request.getSession(false)))
+        if (loginChecker.isLogin(request.getSession(false)))
             throw new LogoutRequiredException();
 
         User user = userService.tempLogin(id);
@@ -47,7 +48,7 @@ public class TestController {
     @NeedNoAuthentication
     @PostMapping("/users/signup")
     public ResponseEntity<?> tempSignUp(HttpServletRequest request){
-        if (LoginChecker.isLogin(request.getSession()))
+        if (loginChecker.isLogin(request.getSession()))
             throw new LogoutRequiredException();
 
         User user = userService.tempSignUp();

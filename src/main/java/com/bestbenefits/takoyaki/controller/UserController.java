@@ -37,13 +37,14 @@ public class UserController {
     private final UserService userService;
     private final Map<String, OAuthWebClient> oAuthWebClient;
     private final Map<String, OAuthURL> oAuthURL;
+    private final LoginChecker loginChecker;
 
     @DontCareAuthentication
     @GetMapping("/login-check")
     public ResponseEntity<?> checkLogin(HttpServletRequest request){
         //TODO: 변경된 로직이 기존과 다른 점이 없는지 다시 확인하기
         Map<String, Boolean> data = new HashMap<>();
-        data.put("login", LoginChecker.isLogin(request));
+        data.put("login", loginChecker.isLogin(request));
         return ResponseEntityCreator.success(data);
     }
 
@@ -73,7 +74,7 @@ public class UserController {
     @NeedNoAuthentication
     @PostMapping("/oauth/login/{social}")
     public ResponseEntity<?> login(HttpServletRequest request, @PathVariable String social, @RequestParam String code) {
-        if (LoginChecker.isLogin(request.getSession(false)))
+        if (loginChecker.isLogin(request.getSession(false)))
             throw new LogoutRequiredException();
 
         //get social-type enum

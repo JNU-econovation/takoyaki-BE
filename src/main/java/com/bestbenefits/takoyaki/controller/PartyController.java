@@ -29,6 +29,7 @@ public class PartyController {
     private final YakiService yakiService;
     private final CommentService commentService;
     private final BookmarkService bookmarkService;
+    private final LoginChecker loginChecker;
 
     /************ /party ************/
     @NeedAuthentication
@@ -94,7 +95,7 @@ public class PartyController {
             @ModelAttribute @Valid PartyListReqDTO dto){
 
         List<? extends PartyListResDTO> partyDTOList;
-        boolean isLogin = LoginChecker.isLogin(id, authentication);
+        boolean isLogin = loginChecker.isLogin(id, authentication);
 
         System.out.println("dto.getNumber() = " + dto.getNumber());
         
@@ -112,7 +113,7 @@ public class PartyController {
                     throw new IllegalArgumentException("로그인 상태와 요청이 일치하지 않습니다.");
             }
             default -> {
-                if (!LoginChecker.isLogin(id, authentication)) {
+                if (!loginChecker.isLogin(id, authentication)) {
 
                     System.out.println(">>>>> UnauthorizedException in PartyController");
                     throw new UnauthorizedException();
@@ -133,7 +134,7 @@ public class PartyController {
                                           @RequestParam(name = "login") boolean loginField,
                                           @PathVariable(name = "party-id") Long partyId) {
 
-        boolean isLogin = LoginChecker.isLogin(id, authentication);
+        boolean isLogin = loginChecker.isLogin(id, authentication);
 
         PartyInfoResDTO partyInfoResDTO;
 

@@ -6,13 +6,15 @@ import com.bestbenefits.takoyaki.util.LoginChecker;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
-@Slf4j
+@RequiredArgsConstructor
 public class AuthenticationCheckInterceptor implements HandlerInterceptor {
+    private final LoginChecker loginChecker;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler){
         String httpMethod = request.getMethod();
@@ -37,7 +39,7 @@ public class AuthenticationCheckInterceptor implements HandlerInterceptor {
 
         HttpSession session = request.getSession(false);
 
-        if (!LoginChecker.isLogin(session)) {
+        if (!loginChecker.isLogin(session)) {
             System.out.println("session = " + session);
             if (session != null) {
                 System.out.println("id = " + (Long) session.getAttribute(SessionConst.ID));

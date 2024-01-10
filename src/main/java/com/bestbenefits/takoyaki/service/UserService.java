@@ -21,6 +21,7 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final LoginChecker loginChecker;
 
     @Transactional(readOnly = true)
     public User tempLogin(Long id){
@@ -65,7 +66,7 @@ public class UserService {
 
     @Transactional
     public void insertAdditionalInfo(Long id, Boolean authentication, UserAdditionalInfoReqDTO userAdditionalInfoReqDTO){
-        if (LoginChecker.isLogout(id, authentication)) {
+        if (loginChecker.isLogout(id, authentication)) {
 
             System.out.println(">>>>> UnauthorizedException in UserService");
             throw new UnauthorizedException();
