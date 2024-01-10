@@ -220,10 +220,13 @@ public class PartyService {
                         .contact(party.getContact());
             }else{
                 Yaki yaki = yakiRepository.findYakiByPartyAndUser(party, user).orElse(null);
-                userType = (yaki != null) ? UserType.YAKI : UserType.OTHER;
-                builder.yakiStatus(yaki.getStatus());
-                if (party.getClosedAt() != null && yaki.getStatus() == YakiStatus.ACCEPTED)
-                    builder.contact(party.getContact());
+                if (yaki != null){
+                    userType = UserType.YAKI;
+                    builder.yakiStatus(yaki.getStatus());
+                    if (party.getClosedAt() != null && yaki.getStatus() == YakiStatus.ACCEPTED)
+                        builder.contact(party.getContact());
+                }else
+                    userType = UserType.OTHER;
             }
             builder.userType(userType);
         }

@@ -25,7 +25,7 @@ public class Yaki {
     @JoinColumn(nullable = false)
     private Party party;
 
-    @Column
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private YakiStatus status;
 
