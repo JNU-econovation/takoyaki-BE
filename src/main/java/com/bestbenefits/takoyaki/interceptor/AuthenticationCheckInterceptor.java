@@ -15,10 +15,14 @@ public class AuthenticationCheckInterceptor implements HandlerInterceptor {
         String httpMethod = request.getMethod();
         String requestURI = request.getRequestURI();
 
-        //TODO: 여러 요청 추가해도 깔끔하도록 리팩토링
-        if (requestURI.matches("/parties/\\d+") && httpMethod.equals("GET")) {
+        //포트만 달라도 post options로 보내더라.
+        //options는 세션이 담기지 않음. 이때 options가 로그인 Interceptor로 도달하면 오류가 남(
+        if (httpMethod.equals("OPTIONS"))
             return true;
-        }
+        //TODO: 여러 요청 추가해도 깔끔하도록 리팩토링
+        if (requestURI.matches("/parties/\\d+") && httpMethod.equals("GET"))
+            return true;
+
 
         HttpSession session = request.getSession();
         Boolean authentication = (Boolean) session.getAttribute(SessionConst.AUTHENTICATION);

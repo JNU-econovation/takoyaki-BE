@@ -16,10 +16,10 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new AuthenticationCheckInterceptor())
                 .addPathPatterns("/users/**")
-//                .addPathPatterns("/parties/**")
-//                .addPathPatterns("/party/**")
+                .addPathPatterns("/parties/**")
+                .addPathPatterns("/party/**") //TODO: 이거 /party로 요청하면 걸리게 되는거랑 연관성 있음
                 .excludePathPatterns(
-                        "/js/**", "/oauth_example", "/oauth", "/favicon.ico", "/users/temp/**", //실험용이니 나중에 삭제하기
+                        "/js/**", "/oauth_example", "/oauth", "/favicon.ico", "/users/temp/**", //TODO: 실험용이니 나중에 삭제하기
 
                         "/users/login-check",
                         "/users/oauth/login-url/**",
@@ -30,9 +30,7 @@ public class WebConfig implements WebMvcConfigurer {
                         "/party/category",
                         "/party/activity-location",
                         "/party/activity-duration-unit",
-                        "/party/contact-method",
-
-                        "/parties/all"
+                        "/party/contact-method"
                 );
     }
 
@@ -46,7 +44,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins("http://3.34.197.43:3000", "http://localhost:3000", "http://3.34.197.43:8080", "http://localhost:8080")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
+                .allowedMethods("*")
                 .allowedHeaders("*")
                 .allowCredentials(true);
     }
