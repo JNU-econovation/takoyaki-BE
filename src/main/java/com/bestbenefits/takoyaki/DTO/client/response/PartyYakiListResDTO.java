@@ -10,6 +10,7 @@ import lombok.Getter;
 public class PartyYakiListResDTO {
     private Long id;
     private String nickname;
+
     @Builder
     public PartyYakiListResDTO(Long id, String nickname) {
         this.id = id;

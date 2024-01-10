@@ -8,6 +8,4 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class TokensResDTO {
-    private String accessToken;
-}
+public class TokensResDTO { private String accessToken; }

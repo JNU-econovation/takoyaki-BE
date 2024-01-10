@@ -2,6 +2,7 @@ package com.bestbenefits.takoyaki.config;
 
 import com.bestbenefits.takoyaki.config.annotation.SessionMethodArgumentResolver;
 import com.bestbenefits.takoyaki.interceptor.AuthenticationCheckInterceptor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -11,26 +12,32 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.util.List;
 
 @Configuration
+@RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
+    //TODO: 종준형에게 물어보기
+    private final AuthenticationCheckInterceptor authenticationCheckInterceptor;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AuthenticationCheckInterceptor())
-                .addPathPatterns("/users/**")
-                .addPathPatterns("/parties/**")
-                .addPathPatterns("/party/**") //TODO: 이거 /party로 요청하면 걸리게 되는거랑 연관성 있음
-                .excludePathPatterns(
-                        "/js/**", "/oauth_example", "/oauth", "/favicon.ico", "/users/temp/**", //TODO: 실험용이니 나중에 삭제하기
+        registry.addInterceptor(authenticationCheckInterceptor)
+                .addPathPatterns(
+                        "/test/party/post-random",
 
-                        "/users/login-check",
-                        "/users/oauth/login-url/**",
-                        "/users/oauth/login/**",
-                        "/users/duplicate-nickname",
-                        "/users/oauth/login/additional-info",
+                        "/users/oauth/login/additional-info", //커스텀 처리
+                        "/users/logout",
+                        "/users/nickname",
+                        "/users/info",
 
-                        "/party/category",
-                        "/party/activity-location",
-                        "/party/activity-duration-unit",
-                        "/party/contact-method"
+
+                        "/parties/{party-id:\\d+}", //GET 제외
+                        "/parties/{party-id:\\d+}/closing",
+                        "/parties/{party-id:\\d+}/apply",
+                        "/parties/{party-id:\\d+}/applicant/{user-id:\\d+}",
+                        "/parties/{party-id:\\d+}/leaving",
+                        "/parties/{party-id:\\d+}/comment", //GET 제외
+                        "/parties/{party-id:\\d+}/bookmark",
+
+                        "/party"
                 );
     }
 

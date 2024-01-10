@@ -10,7 +10,6 @@ import jakarta.validation.constraints.NotBlank;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record CommentReqDTO(@NotBlank String comment) {
     public Comment toEntity(User user, Party party) {
-        //System.out.println("comment = " + comment);
         return Comment.builder()
                 .user(user)
                 .party(party)

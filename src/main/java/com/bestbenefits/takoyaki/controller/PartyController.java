@@ -5,15 +5,19 @@ import com.bestbenefits.takoyaki.DTO.client.request.PartyCreationEditReqDTO;
 import com.bestbenefits.takoyaki.DTO.client.request.PartyListReqDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyInfoResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyListResDTO;
+import com.bestbenefits.takoyaki.config.annotation.DontCareAuthentication;
+import com.bestbenefits.takoyaki.config.annotation.NeedAuthentication;
 import com.bestbenefits.takoyaki.config.annotation.Session;
-import com.bestbenefits.takoyaki.config.apiresponse.ApiMessage;
-import com.bestbenefits.takoyaki.config.apiresponse.ApiResponse;
-import com.bestbenefits.takoyaki.config.apiresponse.ApiResponseCreator;
+import com.bestbenefits.takoyaki.config.apiresponse.ResponseEntityCreator;
 import com.bestbenefits.takoyaki.config.properties.SessionConst;
 import com.bestbenefits.takoyaki.config.properties.party.*;
+import com.bestbenefits.takoyaki.exception.user.UnauthorizedException;
 import com.bestbenefits.takoyaki.service.*;
+import com.bestbenefits.takoyaki.util.LoginChecker;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -25,54 +29,75 @@ public class PartyController {
     private final YakiService yakiService;
     private final CommentService commentService;
     private final BookmarkService bookmarkService;
+    private final LoginChecker loginChecker;
 
     /************ /party ************/
+    @NeedAuthentication
     @PostMapping("/party")
-    public ApiResponse<?> createParty(@Session(attribute = SessionConst.ID) Long id,
-                                      @RequestBody @Valid PartyCreationEditReqDTO dto) {
-        return ApiResponseCreator.success(partyService.createParty(id, dto));
+    public ResponseEntity<?> createParty(@Session(attribute = SessionConst.ID) Long id,
+                                         @RequestBody @Valid PartyCreationEditReqDTO dto) {
+        return ResponseEntityCreator.success(partyService.createParty(id, dto), HttpStatus.CREATED);
     }
 
+    @DontCareAuthentication
     @GetMapping("/party/activity-location")
-    public ApiResponse<?> getActivityLocation() {
+    public ResponseEntity<?> getActivityLocation() {
+        Map<String, Integer> meta = new HashMap<>();
         Map<String, Object> data = new HashMap<>();
+        meta.put("count", ActivityLocation.toNameList().size());
         data.put("activity_location", ActivityLocation.toNameList());
-        return ApiResponseCreator.success(data);
+        return ResponseEntityCreator.success(meta, data);
     }
 
+    @DontCareAuthentication
     @GetMapping("/party/category")
-    public ApiResponse<?> getCategory() {
+    public ResponseEntity<?> getCategory() {
+        Map<String, Integer> meta = new HashMap<>();
         Map<String, Object> data = new HashMap<>();
+        meta.put("count", Category.toNameList().size());
         data.put("category", Category.toNameList());
-        return ApiResponseCreator.success(data);
+        return ResponseEntityCreator.success(meta, data);
     }
 
+    @DontCareAuthentication
     @GetMapping("/party/contact-method")
-    public ApiResponse<?> getContactMethod() {
+    public ResponseEntity<?> getContactMethod() {
+        Map<String, Integer> meta = new HashMap<>();
         Map<String, Object> data = new HashMap<>();
+        meta.put("count", ContactMethod.toNameList().size());
         data.put("contact_method", ContactMethod.toNameList());
-        return ApiResponseCreator.success(data);
+        return ResponseEntityCreator.success(meta, data);
     }
 
+    @DontCareAuthentication
     @GetMapping("/party/activity-duration-unit")
-    public ApiResponse<?> getActivityDurationUnit() {
+    public ResponseEntity<?> getActivityDurationUnit() {
+        Map<String, Integer> meta = new HashMap<>();
         Map<String, Object> data = new HashMap<>();
+        meta.put("count", DurationUnit.toNameList().size());
         data.put("activity_duration_unit", DurationUnit.toNameList());
-        return ApiResponseCreator.success(data);
+        return ResponseEntityCreator.success(meta, data);
     }
 
 
 
     /************ /parties ************/
+    //TODO: 로그인 여부 확인 필요 없게 수정 필요...? 쿼리 param에서 login빼고 응답에서 로그인 여부 반환하게 하기
+    //TODO: 응답에 meta에 적절한 정보 담기
+    //TODO: 전체적으로 리팩터링 필요
+    //TODO: 로그아웃 상태인데 비인가 오류 나는거 수정 필요
+    @DontCareAuthentication
     @GetMapping("/parties")
+    public ResponseEntity<?> getPartyCardListForMainPage(
+            @Session(attribute = SessionConst.ID, nullable = true) Long id,
+            @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
+            @ModelAttribute @Valid PartyListReqDTO dto){
 
-    public ApiResponse<List<? extends PartyListResDTO>> getPartyCardListForMainPage(@Session(attribute = SessionConst.ID, nullable = true) Long id,
-                                                   @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
-                                                   @ModelAttribute @Valid PartyListReqDTO dto){
         List<? extends PartyListResDTO> partyDTOList;
+        boolean isLogin = loginChecker.isLogin(id, authentication);
 
-        boolean isLogin = (id != null && authentication != null && authentication);
-
+        System.out.println("dto.getNumber() = " + dto.getNumber());
+        
         switch (dto.getPartyListType()) {
             case ALL -> {
                 if (dto.getNumber() >= PartyConst.MAX_PARTY_NUMBER_OF_REQUEST)
@@ -87,22 +112,28 @@ public class PartyController {
                     throw new IllegalArgumentException("로그인 상태와 요청이 일치하지 않습니다.");
             }
             default -> {
-                if (!isLogin)
-                    throw new IllegalArgumentException("you need login.");
+                if (!loginChecker.isLogin(id, authentication)) {
+
+                    System.out.println(">>>>> UnauthorizedException in PartyController");
+                    throw new UnauthorizedException();
+                }
                 partyDTOList = partyService.getPartiesInfoForLoginUser(id, dto.getPartyListType());
             }
         }
 
-        return ApiResponseCreator.success(partyDTOList);
+        return ResponseEntityCreator.success(partyDTOList);
     }
 
-    @GetMapping("/parties/{party-id}")
-    public ApiResponse<PartyInfoResDTO> getPartyInfo(@Session(attribute = SessionConst.ID, nullable = true) Long id,
-                                   @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
-                                   @RequestParam(name = "login") boolean loginField,
-                                   @PathVariable(name = "party-id") Long partyId){
 
-        boolean isLogin = (id != null && authentication != null && authentication);
+    //TODO: 로그인 여부 확인 필요 없게 수정 필요...? 쿼리 param에서 login빼고 응답에서 로그인 여부 반환하게 하기
+    @DontCareAuthentication
+    @GetMapping("/parties/{party-id}")
+    public ResponseEntity<?> getPartyInfo(@Session(attribute = SessionConst.ID, nullable = true) Long id,
+                                          @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
+                                          @RequestParam(name = "login") boolean loginField,
+                                          @PathVariable(name = "party-id") Long partyId) {
+
+        boolean isLogin = loginChecker.isLogin(id, authentication);
 
         PartyInfoResDTO partyInfoResDTO;
 
@@ -111,100 +142,114 @@ public class PartyController {
         else
             throw new IllegalArgumentException("로그인 상태와 요청이 일치하지 않습니다.");
 
-        return ApiResponseCreator.success(partyInfoResDTO);
+        return ResponseEntityCreator.success(partyInfoResDTO);
     }
 
-    @PatchMapping("parties/{partyId}")
-    public ApiResponse<?> editParty(@Session(attribute = SessionConst.ID) Long id,
-                                    @PathVariable Long partyId,
-                                    @RequestBody @Valid PartyCreationEditReqDTO dto) {
-        return ApiResponseCreator.success(partyService.editParty(id, partyId, dto));
+    @NeedAuthentication
+    @PatchMapping("parties/{party-id}")
+    public ResponseEntity<?> editParty(@Session(attribute = SessionConst.ID) Long id,
+                                       @PathVariable(name = "party-id") Long partyId,
+                                       @RequestBody @Valid PartyCreationEditReqDTO dto) {
+        return ResponseEntityCreator.success(partyService.editParty(id, partyId, dto));
     }
 
-    @DeleteMapping("/parties/{partyId}")
-    public ApiResponse<?> deleteParty(@Session(attribute = SessionConst.ID) Long id,
-                                      @PathVariable Long partyId) {
-        return ApiResponseCreator.success(partyService.deleteParty(id, partyId));
+    @NeedAuthentication
+    @DeleteMapping("/parties/{party-id}")
+    public ResponseEntity<?> deleteParty(@Session(attribute = SessionConst.ID) Long id,
+                                         @PathVariable(name = "party-id") Long partyId) {
+        return ResponseEntityCreator.success(partyService.deleteParty(id, partyId));
     }
 
-    @PostMapping("/parties/{partyId}/closing")
-    ApiResponse<?> closeParty(@Session(attribute = SessionConst.ID) Long id,
-                              @PathVariable Long partyId) {
-        return ApiResponseCreator.success(partyService.closeParty(id, partyId));
+    @NeedAuthentication
+    @PostMapping("/parties/{party-id}/closing")
+    public ResponseEntity<?> closeParty(@Session(attribute = SessionConst.ID) Long id,
+                                        @PathVariable(name = "party-id") Long partyId) {
+        return ResponseEntityCreator.success(partyService.closeParty(id, partyId));
     }
 
+    @NeedAuthentication
     @PostMapping("/parties/{party-id}/apply")
-    public ApiResponse<?> applyToParty(@Session(attribute = SessionConst.ID) Long id,
-                                       @PathVariable(name = "party-id") Long partyId){
+    public ResponseEntity<?> applyToParty(@Session(attribute = SessionConst.ID) Long id,
+                                          @PathVariable(name = "party-id") Long partyId){
         yakiService.applyToParty(id, partyId);
 
-        return ApiResponseCreator.success(new ApiMessage("신청이 완료되었습니다."));
+        return ResponseEntityCreator.success(HttpStatus.CREATED);
     }
 
+    @NeedAuthentication
     @DeleteMapping("/parties/{party-id}/apply")
-    public ApiResponse<?> cancelApplication(@Session(attribute = SessionConst.ID) Long id,
-                                            @PathVariable(name = "party-id") Long partyId){
+    public ResponseEntity<?> cancelApplication(@Session(attribute = SessionConst.ID) Long id,
+                                               @PathVariable(name = "party-id") Long partyId) {
         yakiService.cancelApplication(id, partyId);
 
-        return ApiResponseCreator.success(new ApiMessage("신청이 취소되었습니다."));
+        return ResponseEntityCreator.success();
     }
 
+    @NeedAuthentication
     @PostMapping("/parties/{party-id}/applicant/{user-id}")
-    public ApiResponse<?> acceptYaki(@Session(attribute = SessionConst.ID) Long id,
-                                     @PathVariable(name = "party-id") Long partyId,
-                                     @PathVariable(name = "user-id") Long yakiId){
+    public ResponseEntity<?> acceptYaki(@Session(attribute = SessionConst.ID) Long id,
+                                        @PathVariable(name = "party-id") Long partyId,
+                                        @PathVariable(name = "user-id") Long yakiId) {
         yakiService.acceptYaki(id, partyId, yakiId);
 
-        return ApiResponseCreator.success(new ApiMessage("야끼가 수락되었습니다."));
+        return ResponseEntityCreator.success();
     }
 
+    @NeedAuthentication
     @DeleteMapping("/parties/{party-id}/applicant/{user-id}")
-    public ApiResponse<?> denyYaki(@Session(attribute = SessionConst.ID) Long id,
-                                   @PathVariable(name = "party-id") Long partyId,
-                                   @PathVariable(name = "user-id") Long yakiId){
+    public ResponseEntity<?> denyYaki(@Session(attribute = SessionConst.ID) Long id,
+                                      @PathVariable(name = "party-id") Long partyId,
+                                      @PathVariable(name = "user-id") Long yakiId) {
 
         yakiService.denyYaki(id, partyId, yakiId);
 
-        return ApiResponseCreator.success(new ApiMessage("야끼가 거절되었습니다."));
+        return ResponseEntityCreator.success();
     }
 
+    @NeedAuthentication
     @DeleteMapping("/parties/{party-id}/leaving")
-    public ApiResponse<?> leaveParty(@Session(attribute = SessionConst.ID) Long id,
-                                     @PathVariable(name = "party-id") Long partyId){
+    public ResponseEntity<?> leaveParty(@Session(attribute = SessionConst.ID) Long id,
+                                        @PathVariable(name = "party-id") Long partyId) {
 
         yakiService.leaveParty(id, partyId);
 
-        return ApiResponseCreator.success(new ApiMessage("팟에서 나가졌습니다."));
+        return ResponseEntityCreator.success();
     }
 
-    @GetMapping("/parties/{partyId}/comment")
-    public ApiResponse<?> getComment(@PathVariable Long partyId) {
-        Map<String, Object> response = new HashMap<>();
+    @DontCareAuthentication
+    @GetMapping("/parties/{party-id}/comment") //로그인 필요 X
+    public ResponseEntity<?> getComment(@PathVariable(name = "party-id") Long partyId) {
+        Map<String, Integer> meta = new HashMap<>();
+        Map<String, List<?>> data = new HashMap<>();
+
         List<?> commentList = commentService.getComments(partyId);
 
-        response.put("count", commentList.size());
-        response.put("comment_list", commentList);
-        return ApiResponseCreator.success(response);
+        meta.put("count", commentList.size());
+        data.put("comment_list", commentList);
+        return ResponseEntityCreator.success(meta, data);
     }
 
-    @PostMapping("/parties/{partyId}/comment")
-    public ApiResponse<?> addComment(@Session(attribute = SessionConst.ID) Long id,
-                                     @PathVariable Long partyId,
-                                     @RequestBody @Valid CommentReqDTO dto) {
-        return ApiResponseCreator.success(commentService.createComment(id, partyId, dto));
+    @NeedAuthentication
+    @PostMapping("/parties/{party-id}/comment")
+    public ResponseEntity<?> addComment(@Session(attribute = SessionConst.ID) Long id,
+                                        @PathVariable(name = "party-id") Long partyId,
+                                        @RequestBody @Valid CommentReqDTO dto) {
+        return ResponseEntityCreator.success(commentService.createComment(id, partyId, dto), HttpStatus.CREATED);
     }
 
-    @PostMapping("/parties/{partyId}/bookmark")
-    public ApiResponse<?> addBookmark(@Session(attribute = SessionConst.ID) Long id,
-                                      @PathVariable Long partyId) {
+    @NeedAuthentication
+    @PostMapping("/parties/{party-id}/bookmark")
+    public ResponseEntity<?> addBookmark(@Session(attribute = SessionConst.ID) Long id,
+                                         @PathVariable(name = "party-id") Long partyId) {
         bookmarkService.addBookmark(id, partyId);
-        return ApiResponseCreator.success(new ApiMessage("북마크되었습니다."));
+        return ResponseEntityCreator.success(HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/parties/{partyId}/bookmark")
-    public ApiResponse<?> deleteBookmark(@Session(attribute = SessionConst.ID) Long id,
-                                         @PathVariable Long partyId) {
+    @NeedAuthentication
+    @DeleteMapping("/parties/{party-id}/bookmark")
+    public ResponseEntity<?> deleteBookmark(@Session(attribute = SessionConst.ID) Long id,
+                                            @PathVariable(name = "party-id") Long partyId) {
         bookmarkService.deleteBookmark(id, partyId);
-        return ApiResponseCreator.success(new ApiMessage("북마크 제거되었습니다."));
+        return ResponseEntityCreator.success();
     }
 }

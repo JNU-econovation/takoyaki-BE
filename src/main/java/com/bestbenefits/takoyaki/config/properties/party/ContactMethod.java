@@ -1,5 +1,6 @@
 package com.bestbenefits.takoyaki.config.properties.party;
 
+import com.bestbenefits.takoyaki.exception.common.InvalidTypeValueException;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -22,7 +23,7 @@ public enum ContactMethod {
             if (contactMethod.getName().equals(contactMethodName))
                 return contactMethod;
         }
-        throw new IllegalArgumentException("Invalid contact method name.");
+        throw new InvalidTypeValueException("contact_method", contactMethodName);
     }
     public static List<String> toNameList(){
         return Arrays.stream(ContactMethod.values())

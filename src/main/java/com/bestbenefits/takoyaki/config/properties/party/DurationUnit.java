@@ -1,5 +1,6 @@
 package com.bestbenefits.takoyaki.config.properties.party;
 
+import com.bestbenefits.takoyaki.exception.common.InvalidTypeValueException;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -22,7 +23,7 @@ public enum DurationUnit {
             if (durationUnit.getName().equals(durationUnitName))
                 return durationUnit;
         }
-        throw new IllegalArgumentException("Invalid duration unit name.");
+        throw new InvalidTypeValueException("activity_duration_unit", durationUnitName);
     }
     public static List<String> toNameList(){
         return Arrays.stream(DurationUnit.values())

@@ -1,5 +1,6 @@
 package com.bestbenefits.takoyaki.config.properties.party;
 
+import com.bestbenefits.takoyaki.exception.common.InvalidTypeValueException;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -27,7 +28,7 @@ public enum Category {
             if (category.getName().equals(categoryName))
                 return category;
         }
-        throw new IllegalArgumentException("Invalid category name.");
+        throw new InvalidTypeValueException("category", categoryName);
     }
     public static List<String> toNameList(){
         return Arrays.stream(Category.values())

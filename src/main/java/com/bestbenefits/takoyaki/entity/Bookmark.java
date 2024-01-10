@@ -28,7 +28,6 @@ public class Bookmark {
     private LocalDateTime createdAt;
 
     @Builder
-
     public Bookmark(User user, Party party) {
         this.user = user;
         this.party = party;
