@@ -41,6 +41,7 @@ public class UserController {
     @DontCareAuthentication
     @GetMapping("/login-check")
     public ResponseEntity<?> checkLogin(HttpServletRequest request){
+        //TODO: 변경된 로직이 기존과 다른 점이 없는지 다시 확인하기
         Map<String, Boolean> data = new HashMap<>();
         data.put("login", LoginChecker.isLogin(request));
         return ResponseEntityCreator.success(data);
@@ -117,6 +118,7 @@ public class UserController {
                                     @Session(attribute = SessionConst.ID, nullable = true) Long id,
                                     @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
                                     @RequestBody @Valid UserAdditionalInfoReqDTO userAdditionalInfoReqDTO) {
+        //TODO: 세션이 null인지 더 확인하기
         userService.insertAdditionalInfo(id, authentication, userAdditionalInfoReqDTO);
         request.getSession(false).setAttribute(SessionConst.AUTHENTICATION, true);
         return ResponseEntityCreator.success(HttpStatus.CREATED);
