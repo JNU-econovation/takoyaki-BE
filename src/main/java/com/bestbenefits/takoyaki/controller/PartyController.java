@@ -82,7 +82,7 @@ public class PartyController {
                 ActivityLocation activityLocation = Optional.ofNullable(dto.getActivityLocationName()).map(ActivityLocation::fromName).orElse(null);
 
                 if (dto.getLoginField() == isLogin)
-                    partyDTOList = partyService.getPartiesInfoForPagination(isLogin, id, dto.getNumber(), dto.getPageNumber(), category, activityLocation);
+                    partyDTOList = partyService.getPartiesInfoForPagination(isLogin, id, dto.getNumber(), dto.getPageNumber() - 1, category, activityLocation);
                 else
                     throw new IllegalArgumentException("로그인 상태와 요청이 일치하지 않습니다.");
             }
