@@ -21,7 +21,7 @@ spring:
 server:
   servlet:
     session:
-      timeout: 18000
+      timeout: 1800000000
 
 oauth2:
   client_secret:

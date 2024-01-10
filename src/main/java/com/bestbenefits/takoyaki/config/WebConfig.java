@@ -15,31 +15,23 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new AuthenticationCheckInterceptor())
-                .addPathPatterns("/test/**", "/users/**", "/parties/**", "/party/**")
+                .addPathPatterns(
+                        "/test/party/post-random",
 
-                //로그인 필요없는 URI들
-                .excludePathPatterns(
-                        //실험용이니 나중에 삭제 필요
-                        "/js/**", "/oauth_example", "/oauth", "/favicon.ico",
+                        "/users/oauth/login/additional-info", //커스텀 처리
+                        "/users/logout",
+                        "/users/nickname",
+                        "/users/info",
 
-                        "/test/users/signup",
-                        "/test/users/login/**",
-                        "/test/party/get-random",
+                        "/parties/{party-id:\\d+}", //GET 제외
+                        "/parties/{party-id:\\d+}/closing",
+                        "/parties/{party-id:\\d+}/apply",
+                        "/parties/{party-id:\\d+}/applicant/{user-id:\\d+}",
+                        "/parties/{party-id:\\d+}/leaving",
+                        "/parties/{party-id:\\d+}/comment", //GET 제외
+                        "/parties/{party-id:\\d+}/bookmark",
 
-                        "/users/login-check",
-                        "/users/oauth/login-url/**",
-                        "/users/oauth/login/**",
-                        "/users/oauth/login/additional-info",
-                        "/users/duplicate-nickname",
-
-                        "/parties/",
-                        //"/parties/{party-id:\\d+}", //GET만 exclude 해야됨
-                        //"/parties/{party-id:\\d+}/comment", //GET만 exclude 해야됨
-
-                        "/party/category",
-                        "/party/activity-location",
-                        "/party/activity-duration-unit",
-                        "/party/contact-method"
+                        "/party"
                 );
     }
 

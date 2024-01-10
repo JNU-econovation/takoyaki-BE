@@ -2,7 +2,6 @@ package com.bestbenefits.takoyaki.exception.handler;
 
 import com.bestbenefits.takoyaki.config.apiresponse.ResponseEntityCreator;
 import com.bestbenefits.takoyaki.exception.*;
-import com.bestbenefits.takoyaki.exception.common.InvalidTypeValueException;
 import com.bestbenefits.takoyaki.exception.user.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,16 +16,16 @@ public class UserControllerExceptionHandler {
         return ResponseEntityCreator.fail(ExceptionCode.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
 
+    //로그아웃 필요한 API를 로그인 상태에서 요청
+    @ExceptionHandler(LogoutRequiredException.class)
+    public ResponseEntity<?> handleLogoutRequiredException() {
+        return ResponseEntityCreator.fail(ExceptionCode.LOGOUT_REQUIRED, HttpStatus.BAD_REQUEST);
+    }
+
     //사용자를 찾을 수 없을 때 발생
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<?> handleUserNotFoundException() {
-        return ResponseEntityCreator.fail(ExceptionCode.NOT_FOUND_USER, HttpStatus.NOT_FOUND);
-    }
-
-    //제한된 문자열만 수용할 수 있는 파라미터에 범위 밖의 유효하지 않은 문자열 제공
-    @ExceptionHandler(InvalidTypeValueException.class)
-    public ResponseEntity<?> handleInvalidTypeValueException() {
-        return ResponseEntityCreator.fail(ExceptionCode.INVALID_TYPE_VALUE);
+        return ResponseEntityCreator.fail(ExceptionCode.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
     //중복된 닉네임 제공

@@ -65,8 +65,11 @@ public class UserService {
 
     @Transactional
     public void insertAdditionalInfo(Long id, Boolean authentication, UserAdditionalInfoReqDTO userAdditionalInfoReqDTO){
-        if (LoginChecker.isLogout(id, authentication))
+        if (LoginChecker.isLogout(id, authentication)) {
+
+            System.out.println(">>>>> UnauthorizedException in UserService");
             throw new UnauthorizedException();
+        }
 
         User user = getUserOrThrow(id);
         if (user.getNickname() != null)

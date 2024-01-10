@@ -22,14 +22,14 @@ public enum OAuthSocialType{
             if (oAuthSocialType.name().equals(socialName))
                 return oAuthSocialType;
         }
-        throw new InvalidTypeValueException();
+        throw new InvalidTypeValueException("social", socialName);
     }
     public static OAuthSocialType fromValue(int index) {
         for (OAuthSocialType oAuthSocialType : OAuthSocialType.values()) {
             if (oAuthSocialType.getIndex() == index)
                 return oAuthSocialType;
         }
-        throw new InvalidTypeValueException();
+        throw new InvalidTypeValueException("social", String.valueOf(index));
     }
 
 }

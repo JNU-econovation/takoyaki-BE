@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -52,11 +51,11 @@ public class PartyService {
         Party party = getPartyOrThrow(partyId);
 
         //party 상태 검사
+        if (party.isDeleted()) {
+            throw new PartyNotFoundException();
+        }
         if (!party.isAuthor(id)) {
             throw new NotTakoException();
-        }
-        if (party.isDeleted()) {
-            throw new NotFoundPartyException();
         }
         if (party.isClosed()) {
             throw new PartyClosedException();
@@ -96,22 +95,22 @@ public class PartyService {
 
     @Transactional
     public PartyIdResDTO deleteParty(Long id, Long partyId) {
-        Party p = getPartyOrThrow(partyId);
+        Party party = getPartyOrThrow(partyId);
 
-        if (!p.isAuthor(id))
+        if (party.isDeleted())
+            throw new PartyNotFoundException();
+
+        if (!party.isAuthor(id))
             throw new NotTakoException();
 
-        if (p.isDeleted())
-            throw new NotFoundPartyException();
-
-        if (p.isClosed())
+        if (party.isClosed())
             throw new PartyClosedException();
 
-        p.updateModifiedAt().updateDeleteAt();
-        bookmarkRepository.deleteAllByParty(p); //북마크 제거
+        party.updateModifiedAt().updateDeleteAt();
+        bookmarkRepository.deleteAllByParty(party); //북마크 제거
 
         return PartyIdResDTO.builder()
-                .partyId(p.getId())
+                .partyId(party.getId())
                 .build();
     }
 
@@ -119,14 +118,15 @@ public class PartyService {
     public PartyIdResDTO closeParty(Long id, Long partyId) {
         Party p = getPartyOrThrow(partyId);
 
+        if (p.isDeleted())
+            throw new PartyNotFoundException();
+
         if (!p.isAuthor(id))
             throw new NotTakoException();
 
-        if (p.isDeleted())
-            throw new NotFoundPartyException();
-
         if (p.isClosed())
             throw new PartyClosedException();
+
 
         p.updateModifiedAt().updateClosedAt();
         bookmarkRepository.deleteAllByParty(p); //북마크 제거
@@ -192,7 +192,7 @@ public class PartyService {
     public PartyInfoResDTO getPartyInfo(boolean isLogin, Long id, Long partyId){
         Party party = partyRepository.findById(partyId)
                 .filter(p -> p.getDeletedAt() == null)
-                .orElseThrow(NotFoundPartyException::new);
+                .orElseThrow(PartyNotFoundException::new);
 
         User user = isLogin ? userService.getUserOrThrow(id) : null;
 
@@ -233,7 +233,7 @@ public class PartyService {
 
     @Transactional(readOnly = true)
     public Party getPartyOrThrow(Long partyId){
-        return partyRepository.findById(partyId).orElseThrow(NotFoundPartyException::new);
+        return partyRepository.findById(partyId).orElseThrow(PartyNotFoundException::new);
     }
 
     private PartyListResDTO.PartyListResDTOBuilder initializePartyListBuilder(Object[] row) {

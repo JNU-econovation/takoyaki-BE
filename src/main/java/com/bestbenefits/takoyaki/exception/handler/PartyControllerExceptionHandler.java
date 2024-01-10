@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class PartyControllerExceptionHandler {
-    @ExceptionHandler(NotFoundPartyException.class)
-    public ResponseEntity<?> handleNotFoundPartyException() {
-        return ResponseEntityCreator.fail(ExceptionCode.NOT_FOUND_PARTY, HttpStatus.NOT_FOUND);
+    @ExceptionHandler(PartyNotFoundException.class)
+    public ResponseEntity<?> handlePartyNotFoundException() {
+        return ResponseEntityCreator.fail(ExceptionCode.PARTY_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(NotTakoException.class)
     public ResponseEntity<?> handleNotAuthorException() {
-        return ResponseEntityCreator.fail(ExceptionCode.NOT_TAKO_EXCEPTION, HttpStatus.FORBIDDEN);
+        return ResponseEntityCreator.fail(ExceptionCode.NOT_TAKO, HttpStatus.FORBIDDEN);
     }
 
 
@@ -33,7 +33,7 @@ public class PartyControllerExceptionHandler {
 
     @ExceptionHandler(ModifiedRecruitNumberNotBiggerException.class)
     public ResponseEntity<?> handleModifiedRecruitNumberNotBiggerException() {
-        return ResponseEntityCreator.fail(ExceptionCode.CATEGORY_NOT_MODIFIABLE, HttpStatus.FORBIDDEN);
+        return ResponseEntityCreator.fail(ExceptionCode.MODIFIED_RECRUIT_NUMBER_NOT_BIGGER, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(ModifiedPlannedClosingDateNotBeforeException.class)

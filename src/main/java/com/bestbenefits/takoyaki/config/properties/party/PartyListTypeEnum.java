@@ -15,6 +15,6 @@ public enum PartyListTypeEnum {
             if (partyListTypeEnum.name().equalsIgnoreCase(typeName))
                 return partyListTypeEnum;
         }
-        throw new InvalidTypeValueException();
+        throw new InvalidTypeValueException("party_list_type", typeName);
     }
 }

@@ -29,7 +29,7 @@ public enum ActivityLocation {
             if (activityLocation.getName().equals(activityLocationName))
                 return activityLocation;
         }
-        throw new InvalidTypeValueException();
+        throw new InvalidTypeValueException("activity_location", activityLocationName);
     }
 
     public static List<String> toNameList(){

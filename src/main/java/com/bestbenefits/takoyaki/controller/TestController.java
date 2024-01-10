@@ -1,6 +1,9 @@
 package com.bestbenefits.takoyaki.controller;
 
 import com.bestbenefits.takoyaki.DTO.client.request.PartyCreationEditReqDTO;
+import com.bestbenefits.takoyaki.config.annotation.DontCareAuthentication;
+import com.bestbenefits.takoyaki.config.annotation.NeedAuthentication;
+import com.bestbenefits.takoyaki.config.annotation.NeedNoAuthentication;
 import com.bestbenefits.takoyaki.config.annotation.Session;
 import com.bestbenefits.takoyaki.config.apiresponse.ResponseEntityCreator;
 import com.bestbenefits.takoyaki.config.properties.SessionConst;
@@ -9,7 +12,10 @@ import com.bestbenefits.takoyaki.config.properties.party.Category;
 import com.bestbenefits.takoyaki.config.properties.party.ContactMethod;
 import com.bestbenefits.takoyaki.config.properties.party.DurationUnit;
 import com.bestbenefits.takoyaki.entity.User;
+import com.bestbenefits.takoyaki.exception.user.LogoutRequiredException;
 import com.bestbenefits.takoyaki.service.UserService;
+import com.bestbenefits.takoyaki.util.LoginChecker;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,22 +31,33 @@ public class TestController {
     private final PartyController partyController;
     private final UserService userService;
 
+    @NeedNoAuthentication
     @PostMapping("/users/login/{id}")
-    public ResponseEntity<?> tempLogin(HttpSession session, @PathVariable Long id){
+    public ResponseEntity<?> tempLogin(HttpServletRequest request, @PathVariable Long id){
+        if (LoginChecker.isLogin(request.getSession(false)))
+            throw new LogoutRequiredException();
+
         User user = userService.tempLogin(id);
+        HttpSession session = request.getSession();
         session.setAttribute(SessionConst.ID, id);
         session.setAttribute(SessionConst.AUTHENTICATION, true);
         return ResponseEntityCreator.success(user);
     }
 
+    @NeedNoAuthentication
     @PostMapping("/users/signup")
-    public ResponseEntity<?> tempSignUp(HttpSession session){
+    public ResponseEntity<?> tempSignUp(HttpServletRequest request){
+        if (LoginChecker.isLogin(request.getSession()))
+            throw new LogoutRequiredException();
+
         User user = userService.tempSignUp();
+        HttpSession session = request.getSession();
         session.setAttribute(SessionConst.ID, user.getId());
         session.setAttribute(SessionConst.AUTHENTICATION, true);
         return ResponseEntityCreator.success(user);
     }
 
+    @DontCareAuthentication
     @GetMapping("/party/get-random")
     public PartyCreationEditReqDTO getRandomParty() {
         Random r = new Random();
@@ -67,6 +84,7 @@ public class TestController {
                 .build();
     }
 
+    @NeedAuthentication
     @PostMapping("/party/post-random")
     public ResponseEntity<?> postRandomParty(@Session(attribute = SessionConst.ID) Long id) {
         return partyController.createParty(id, getRandomParty());

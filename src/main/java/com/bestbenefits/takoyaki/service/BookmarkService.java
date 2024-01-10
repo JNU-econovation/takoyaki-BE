@@ -4,7 +4,11 @@ import com.bestbenefits.takoyaki.config.properties.BookmarkConst;
 import com.bestbenefits.takoyaki.entity.Bookmark;
 import com.bestbenefits.takoyaki.entity.Party;
 import com.bestbenefits.takoyaki.entity.User;
-import com.bestbenefits.takoyaki.exception.party.NotFoundPartyException;
+import com.bestbenefits.takoyaki.exception.bookmark.AlreadyBookmarkedException;
+import com.bestbenefits.takoyaki.exception.bookmark.BookmarkCountExceedException;
+import com.bestbenefits.takoyaki.exception.bookmark.NotBookmarkedException;
+import com.bestbenefits.takoyaki.exception.bookmark.SelfBookmarkNotAllowedException;
+import com.bestbenefits.takoyaki.exception.party.PartyNotFoundException;
 import com.bestbenefits.takoyaki.exception.party.PartyClosedException;
 import com.bestbenefits.takoyaki.repository.BookmarkRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,25 +35,26 @@ public class BookmarkService {
         User user = userService.getUserOrThrow(userId);
         Party party = partyService.getPartyOrThrow(partyId);
 
-        //이미 북마크된 경우
-        if (bookmarkRepository.findByUserAndParty(user, party).isPresent())
-            throw new IllegalArgumentException("이미 북마크 되었습니다.");
-
-        //타코가 자신의 게시물 북마크하는 경우
-        if (party.isAuthor(user))
-            throw new IllegalArgumentException("자신의 글을 북마크할 수 없습니다.");
-
-        //북마크 개수 초과시 북마크 안됨(정책에 의거)
-        if (getBookmarkedPartiesByUser(userId).size() >= BookmarkConst.MAX_BOOKMARK_NUMBER_PER_USER)
-            throw new IllegalStateException("북마크는 최대 " + BookmarkConst.MAX_BOOKMARK_NUMBER_PER_USER + "개까지 가능합니다.");
+        //삭제된 글 북마크하는 경우
+        if (party.isDeleted())
+            throw new PartyNotFoundException();
 
         //마감된 글 북마크하는 경우
         if (party.isClosed())
             throw new PartyClosedException();
 
-        //삭제된 글 북마크하는 경우
-        if (party.isDeleted())
-            throw new NotFoundPartyException();
+        //이미 북마크된 경우
+        if (bookmarkRepository.findByUserAndParty(user, party).isPresent())
+            throw new AlreadyBookmarkedException();
+
+        //타코가 자신의 게시물 북마크하는 경우
+        if (party.isAuthor(user))
+            throw new SelfBookmarkNotAllowedException();
+
+        //북마크 개수 초과시 북마크 안됨(정책에 의거)
+        if (getBookmarkedPartiesByUser(userId).size() >= BookmarkConst.MAX_BOOKMARK_NUMBER_PER_USER)
+            throw new BookmarkCountExceedException();
+
 
         bookmarkRepository.save(Bookmark.builder()
                 .user(user)
@@ -65,6 +70,6 @@ public class BookmarkService {
         if (byUserAndParty.isPresent())
             bookmarkRepository.delete(byUserAndParty.get());
         else
-            throw new IllegalArgumentException("북마크가 존재하지 않습니다.");
+            throw new NotBookmarkedException();
     }
 }

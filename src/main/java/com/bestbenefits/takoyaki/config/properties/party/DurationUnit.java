@@ -23,7 +23,7 @@ public enum DurationUnit {
             if (durationUnit.getName().equals(durationUnitName))
                 return durationUnit;
         }
-        throw new InvalidTypeValueException();
+        throw new InvalidTypeValueException("activity_duration_unit", durationUnitName);
     }
     public static List<String> toNameList(){
         return Arrays.stream(DurationUnit.values())

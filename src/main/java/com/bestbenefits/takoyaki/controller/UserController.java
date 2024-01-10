@@ -6,15 +6,20 @@ import com.bestbenefits.takoyaki.DTO.layer.request.OAuthSignUpReqDTO;
 import com.bestbenefits.takoyaki.DTO.layer.response.OAuthAuthResDTO;
 import com.bestbenefits.takoyaki.DTO.server.response.TokensResDTO;
 import com.bestbenefits.takoyaki.DTO.server.response.SocialUserInfoResDTO;
+import com.bestbenefits.takoyaki.config.annotation.DontCareAuthentication;
+import com.bestbenefits.takoyaki.config.annotation.NeedAuthentication;
+import com.bestbenefits.takoyaki.config.annotation.NeedNoAuthentication;
 import com.bestbenefits.takoyaki.config.annotation.Session;
 import com.bestbenefits.takoyaki.config.apiresponse.*;
 import com.bestbenefits.takoyaki.config.properties.SessionConst;
 import com.bestbenefits.takoyaki.config.properties.auth.OAuthSocialType;
 import com.bestbenefits.takoyaki.config.properties.auth.OAuthURL;
+import com.bestbenefits.takoyaki.exception.user.LogoutRequiredException;
 import com.bestbenefits.takoyaki.interceptor.AuthenticationCheckInterceptor;
 import com.bestbenefits.takoyaki.service.UserService;
 import com.bestbenefits.takoyaki.util.LoginChecker;
 import com.bestbenefits.takoyaki.util.webclient.oauth.OAuthWebClient;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,13 +38,15 @@ public class UserController {
     private final Map<String, OAuthWebClient> oAuthWebClient;
     private final Map<String, OAuthURL> oAuthURL;
 
+    @DontCareAuthentication
     @GetMapping("/login-check")
-    public ResponseEntity<?> checkLogin(HttpSession session){
+    public ResponseEntity<?> checkLogin(HttpServletRequest request){
         Map<String, Boolean> data = new HashMap<>();
-        data.put("login", LoginChecker.isLogin(session));
+        data.put("login", LoginChecker.isLogin(request));
         return ResponseEntityCreator.success(data);
     }
 
+    @DontCareAuthentication
     @GetMapping("/oauth/login-url/{social}")
     public ResponseEntity<?> getOAuthLoginUrl(@PathVariable String social){
         OAuthSocialType oAuthSocialType = OAuthSocialType.fromValue(social.toUpperCase());
@@ -51,6 +58,7 @@ public class UserController {
         return ResponseEntityCreator.success(data);
     }
 
+    @DontCareAuthentication
     @GetMapping("/duplicate-nickname")
     public ResponseEntity<?> checkDuplicateNickname(@RequestParam String nickname){
 
@@ -61,8 +69,12 @@ public class UserController {
     }
 
     //TODO: 여러 소셜 받기
+    @NeedNoAuthentication
     @PostMapping("/oauth/login/{social}")
-    public ResponseEntity<?> login(HttpSession session, @PathVariable String social, @RequestParam String code){
+    public ResponseEntity<?> login(HttpServletRequest request, @PathVariable String social, @RequestParam String code) {
+        if (LoginChecker.isLogin(request.getSession(false)))
+            throw new LogoutRequiredException();
+
         //get social-type enum
         OAuthSocialType oAuthSocialType = OAuthSocialType.fromValue(social.toUpperCase());
         //소셜 플랫폼에 따라 OAuth 요청을 수행할 객체를 가져옴
@@ -74,6 +86,7 @@ public class UserController {
         //check whether this user exists in DataBase by using email & social type
         OAuthAuthResDTO oAuthAuthResDTO = userService.loginByOAuth(socialUserInfoResDTO.getEmail(), oAuthSocialType);
 
+        HttpSession session = request.getSession();
         HttpStatus status;
         //등록된 유저고, 추가 정보 있으면 로그인 완료
         //세션에 ID, AUTHENTICATION 등록됨
@@ -98,16 +111,18 @@ public class UserController {
         return ResponseEntityCreator.success(data, status);
     }
 
+    @NeedAuthentication
     @PostMapping("/oauth/login/additional-info")
-    public ResponseEntity<?> signup(HttpSession session,
+    public ResponseEntity<?> signup(HttpServletRequest request,
                                     @Session(attribute = SessionConst.ID, nullable = true) Long id,
                                     @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
                                     @RequestBody @Valid UserAdditionalInfoReqDTO userAdditionalInfoReqDTO) {
         userService.insertAdditionalInfo(id, authentication, userAdditionalInfoReqDTO);
-        session.setAttribute(SessionConst.AUTHENTICATION, true);
+        request.getSession(false).setAttribute(SessionConst.AUTHENTICATION, true);
         return ResponseEntityCreator.success(HttpStatus.CREATED);
     }
 
+    @NeedAuthentication
     @PatchMapping("/nickname")
     public ResponseEntity<?> changeNickname(@Session(attribute = SessionConst.ID) Long id,
                                                      @RequestBody @Valid UserNicknameUpdateReqDTO userNicknameUpdateReqDTO){
@@ -115,13 +130,17 @@ public class UserController {
         return ResponseEntityCreator.success();
     }
 
+    @NeedAuthentication
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpSession session){
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
         session.removeAttribute(SessionConst.ID); //로그아웃하면 세션 attribute 다 날리기
         session.removeAttribute(SessionConst.AUTHENTICATION);
+        session.invalidate();
         return ResponseEntityCreator.success();
     }
 
+    @NeedAuthentication
     @GetMapping("/info")
     public ResponseEntity<?> getInfo(@Session(attribute = SessionConst.ID) Long id){
         return ResponseEntityCreator.success(userService.getUserInfo(id));

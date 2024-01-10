@@ -28,7 +28,7 @@ public enum Category {
             if (category.getName().equals(categoryName))
                 return category;
         }
-        throw new InvalidTypeValueException();
+        throw new InvalidTypeValueException("category", categoryName);
     }
     public static List<String> toNameList(){
         return Arrays.stream(Category.values())

@@ -1,5 +1,7 @@
 package com.bestbenefits.takoyaki.config.annotation;
 
+import com.bestbenefits.takoyaki.exception.user.UnauthorizedException;
+import com.bestbenefits.takoyaki.util.LoginChecker;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.core.MethodParameter;
@@ -19,15 +21,20 @@ public class SessionMethodArgumentResolver implements HandlerMethodArgumentResol
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        HttpSession session = request.getSession();
+        HttpSession session = request.getSession(false);
         boolean nullable = parameter.getParameterAnnotation(Session.class).nullable();
         String attribute = parameter.getParameterAnnotation(Session.class).attribute();
-        if (nullable)
+
+        if (session == null) {
+            if (nullable) return null;
+            else {
+                //return null;
+                System.out.println(">>>>> UnauthorizedException in Argument Resolver");
+                throw new UnauthorizedException();
+            }
+        } else
             return session.getAttribute(attribute);
-        else
-            return Optional.ofNullable(session.getAttribute(attribute))
-                    //TODO: attribute 제거
-                    .orElseThrow(() -> new NullPointerException("Invalid session attribute: "+attribute));
+
         //TODO: 로그인 안되어있어도 세션 예외가 발생하지 않도록 임시 조치하기
     }
 }

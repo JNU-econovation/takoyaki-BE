@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface EnumName {
-    String message() default "enum의 name값이 잘못되었습니다.";
+    String message() default "범위 밖의 타입 값입니다.";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
     Class<? extends Enum> enumClass();

@@ -13,9 +13,16 @@ public class FailResponseBody {
         this.msg = code.getMsg();
     }
 
-    FailResponseBody(ExceptionCode code, String msg) {
+    FailResponseBody(ExceptionCode code, String additional) {
         this.success = false;
         this.code = code.toString();
-        this.msg = msg;
+        this.msg = additional + ": " + code.getMsg();
+    }
+
+    FailResponseBody(ExceptionCode code, String customMsg, boolean custom) {
+        this(code);
+        if (custom) {
+            this.msg = customMsg;
+        }
     }
 }

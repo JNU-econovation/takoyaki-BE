@@ -23,7 +23,7 @@ public enum ContactMethod {
             if (contactMethod.getName().equals(contactMethodName))
                 return contactMethod;
         }
-        throw new InvalidTypeValueException();
+        throw new InvalidTypeValueException("contact_method", contactMethodName);
     }
     public static List<String> toNameList(){
         return Arrays.stream(ContactMethod.values())
