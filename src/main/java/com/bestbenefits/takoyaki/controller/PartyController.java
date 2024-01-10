@@ -64,7 +64,7 @@ public class PartyController {
 
 
     /************ /parties ************/
-    @GetMapping("/parties/")
+    @GetMapping("/parties")
 
     public ApiResponse<List<? extends PartyListResDTO>> getPartyCardListForMainPage(@Session(attribute = SessionConst.ID, nullable = true) Long id,
                                                    @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
