@@ -31,11 +31,11 @@ public class EnumNameValidator implements ConstraintValidator<EnumName, String> 
     public boolean isValid(String name, ConstraintValidatorContext context) {
         try {
             return className.isInstance(fromName.invoke(null, name));
-        } catch (IllegalAccessException | InvocationTargetException e) {
+        } catch (IllegalAccessException e) {
             //TODO: SLF4J 사용해서 로그 남겨보기
             throw new RuntimeException(e.toString());
-        } catch (InvalidTypeValueException e) {
-            throw e;
+        } catch (InvocationTargetException e) {
+            throw (InvalidTypeValueException)e.getTargetException();
         }
     }
 }
