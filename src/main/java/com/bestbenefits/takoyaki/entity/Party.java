@@ -5,6 +5,8 @@ import com.bestbenefits.takoyaki.config.properties.party.Category;
 import com.bestbenefits.takoyaki.config.properties.party.ContactMethod;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,6 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 public class Party {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,6 +38,7 @@ public class Party {
     @Column private String contact;
     @Column private Long viewCount;
 
+    @LastModifiedBy
     @Column private LocalDateTime deletedAt; //삭제 일시
     @Column private LocalDateTime closedAt; //마감 일시
     @Column private LocalDateTime createdAt; //글 작성 일시

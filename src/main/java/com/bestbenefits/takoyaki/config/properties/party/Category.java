@@ -2,6 +2,8 @@ package com.bestbenefits.takoyaki.config.properties.party;
 
 import com.bestbenefits.takoyaki.exception.common.InvalidTypeValueException;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,6 +32,7 @@ public enum Category {
         }
         throw new InvalidTypeValueException("category", categoryName);
     }
+
     public static List<String> toNameList(){
         return Arrays.stream(Category.values())
                 .map(Category::getName)

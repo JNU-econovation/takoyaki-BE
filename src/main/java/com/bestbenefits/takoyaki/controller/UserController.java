@@ -15,9 +15,9 @@ import com.bestbenefits.takoyaki.config.properties.SessionConst;
 import com.bestbenefits.takoyaki.config.properties.auth.OAuthSocialType;
 import com.bestbenefits.takoyaki.config.properties.auth.OAuthURL;
 import com.bestbenefits.takoyaki.exception.user.LogoutRequiredException;
-import com.bestbenefits.takoyaki.interceptor.AuthenticationCheckInterceptor;
 import com.bestbenefits.takoyaki.service.UserService;
 import com.bestbenefits.takoyaki.util.LoginChecker;
+import com.bestbenefits.takoyaki.util.StringModer;
 import com.bestbenefits.takoyaki.util.webclient.oauth.OAuthWebClient;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -29,6 +29,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,6 +40,7 @@ public class UserController {
     private final Map<String, OAuthWebClient> oAuthWebClient;
     private final Map<String, OAuthURL> oAuthURL;
     private final LoginChecker loginChecker;
+    private final StringModer stringModer;
 
     @DontCareAuthentication
     @GetMapping("/login-check")
@@ -51,8 +54,8 @@ public class UserController {
     @DontCareAuthentication
     @GetMapping("/oauth/login-url/{social}")
     public ResponseEntity<?> getOAuthLoginUrl(@PathVariable String social){
-        OAuthSocialType oAuthSocialType = OAuthSocialType.fromValue(social.toUpperCase());
-        OAuthURL oAuthSocialURL = oAuthURL.get("OAuth" + oAuthSocialType.getPascalName() + "URL");
+        OAuthSocialType oAuthSocialType = OAuthSocialType.fromName(social);
+        OAuthURL oAuthSocialURL = oAuthURL.get("OAuth" + stringModer.toPascal(oAuthSocialType.getName()) + "URL");
 
         Map<String, String> data = new HashMap<>();
         data.put("login_url", oAuthSocialURL.getLoginURL());
@@ -78,9 +81,9 @@ public class UserController {
             throw new LogoutRequiredException();
 
         //get social-type enum
-        OAuthSocialType oAuthSocialType = OAuthSocialType.fromValue(social.toUpperCase());
+        OAuthSocialType oAuthSocialType = OAuthSocialType.fromName(social);
         //소셜 플랫폼에 따라 OAuth 요청을 수행할 객체를 가져옴
-        OAuthWebClient oAuthSocialWebClient = oAuthWebClient.get("OAuth"+ oAuthSocialType.getPascalName()+"WebClient");
+        OAuthWebClient oAuthSocialWebClient = oAuthWebClient.get("OAuth" + stringModer.toPascal(oAuthSocialType.getName()) + "WebClient");
         //request tokens to resource server by Authorization code
         TokensResDTO tokensResDTO = oAuthSocialWebClient.requestTokens(code);
         //request user's info to resource server by access token

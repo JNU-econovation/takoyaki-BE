@@ -25,6 +25,7 @@ public enum ContactMethod {
         }
         throw new InvalidTypeValueException("contact_method", contactMethodName);
     }
+
     public static List<String> toNameList(){
         return Arrays.stream(ContactMethod.values())
                 .map(ContactMethod::getName)

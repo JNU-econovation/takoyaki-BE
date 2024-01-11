@@ -19,6 +19,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+
         registry.addInterceptor(authenticationCheckInterceptor)
                 .addPathPatterns(
                         "/test/party/post-random",
@@ -45,6 +46,8 @@ public class WebConfig implements WebMvcConfigurer {
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new SessionMethodArgumentResolver());
     }
+
+
 
     //TODO: CORS 범위 지정
     @Override

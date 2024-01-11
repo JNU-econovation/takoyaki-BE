@@ -7,7 +7,7 @@ import com.bestbenefits.takoyaki.DTO.client.response.PartyListResDTO;
 import com.bestbenefits.takoyaki.config.properties.party.ActivityLocation;
 import com.bestbenefits.takoyaki.config.properties.party.Category;
 import com.bestbenefits.takoyaki.config.properties.party.DurationUnit;
-import com.bestbenefits.takoyaki.config.properties.party.PartyListTypeEnum;
+import com.bestbenefits.takoyaki.config.properties.party.PartyListType;
 import com.bestbenefits.takoyaki.config.properties.user.UserType;
 import com.bestbenefits.takoyaki.config.properties.user.YakiStatus;
 import com.bestbenefits.takoyaki.entity.Party;
@@ -156,7 +156,7 @@ public class PartyService {
     }
 
     @Transactional(readOnly = true)
-    public List<PartyListResDTO> getPartiesInfoForLoginUser(Long id, PartyListTypeEnum partyListType){
+    public List<PartyListResDTO> getPartiesInfoForLoginUser(Long id, PartyListType partyListType){
         User user = userService.getUserOrThrow(id);
 
         List<Object[]> partyList;
@@ -180,8 +180,8 @@ public class PartyService {
         }
         for (Object[] row : partyList) {
             PartyListResDTO.PartyListResDTOBuilder builder = initializePartyListBuilder(row);
-            if (PartyListTypeEnum.NOT_CLOSED_ACCEPTED == partyListType || PartyListTypeEnum.NOT_CLOSED_WAITING == partyListType) builder.bookmarked((boolean) row[8]);
-            if (PartyListTypeEnum.WROTE == partyListType) builder.closed((boolean) row[8]);
+            if (PartyListType.NOT_CLOSED_ACCEPTED == partyListType || PartyListType.NOT_CLOSED_WAITING == partyListType) builder.bookmarked((boolean) row[8]);
+            if (PartyListType.WROTE == partyListType) builder.closed((boolean) row[8]);
             partyDTOList.add(builder.build());
         }
 

@@ -1,41 +1,41 @@
 package com.bestbenefits.takoyaki.config.constraint_validator;
 
 import com.bestbenefits.takoyaki.config.annotation.EnumName;
+import com.bestbenefits.takoyaki.exception.common.InvalidTypeValueException;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
+@Slf4j
 public class EnumNameValidator implements ConstraintValidator<EnumName, String> {
-    private List<String> validEnumList;
+    private final static String methodName = "fromName";
+    private Class<?> className;
+    private Method fromName;
 
     @Override
     public void initialize(EnumName constraintAnnotation) {
-        String methodName = "getName";
-        Method method;
-
         try {
-            method = constraintAnnotation.enumClass().getEnumConstants()[0].getClass().getMethod(methodName);
-        } catch (Exception e) {
-            throw new RuntimeException("해당 Enum에 이런 메서드는 없습니다", e);
+            className = constraintAnnotation.enumClass();
+            fromName = className.getDeclaredMethod(methodName);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(
+                    "Enum Class " + constraintAnnotation.enumClass().getName() +
+                    ": 해당 Enum 클래스는 " + methodName + " 메서드가 없습니다.");
         }
-
-        validEnumList = Arrays.stream(constraintAnnotation.enumClass().getEnumConstants())
-            .map(enumConstant -> {
-                try {
-                    return (String) method.invoke(enumConstant);
-                } catch (Exception e) {
-                    throw new RuntimeException("invoke 실패", e);
-                }
-            })
-            .collect(Collectors.toList());
     }
 
     @Override
     public boolean isValid(String name, ConstraintValidatorContext context) {
-        return validEnumList.contains(name);
+        try {
+            return className.isInstance(fromName.invoke(null, name));
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            //TODO: SLF4J 사용해서 로그 남겨보기
+            throw new RuntimeException(e.toString());
+        } catch (InvalidTypeValueException e) {
+            throw e;
+        }
     }
 }

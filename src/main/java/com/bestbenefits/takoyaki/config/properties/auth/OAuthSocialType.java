@@ -4,32 +4,22 @@ import com.bestbenefits.takoyaki.exception.common.InvalidTypeValueException;
 import lombok.Getter;
 
 @Getter
-public enum OAuthSocialType{
-    NONE("none", -1),
-    KAKAO("Kakao", 0),
-    GOOGLE("Google", 1),
-    NAVER("Naver", 2);
+public enum OAuthSocialType {
+    NONE("none"),
+    KAKAO("kakao"),
+    GOOGLE("google"),
+    NAVER("naver");
 
-    private final String pascalName;
-    private final int index;
-    OAuthSocialType(String pascalName, int index){
-        this.pascalName = pascalName;
-        this.index = index;
+    private final String name;
+    OAuthSocialType(String name){
+        this.name = name;
     }
 
-    public static OAuthSocialType fromValue(String socialName) {
+    public static OAuthSocialType fromName(String socialName) {
         for (OAuthSocialType oAuthSocialType : OAuthSocialType.values()) {
-            if (oAuthSocialType.name().equals(socialName))
+            if (oAuthSocialType.getName().equals(socialName))
                 return oAuthSocialType;
         }
-        throw new InvalidTypeValueException("social", socialName);
+        throw new InvalidTypeValueException("OauthSocialType", socialName);
     }
-    public static OAuthSocialType fromValue(int index) {
-        for (OAuthSocialType oAuthSocialType : OAuthSocialType.values()) {
-            if (oAuthSocialType.getIndex() == index)
-                return oAuthSocialType;
-        }
-        throw new InvalidTypeValueException("social", String.valueOf(index));
-    }
-
 }
