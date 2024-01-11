@@ -48,7 +48,7 @@ public class TestController {
     @NeedNoAuthentication
     @PostMapping("/users/signup")
     public ResponseEntity<?> tempSignUp(HttpServletRequest request){
-        if (loginChecker.isLogin(request.getSession()))
+        if (loginChecker.isLogin(request.getSession(false)))
             throw new LogoutRequiredException();
 
         User user = userService.tempSignUp();
