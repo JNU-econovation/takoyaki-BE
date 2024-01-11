@@ -19,7 +19,7 @@ public class EnumNameValidator implements ConstraintValidator<EnumName, String> 
     public void initialize(EnumName constraintAnnotation) {
         try {
             className = constraintAnnotation.enumClass();
-            fromName = className.getDeclaredMethod(methodName);
+            fromName = className.getDeclaredMethod(methodName, String.class);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(
                     "Enum Class " + constraintAnnotation.enumClass().getName() +
