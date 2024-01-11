@@ -100,7 +100,7 @@ public class PartyController {
         
         switch (dto.getPartyListType()) {
             case ALL -> {
-                if (dto.getNumber() >= PartyConst.MAX_PARTY_NUMBER_OF_REQUEST)
+                if (dto.getNumber() > PartyConst.MAX_PARTY_NUMBER_OF_REQUEST)
                     throw new IllegalArgumentException("한 번에 요청할 수 있는 팟의 개수는 " + PartyConst.MAX_PARTY_NUMBER_OF_REQUEST + "개입니다.");
 
                 Category category = Optional.ofNullable(dto.getCategoryName()).map(Category::fromName).orElse(null);
