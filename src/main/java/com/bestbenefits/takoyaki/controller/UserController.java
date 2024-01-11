@@ -90,15 +90,13 @@ public class UserController {
 
         HttpSession session = request.getSession();
         HttpStatus status;
-        //등록된 유저고, 추가 정보 있으면 로그인 완료
+
         //세션에 ID, AUTHENTICATION 등록됨
-        if (oAuthAuthResDTO != null && !oAuthAuthResDTO.isInfoNeeded()) {
-            session.setAttribute(SessionConst.AUTHENTICATION, true);
+        if (oAuthAuthResDTO != null) { //등록된 유저고,
+            if (!oAuthAuthResDTO.isInfoNeeded()) //추가 정보 있으면 로그인 완료
+                session.setAttribute(SessionConst.AUTHENTICATION, true);
             status = HttpStatus.OK;
-        }
-        //등록되지 않은 유저면 유저 등록 필요
-        //세션에 ID만 등록됨
-        else {
+        }else {//등록되지 않은 유저면 유저 등록 필요 - 세션에 ID만 등록됨
             oAuthAuthResDTO = userService.signUpByOAuth(OAuthSignUpReqDTO.builder()
                     .socialUserInfoResDTO(socialUserInfoResDTO)
                     .social(oAuthSocialType)
@@ -116,11 +114,10 @@ public class UserController {
     @NeedAuthentication
     @PostMapping("/oauth/login/additional-info")
     public ResponseEntity<?> signup(HttpServletRequest request,
-                                    @Session(attribute = SessionConst.ID, nullable = true) Long id,
-                                    @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
+                                    @Session(attribute = SessionConst.ID) Long id,
                                     @RequestBody @Valid UserAdditionalInfoReqDTO userAdditionalInfoReqDTO) {
         //TODO: 세션이 null인지 더 확인하기
-        userService.insertAdditionalInfo(id, authentication, userAdditionalInfoReqDTO);
+        userService.insertAdditionalInfo(id, userAdditionalInfoReqDTO);
         request.getSession(false).setAttribute(SessionConst.AUTHENTICATION, true);
         return ResponseEntityCreator.success(HttpStatus.CREATED);
     }

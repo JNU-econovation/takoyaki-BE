@@ -31,8 +31,7 @@ public class AuthenticationCheckInterceptor implements HandlerInterceptor {
             return true;
 
         if (requestURI.matches("/users/oauth/login/additional-info")) {
-            System.out.println("해당 URI는 커스텀 로그인 필요하므로 인터셉터 종료");
-            return true; //커스텀 로그인 확인
+            return true;
         }
         if (requestURI.matches("/parties/\\d+") && httpMethod.equals("GET")) {
             System.out.println("해당 URI는 로그인 필요 없음");
