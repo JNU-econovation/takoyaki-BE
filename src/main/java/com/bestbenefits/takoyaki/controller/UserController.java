@@ -24,13 +24,10 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,39 +41,39 @@ public class UserController {
 
     @DontCareAuthentication
     @GetMapping("/login-check")
-    public ResponseEntity<?> checkLogin(HttpServletRequest request){
+    public ApiResponse<?> checkLogin(HttpServletRequest request){
         //TODO: 변경된 로직이 기존과 다른 점이 없는지 다시 확인하기
         Map<String, Boolean> data = new HashMap<>();
         data.put("login", loginChecker.isLogin(request));
-        return ResponseEntityCreator.success(data);
+        return ApiResponseCreator.success(data);
     }
 
     @DontCareAuthentication
     @GetMapping("/oauth/login-url/{social}")
-    public ResponseEntity<?> getOAuthLoginUrl(@PathVariable String social){
+    public ApiResponse<?> getOAuthLoginUrl(@PathVariable String social){
         OAuthSocialType oAuthSocialType = OAuthSocialType.fromName(social);
         OAuthURL oAuthSocialURL = oAuthURL.get("OAuth" + stringModer.toPascal(oAuthSocialType.getName()) + "URL");
 
         Map<String, String> data = new HashMap<>();
         data.put("login_url", oAuthSocialURL.getLoginURL());
 
-        return ResponseEntityCreator.success(data);
+        return ApiResponseCreator.success(data);
     }
 
     @DontCareAuthentication
     @GetMapping("/duplicate-nickname")
-    public ResponseEntity<?> checkDuplicateNickname(@RequestParam String nickname){
+    public ApiResponse<?> checkDuplicateNickname(@RequestParam String nickname){
 
         Map<String, Boolean> data = new HashMap<>();
         data.put("duplicate-nickname", userService.checkDuplicateNickname(nickname));
 
-        return ResponseEntityCreator.success(data);
+        return ApiResponseCreator.success(data);
     }
 
     //TODO: 여러 소셜 받기
     @NeedNoAuthentication
     @PostMapping("/oauth/login/{social}")
-    public ResponseEntity<?> login(HttpServletRequest request, @PathVariable String social, @RequestParam String code) {
+    public ApiResponse<?> login(HttpServletRequest request, @PathVariable String social, @RequestParam String code) {
         if (loginChecker.isLogin(request.getSession(false)))
             throw new LogoutRequiredException();
 
@@ -111,41 +108,41 @@ public class UserController {
         Map<String, Boolean> data = new HashMap<>();
         data.put("is_info_needed", oAuthAuthResDTO.isInfoNeeded());
 
-        return ResponseEntityCreator.success(data, status);
+        return ApiResponseCreator.success(data, status);
     }
 
     @NeedAuthentication
     @PostMapping("/oauth/login/additional-info")
-    public ResponseEntity<?> signup(HttpServletRequest request,
+    public ApiResponse<?> signup(HttpServletRequest request,
                                     @Session(attribute = SessionConst.ID) Long id,
                                     @RequestBody @Valid UserAdditionalInfoReqDTO userAdditionalInfoReqDTO) {
         //TODO: 세션이 null인지 더 확인하기
         userService.insertAdditionalInfo(id, userAdditionalInfoReqDTO);
         request.getSession(false).setAttribute(SessionConst.AUTHENTICATION, true);
-        return ResponseEntityCreator.success(HttpStatus.CREATED);
+        return ApiResponseCreator.success(HttpStatus.CREATED);
     }
 
     @NeedAuthentication
     @PatchMapping("/nickname")
-    public ResponseEntity<?> changeNickname(@Session(attribute = SessionConst.ID) Long id,
+    public ApiResponse<?> changeNickname(@Session(attribute = SessionConst.ID) Long id,
                                                      @RequestBody @Valid UserNicknameUpdateReqDTO userNicknameUpdateReqDTO){
         userService.changeNickname(id, userNicknameUpdateReqDTO);
-        return ResponseEntityCreator.success();
+        return ApiResponseCreator.success();
     }
 
     @NeedAuthentication
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request) {
+    public ApiResponse<?> logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         session.removeAttribute(SessionConst.ID); //로그아웃하면 세션 attribute 다 날리기
         session.removeAttribute(SessionConst.AUTHENTICATION);
         session.invalidate();
-        return ResponseEntityCreator.success();
+        return ApiResponseCreator.success();
     }
 
     @NeedAuthentication
     @GetMapping("/info")
-    public ResponseEntity<?> getInfo(@Session(attribute = SessionConst.ID) Long id){
-        return ResponseEntityCreator.success(userService.getUserInfo(id));
+    public ApiResponse<?> getInfo(@Session(attribute = SessionConst.ID) Long id){
+        return ApiResponseCreator.success(userService.getUserInfo(id));
     }
 }

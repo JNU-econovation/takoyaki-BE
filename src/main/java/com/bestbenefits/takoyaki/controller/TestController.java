@@ -5,7 +5,8 @@ import com.bestbenefits.takoyaki.config.annotation.DontCareAuthentication;
 import com.bestbenefits.takoyaki.config.annotation.NeedAuthentication;
 import com.bestbenefits.takoyaki.config.annotation.NeedNoAuthentication;
 import com.bestbenefits.takoyaki.config.annotation.Session;
-import com.bestbenefits.takoyaki.config.apiresponse.ResponseEntityCreator;
+import com.bestbenefits.takoyaki.config.apiresponse.ApiResponse;
+import com.bestbenefits.takoyaki.config.apiresponse.ApiResponseCreator;
 import com.bestbenefits.takoyaki.config.properties.SessionConst;
 import com.bestbenefits.takoyaki.config.properties.party.ActivityLocation;
 import com.bestbenefits.takoyaki.config.properties.party.Category;
@@ -18,7 +19,6 @@ import com.bestbenefits.takoyaki.util.LoginChecker;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -34,7 +34,7 @@ public class TestController {
 
     @NeedNoAuthentication
     @PostMapping("/users/login/{id}")
-    public ResponseEntity<?> tempLogin(HttpServletRequest request, @PathVariable Long id){
+    public ApiResponse<?> tempLogin(HttpServletRequest request, @PathVariable Long id){
         if (loginChecker.isLogin(request.getSession(false)))
             throw new LogoutRequiredException();
 
@@ -42,12 +42,12 @@ public class TestController {
         HttpSession session = request.getSession();
         session.setAttribute(SessionConst.ID, id);
         session.setAttribute(SessionConst.AUTHENTICATION, true);
-        return ResponseEntityCreator.success(user);
+        return ApiResponseCreator.success(user);
     }
 
     @NeedNoAuthentication
     @PostMapping("/users/signup")
-    public ResponseEntity<?> tempSignUp(HttpServletRequest request){
+    public ApiResponse<?> tempSignUp(HttpServletRequest request){
         if (loginChecker.isLogin(request.getSession(false)))
             throw new LogoutRequiredException();
 
@@ -55,7 +55,7 @@ public class TestController {
         HttpSession session = request.getSession();
         session.setAttribute(SessionConst.ID, user.getId());
         session.setAttribute(SessionConst.AUTHENTICATION, true);
-        return ResponseEntityCreator.success(user);
+        return ApiResponseCreator.success(user);
     }
 
     @DontCareAuthentication
@@ -88,7 +88,7 @@ public class TestController {
 
     @NeedAuthentication
     @PostMapping("/party/post-random")
-    public ResponseEntity<?> postRandomParty(@Session(attribute = SessionConst.ID) Long id) {
+    public ApiResponse<?> postRandomParty(@Session(attribute = SessionConst.ID) Long id) {
         return partyController.createParty(id, getRandomParty());
     }
 
