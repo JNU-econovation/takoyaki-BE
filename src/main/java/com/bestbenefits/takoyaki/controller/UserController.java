@@ -37,7 +37,6 @@ public class UserController {
     private final Map<String, OAuthWebClient> oAuthWebClient;
     private final Map<String, OAuthURL> oAuthURL;
     private final LoginChecker loginChecker;
-    private final StringModer stringModer;
 
     @DontCareAuthentication
     @GetMapping("/login-check")
@@ -52,7 +51,7 @@ public class UserController {
     @GetMapping("/oauth/login-url/{social}")
     public ApiResponse<?> getOAuthLoginUrl(@PathVariable String social){
         OAuthSocialType oAuthSocialType = OAuthSocialType.fromName(social);
-        OAuthURL oAuthSocialURL = oAuthURL.get("OAuth" + stringModer.toPascal(oAuthSocialType.getName()) + "URL");
+        OAuthURL oAuthSocialURL = oAuthURL.get("OAuth" + StringModer.toPascal(oAuthSocialType.getName()) + "URL");
 
         Map<String, String> data = new HashMap<>();
         data.put("login_url", oAuthSocialURL.getLoginURL());
@@ -80,7 +79,7 @@ public class UserController {
         //get social-type enum
         OAuthSocialType oAuthSocialType = OAuthSocialType.fromName(social);
         //소셜 플랫폼에 따라 OAuth 요청을 수행할 객체를 가져옴
-        OAuthWebClient oAuthSocialWebClient = oAuthWebClient.get("OAuth" + stringModer.toPascal(oAuthSocialType.getName()) + "WebClient");
+        OAuthWebClient oAuthSocialWebClient = oAuthWebClient.get("OAuth" + StringModer.toPascal(oAuthSocialType.getName()) + "WebClient");
         //request tokens to resource server by Authorization code
         TokensResDTO tokensResDTO = oAuthSocialWebClient.requestTokens(code);
         //request user's info to resource server by access token

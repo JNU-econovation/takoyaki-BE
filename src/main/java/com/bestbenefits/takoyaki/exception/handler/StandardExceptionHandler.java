@@ -3,6 +3,7 @@ package com.bestbenefits.takoyaki.exception.handler;
 import com.bestbenefits.takoyaki.config.apiresponse.ApiResponse;
 import com.bestbenefits.takoyaki.config.apiresponse.ApiResponseCreator;
 import com.bestbenefits.takoyaki.exception.ExceptionCode;
+import com.bestbenefits.takoyaki.util.StringModer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.http.HttpStatus;
@@ -39,7 +40,7 @@ public class StandardExceptionHandler {
     public ApiResponse<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e){
         FieldError error = e.getBindingResult().getFieldError();
         String message = error == null ? ExceptionCode.VALIDATION_FAILED.getMsg()
-                : error.getField() + ": " + error.getDefaultMessage();
+                : StringModer.toSnakeCase(error.getField()) + ": " + error.getDefaultMessage();
         return ApiResponseCreator.fail(
                 ExceptionCode.VALIDATION_FAILED,
                 message,
