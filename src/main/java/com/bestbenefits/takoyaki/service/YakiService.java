@@ -32,6 +32,7 @@ public class YakiService {
 
         if (party.isAuthor(id)) //타코가 파티를 신청할 수 없음
             throw new TakoNotAllowedException(); //여기서만 사용됨
+
         if (yakiRepository.existsYakiByPartyAndUser(party, user)) //이미 신청한 파티임
             throw new AlreadyAppliedException(); //여기서만 사용됨
 
@@ -48,16 +49,18 @@ public class YakiService {
         if (party.isClosed())
             throw new PartyClosedException();
 
+        if (party.isAuthor(id)) //타코가 파티를 신청할 수 없음
+            throw new TakoNotAllowedException(); //여기서만 사용됨
+
         Yaki yaki = getYakiOrThrow(party, user);
         if (yaki.getStatus() != YakiStatus.WAITING)
             throw new CancelApplicationNotAllowedException(); //여기서만 사용됨
-            //throw new IllegalArgumentException("신청 취소는 대기 중에만 할 수 있습니다.");
+
         yakiRepository.delete(yaki);
     }
 
     @Transactional
     public void acceptYaki(Long id, Long partyId, Long yakiId){
-        User yakiUser = userService.getUserOrThrow(yakiId);
         Party party = partyService.getPartyOrThrow(partyId);
 
         if (party.isDeleted())
@@ -67,6 +70,8 @@ public class YakiService {
 
         if (!party.isAuthor(id)) //타코가 아님
             throw new NotTakoException();
+
+        User yakiUser = userService.getUserOrThrow(yakiId);
         Yaki yaki = getYakiOrThrow(party, yakiUser); //야끼가 아님
 
         if (yaki.getStatus() != YakiStatus.WAITING)//이미 수락된 야끼임
@@ -81,7 +86,6 @@ public class YakiService {
 
     @Transactional
     public void denyYaki(Long id, Long partyId, Long yakiId){
-        User yakiUser = userService.getUserOrThrow(yakiId);
         Party party = partyService.getPartyOrThrow(partyId);
 
         if (party.isDeleted())
@@ -91,9 +95,13 @@ public class YakiService {
 
         if (!party.isAuthor(id)) //타코가 아님
             throw new NotTakoException();
+
+        User yakiUser = userService.getUserOrThrow(yakiId);
         Yaki yaki = getYakiOrThrow(party, yakiUser); //야끼가 아님
+
         if (yaki.getStatus() != YakiStatus.WAITING) //이미 수락된 야끼임
             throw new AlreadyAcceptedYakiException(); //공통
+
         yakiRepository.delete(yaki);
     }
 

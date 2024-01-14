@@ -39,6 +39,16 @@ public class YakiController {
     }
 
     @NeedAuthentication
+    @DeleteMapping("/leaving")
+    public ApiResponse<?> leaveParty(@Session(attribute = SessionConst.ID) Long id,
+                                     @PathVariable(name = "party-id") Long partyId) {
+
+        yakiService.leaveParty(id, partyId);
+
+        return ApiResponseCreator.success();
+    }
+
+    @NeedAuthentication
     @PostMapping("/applicant/{user-id}")
     public ApiResponse<?> acceptYaki(@Session(attribute = SessionConst.ID) Long id,
                                      @PathVariable(name = "party-id") Long partyId,
@@ -55,16 +65,6 @@ public class YakiController {
                                    @PathVariable(name = "user-id") Long yakiId) {
 
         yakiService.denyYaki(id, partyId, yakiId);
-
-        return ApiResponseCreator.success();
-    }
-
-    @NeedAuthentication
-    @DeleteMapping("/leaving")
-    public ApiResponse<?> leaveParty(@Session(attribute = SessionConst.ID) Long id,
-                                     @PathVariable(name = "party-id") Long partyId) {
-
-        yakiService.leaveParty(id, partyId);
 
         return ApiResponseCreator.success();
     }
