@@ -28,7 +28,7 @@ import java.util.Random;
 @RequiredArgsConstructor
 @RequestMapping("/test")
 public class TestController {
-    private final PartyController partyController;
+    private final PartyCrudController partyCrudController;
     private final UserService userService;
     private final LoginChecker loginChecker;
 
@@ -89,7 +89,7 @@ public class TestController {
     @NeedAuthentication
     @PostMapping("/party/post-random")
     public ApiResponse<?> postRandomParty(@Session(attribute = SessionConst.ID) Long id) {
-        return partyController.createParty(id, getRandomParty());
+        return partyCrudController.createParty(id, getRandomParty());
     }
 
     public static String getRandomContact(ContactMethod m) {
