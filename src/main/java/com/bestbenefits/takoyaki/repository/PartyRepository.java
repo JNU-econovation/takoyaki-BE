@@ -23,6 +23,7 @@ public interface PartyRepository extends JpaRepository<Party, Long> {
             "FROM Party p " +
             "LEFT JOIN Bookmark b ON b.party = p AND b.user = :user " +
             "WHERE p.deletedAt IS NULL " +
+            "AND p.closedAt = p.createdAt " +
             "AND (:category IS NULL OR p.category = :category) " +
             "AND (:activityLocation IS NULL OR p.activityLocation = :activityLocation)" +
             "ORDER BY p.id DESC")
