@@ -2,6 +2,7 @@ package com.bestbenefits.takoyaki.controller;
 
 import com.bestbenefits.takoyaki.DTO.client.request.PartyCreationEditReqDTO;
 import com.bestbenefits.takoyaki.DTO.client.request.PartyListReqDTO;
+import com.bestbenefits.takoyaki.DTO.client.response.PartiesResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyInfoResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyListResDTO;
 import com.bestbenefits.takoyaki.config.annotation.DontCareAuthentication;
@@ -21,7 +22,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -39,10 +42,7 @@ public class PartyCrudController {
     }
 
     /************ /parties ************/
-    //TODO: 로그인 여부 확인 필요 없게 수정 필요...? 쿼리 param에서 login빼고 응답에서 로그인 여부 반환하게 하기
-    //TODO: 응답에 meta에 적절한 정보 담기
     //TODO: 전체적으로 리팩터링 필요
-    //TODO: 로그아웃 상태인데 비인가 오류 나는거 수정 필요
     @DontCareAuthentication
     @GetMapping("/parties")
     public ApiResponse<?> getPartyCardListForMainPage(
@@ -50,7 +50,6 @@ public class PartyCrudController {
             @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
             @ModelAttribute @Valid PartyListReqDTO dto){
 
-        List<? extends PartyListResDTO> partyDTOList;
         boolean isLogin = loginChecker.isLogin(id, authentication);
 
         System.out.println("dto.getNumber() = " + dto.getNumber());
@@ -63,10 +62,12 @@ public class PartyCrudController {
                 Category category = Optional.ofNullable(dto.getCategoryName()).map(Category::fromName).orElse(null);
                 ActivityLocation activityLocation = Optional.ofNullable(dto.getActivityLocationName()).map(ActivityLocation::fromName).orElse(null);
 
-                if (dto.getLoginField() == isLogin)
-                    partyDTOList = partyService.getPartiesInfoForPagination(isLogin, id, dto.getNumber(), dto.getPageNumber() - 1, category, activityLocation);
-                else
-                    throw new IllegalArgumentException("로그인 상태와 요청이 일치하지 않습니다.");
+                PartiesResDTO ret = partyService.getPartiesInfoForPagination(isLogin, id, dto.getNumber(), dto.getPageNumber() - 1, category, activityLocation);
+                Map<String, Object> meta = new HashMap<>();
+                meta.put("is_login", isLogin);
+                meta.put("count", ret.getPartyDTOlist().size());
+                meta.put("total_pages", ret.getTotalPages());
+                return ApiResponseCreator.success(meta, ret.getPartyDTOlist());
             }
             default -> {
                 if (!loginChecker.isLogin(id, authentication)) {
@@ -74,32 +75,25 @@ public class PartyCrudController {
                     System.out.println(">>>>> UnauthorizedException in PartyController");
                     throw new UnauthorizedException();
                 }
-                partyDTOList = partyService.getPartiesInfoForLoginUser(id, dto.getPartyListType());
+                Map<String, Integer> meta = new HashMap<>();
+                List<PartyListResDTO> data = partyService.getPartiesInfoForLoginUser(id, dto.getPartyListType());
+
+                meta.put("count", data.size());
+                return ApiResponseCreator.success(meta, data);
             }
         }
-
-        return ApiResponseCreator.success(partyDTOList);
     }
 
-
-    //TODO: 로그인 여부 확인 필요 없게 수정 필요...? 쿼리 param에서 login빼고 응답에서 로그인 여부 반환하게 하기
     @DontCareAuthentication
     @GetMapping("/parties/{party-id}")
     public ApiResponse<?> getPartyInfo(@Session(attribute = SessionConst.ID, nullable = true) Long id,
                                        @Session(attribute = SessionConst.AUTHENTICATION, nullable = true) Boolean authentication,
-                                       @RequestParam(name = "login") boolean loginField,
                                        @PathVariable(name = "party-id") Long partyId) {
-
         boolean isLogin = loginChecker.isLogin(id, authentication);
+        Map<String, Boolean> meta = new HashMap<>();
+        meta.put("is_login", isLogin);
 
-        PartyInfoResDTO partyInfoResDTO;
-
-        if (loginField == isLogin)
-            partyInfoResDTO = partyService.getPartyInfo(isLogin, id, partyId);
-        else
-            throw new IllegalArgumentException("로그인 상태와 요청이 일치하지 않습니다.");
-
-        return ApiResponseCreator.success(partyInfoResDTO);
+        return ApiResponseCreator.success(meta, partyService.getPartyInfo(isLogin, id, partyId));
     }
 
     @NeedAuthentication

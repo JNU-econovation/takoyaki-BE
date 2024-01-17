@@ -1,6 +1,7 @@
 package com.bestbenefits.takoyaki.service;
 
 import com.bestbenefits.takoyaki.DTO.client.request.PartyCreationEditReqDTO;
+import com.bestbenefits.takoyaki.DTO.client.response.PartiesResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyIdResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyInfoResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyListResDTO;
@@ -18,6 +19,7 @@ import com.bestbenefits.takoyaki.repository.BookmarkRepository;
 import com.bestbenefits.takoyaki.repository.PartyRepository;
 import com.bestbenefits.takoyaki.repository.YakiRepositoy;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -137,13 +139,12 @@ public class PartyService {
     }
 
     @Transactional(readOnly = true)
-    public List<PartyListResDTO> getPartiesInfoForPagination(boolean isLogin, Long id, int number, int pageNumber, Category category, ActivityLocation activityLocation){
-
-        List<Object[]> partyList;
-
+    public PartiesResDTO getPartiesInfoForPagination(boolean isLogin, Long id, int number, int pageNumber, Category category, ActivityLocation activityLocation){
         User user = isLogin ? userService.getUserOrThrow(id) : null;
-        partyList = partyRepository.getPartiesByFilteringAndPagination(PageRequest.of(pageNumber, number), user, category, activityLocation).getContent();
+        Page<Object[]> page = partyRepository.getPartiesByFilteringAndPagination(PageRequest.of(pageNumber, number), user, category, activityLocation);
 
+        List<Object[]> partyList = page.getContent();
+        page.getTotalPages();
         List<PartyListResDTO> partyDTOList = new ArrayList<>();
 
         for (Object[] row : partyList) {
@@ -152,7 +153,7 @@ public class PartyService {
             partyDTOList.add(builder.build());
         }
 
-        return partyDTOList;
+        return new PartiesResDTO(partyDTOList, page.getTotalPages());
     }
 
     @Transactional(readOnly = true)
