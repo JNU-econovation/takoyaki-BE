@@ -51,10 +51,12 @@ public class UserController {
         return ApiResponseCreator.success();
     }
 
-    @NeedAuthentication
+    @DontCareAuthentication
     @PostMapping("/logout")
     public ApiResponse<?> logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
+        if (session == null) return ApiResponseCreator.success();
+
         session.removeAttribute(SessionConst.ID); //로그아웃하면 세션 attribute 다 날리기
         session.removeAttribute(SessionConst.AUTHENTICATION);
         session.invalidate();

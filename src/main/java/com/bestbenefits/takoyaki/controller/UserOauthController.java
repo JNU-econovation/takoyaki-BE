@@ -52,8 +52,8 @@ public class UserOauthController {
     @NeedNoAuthentication
     @PostMapping("/login/{social}")
     public ApiResponse<?> login(HttpServletRequest request, @PathVariable String social, @RequestParam String code) {
-        if (loginChecker.isLogin(request.getSession(false)))
-            throw new LogoutRequiredException();
+/*        if (loginChecker.isLogin(request.getSession(false)))
+            throw new LogoutRequiredException();*/
 
         //get social-type enum
         OAuthSocialType oAuthSocialType = OAuthSocialType.fromName(social);
