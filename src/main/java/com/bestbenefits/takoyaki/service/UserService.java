@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Random;
 
 @Service
@@ -111,5 +112,22 @@ public class UserService {
     @Transactional(readOnly = true)
     public User getUserOrThrow(Long id) {
         return userRepository.findUserById(id).orElseThrow(UserNotFoundException::new);
+    }
+
+    /**********  Test Services **********/
+    @Transactional
+    public void deleteUserById(Long id) {
+        User user = getUserOrThrow(id);
+        userRepository.delete(user);
+    }
+
+    @Transactional
+    public void deleteAllUsers() {
+        userRepository.deleteAll();
+    }
+
+    @Transactional
+    public List<User> showAllUsers() {
+        return userRepository.findAll();
     }
 }

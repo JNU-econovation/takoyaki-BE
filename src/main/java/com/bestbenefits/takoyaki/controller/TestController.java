@@ -14,6 +14,7 @@ import com.bestbenefits.takoyaki.config.properties.party.ContactMethod;
 import com.bestbenefits.takoyaki.config.properties.party.DurationUnit;
 import com.bestbenefits.takoyaki.entity.User;
 import com.bestbenefits.takoyaki.exception.user.LogoutRequiredException;
+import com.bestbenefits.takoyaki.repository.UserRepository;
 import com.bestbenefits.takoyaki.service.UserService;
 import com.bestbenefits.takoyaki.util.LoginChecker;
 import jakarta.servlet.http.HttpServletRequest;
@@ -90,6 +91,26 @@ public class TestController {
     @PostMapping("/party/post-random")
     public ApiResponse<?> postRandomParty(@Session(attribute = SessionConst.ID) Long id) {
         return partyCrudController.createParty(id, getRandomParty());
+    }
+
+    @DontCareAuthentication
+    @DeleteMapping("/users")
+    public ApiResponse<?> deleteAllUsers() {
+        userService.deleteAllUsers();
+        return ApiResponseCreator.success();
+    }
+
+    @DontCareAuthentication
+    @GetMapping("/users")
+    public ApiResponse<?> showAllUsers() {
+        return ApiResponseCreator.success(userService.showAllUsers());
+    }
+
+    @DontCareAuthentication
+    @DeleteMapping("/user/{user-id}")
+    public ApiResponse<?> deleteUserByID(@PathVariable(value = "user-id") Long id) {
+        userService.deleteUserById(id);
+        return ApiResponseCreator.success();
     }
 
     public static String getRandomContact(ContactMethod m) {
