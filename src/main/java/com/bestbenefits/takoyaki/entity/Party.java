@@ -109,6 +109,11 @@ public class Party {
         return this;
     }
 
+    //조회수 갱신에서 사용됨
+    public void updateViewCount() {
+        this.viewCount++;
+    }
+
     public Party updateContactMethod(ContactMethod contactMethod) {
         this.contactMethod = contactMethod;
         return this;

@@ -191,6 +191,8 @@ public class PartyService {
 
         User user = isLogin ? userService.getUserOrThrow(id) : null;
 
+        party.updateViewCount();
+
         PartyInfoResDTO.PartyInfoResDTOBuilder builder =
                 PartyInfoResDTO.builder().partyId(partyId)
                         .title(party.getTitle())
