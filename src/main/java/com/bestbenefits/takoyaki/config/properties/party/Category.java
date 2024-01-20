@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 @Getter
 public enum Category {
     EXTERNAL_ACTIVITIES("대외활동"),
-    JOB_STUDY("취업/스터디"),
+    JOB_STUDY("스터디"),
     OTT("OTT"),
-    HABIT_CHALLENGE("습관 챌린지"),
+    HABIT_CHALLENGE("챌린지"),
     GAME("게임"),
     SMALL_GROUP("소모임"),
     ETC("기타");
