@@ -74,9 +74,8 @@ public class PartyCrudController {
 
 
         data.put("card_list", ret.getPartyDTOlist());
-
         meta.put("is_login", isLogin);
-        meta.put("count", data.get("card_list").size());
+        meta.put("count", ret.getPartyDTOlist().size());
         meta.put("total_pages", ret.getTotalPages());
 
         return ApiResponseCreator.success(meta, data);
@@ -93,8 +92,11 @@ public class PartyCrudController {
         Map<String, Object> meta = new HashMap<>();
         Map<String, List<PartyListResDTO>> data = new HashMap<>();
 
-        data.put("card_list", partyService.getPartiesInfoForLoginUser(id, partyListType, number, pageNumber - 1));
-        meta.put("count", data.get("card_list").size());
+        PartiesPaginationResDTO ret = partyService.getPartiesInfoForLoginUser(id, partyListType, number, pageNumber - 1);
+
+        data.put("card_list", ret.getPartyDTOlist());
+        meta.put("count", ret.getPartyDTOlist().size());
+        meta.put("total_pages", ret.getTotalPages());
 
         return ApiResponseCreator.success(meta, data);
     }

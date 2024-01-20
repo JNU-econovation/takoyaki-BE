@@ -160,7 +160,7 @@ public class PartyService {
 
     //TODO: row[] 인덱스 하드코딩 개선
     @Transactional(readOnly = true)
-    public List<PartyListResDTO> getPartiesInfoForLoginUser(Long id, String partyListType, int number, int pageNumber) {
+    public PartiesPaginationResDTO getPartiesInfoForLoginUser(Long id, String partyListType, int number, int pageNumber) {
         User user = userService.getUserOrThrow(id);
 
         Page<Object[]> page = null;
@@ -181,6 +181,7 @@ public class PartyService {
         }
 
         List<Object[]> partyList = page.getContent();
+
         List<PartyListResDTO> partyDTOList = new ArrayList<>();
 
         for (Object[] row : partyList) {
@@ -190,7 +191,7 @@ public class PartyService {
             partyDTOList.add(builder.build());
         }
 
-        return partyDTOList;
+        return new PartiesPaginationResDTO(partyDTOList, page.getTotalPages());
     }
 
     @Transactional(readOnly = true)
