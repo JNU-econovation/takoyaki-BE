@@ -139,12 +139,11 @@ public class PartyService {
     }
 
     @Transactional(readOnly = true)
-    public PartiesResDTO getPartiesInfoForPagination(boolean isLogin, Long id, int number, int pageNumber, Category category, ActivityLocation activityLocation){
+    public PartiesResDTO getPartiesInfoForPagination(boolean isLogin, Long id, int number, int pageNumber, Category category, ActivityLocation activityLocation) {
         User user = isLogin ? userService.getUserOrThrow(id) : null;
         Page<Object[]> page = partyRepository.getPartiesByFilteringAndPagination(PageRequest.of(pageNumber, number), user, category, activityLocation);
 
         List<Object[]> partyList = page.getContent();
-        page.getTotalPages();
         List<PartyListResDTO> partyDTOList = new ArrayList<>();
 
         for (Object[] row : partyList) {
@@ -157,7 +156,7 @@ public class PartyService {
     }
 
     @Transactional(readOnly = true)
-    public List<PartyListResDTO> getPartiesInfoForLoginUser(Long id, PartyListType partyListType){
+    public List<PartyListResDTO> getPartiesInfoForLoginUser(Long id, PartyListType partyListType) {
         User user = userService.getUserOrThrow(id);
 
         List<Object[]> partyList;
@@ -165,23 +164,18 @@ public class PartyService {
 
         //TODO: row[] 인덱스 하드코딩 개선
 
-        switch (partyListType){
-            case NOT_CLOSED_WAITING ->
-                partyList = partyRepository.getNotClosedParties(user, YakiStatus.WAITING);
-            case NOT_CLOSED_ACCEPTED ->
-                partyList = partyRepository.getNotClosedParties(user, YakiStatus.ACCEPTED);
-            case CLOSED ->
-                partyList = partyRepository.getClosedParties(user);
-            case WROTE ->
-                partyList = partyRepository.getWroteParties(user);
-            case BOOKMARKED ->
-                partyList = partyRepository.getBookmarkedParties(user);
-            default ->
-                partyList = new ArrayList<>(); //오류 없애려고 씀, 실행될 일 절대 없음
+        switch (partyListType) {
+            case NOT_CLOSED_WAITING -> partyList = partyRepository.getNotClosedParties(user, YakiStatus.WAITING);
+            case NOT_CLOSED_ACCEPTED -> partyList = partyRepository.getNotClosedParties(user, YakiStatus.ACCEPTED);
+            case CLOSED -> partyList = partyRepository.getClosedParties(user);
+            case WROTE -> partyList = partyRepository.getWroteParties(user);
+            case BOOKMARKED -> partyList = partyRepository.getBookmarkedParties(user);
+            default -> partyList = new ArrayList<>(); //오류 없애려고 씀, 실행될 일 절대 없음
         }
         for (Object[] row : partyList) {
             PartyListResDTO.PartyListResDTOBuilder builder = initializePartyListBuilder(row);
-            if (PartyListType.NOT_CLOSED_ACCEPTED == partyListType || PartyListType.NOT_CLOSED_WAITING == partyListType) builder.bookmarked((boolean) row[8]);
+            if (PartyListType.NOT_CLOSED_ACCEPTED == partyListType || PartyListType.NOT_CLOSED_WAITING == partyListType)
+                builder.bookmarked((boolean) row[8]);
             if (PartyListType.WROTE == partyListType) builder.closed((boolean) row[8]);
             partyDTOList.add(builder.build());
         }
@@ -190,7 +184,7 @@ public class PartyService {
     }
 
     @Transactional(readOnly = true)
-    public PartyInfoResDTO getPartyInfo(boolean isLogin, Long id, Long partyId){
+    public PartyInfoResDTO getPartyInfo(boolean isLogin, Long id, Long partyId) {
         Party party = partyRepository.findById(partyId)
                 .filter(p -> p.getDeletedAt() == null)
                 .orElseThrow(PartyNotFoundException::new);
@@ -208,25 +202,25 @@ public class PartyService {
                         .activityDuration(DurationUnit.calculateDuration(party.getActivityDuration()))
                         .contactMethod(party.getContactMethod().getName())
                         .viewCount(party.getViewCount().intValue())
-                        .closedDate(party.getClosedAt().isEqual(party.getCreatedAt()) ? null : party.getClosedAt().toLocalDate() ) //
+                        .closedDate(party.getClosedAt().isEqual(party.getCreatedAt()) ? null : party.getClosedAt().toLocalDate()) //
                         .recruitNumber(party.getRecruitNumber())
                         .plannedClosingDate(party.getPlannedClosingDate());
 
-        if (isLogin){
+        if (isLogin) {
             UserType userType;
             if (party.getUser() == user) {
                 userType = UserType.TAKO;
                 builder.waitingList(yakiRepository.findWaitingList(party))
                         .acceptedList(yakiRepository.findAcceptedList(party))
                         .contact(party.getContact());
-            }else{
+            } else {
                 Yaki yaki = yakiRepository.findYakiByPartyAndUser(party, user).orElse(null);
-                if (yaki != null){
+                if (yaki != null) {
                     userType = UserType.YAKI;
                     builder.yakiStatus(yaki.getStatus());
                     if (party.getClosedAt() != null && yaki.getStatus() == YakiStatus.ACCEPTED)
                         builder.contact(party.getContact());
-                }else
+                } else
                     userType = UserType.OTHER;
             }
             builder.userType(userType);
@@ -236,15 +230,15 @@ public class PartyService {
     }
 
     @Transactional(readOnly = true)
-    public Party getPartyOrThrow(Long partyId){
+    public Party getPartyOrThrow(Long partyId) {
         return partyRepository.findById(partyId).orElseThrow(PartyNotFoundException::new);
     }
 
     private PartyListResDTO.PartyListResDTOBuilder initializePartyListBuilder(Object[] row) {
-        int recruitNumber = (int) row[4];
-        int waitingNumber = ((Long) row[6]).intValue();
-        int acceptedNumber = ((Long) row[7]).intValue();
-        float competitionRate = (waitingNumber != 0) ? (float) (recruitNumber - acceptedNumber)/waitingNumber : 0f;
+        int recruitNumber = (int) row[4]; //모집인원
+        int waitingNumber = ((Long) row[6]).intValue(); //신청했고 대기중인 야끼
+        int acceptedNumber = ((Long) row[7]).intValue(); //신청했고 수락된 야끼
+        float competitionRate = getCompetitionRate(recruitNumber, waitingNumber, acceptedNumber);
         return PartyListResDTO.builder()
                 .partyId((Long) row[0])
                 .title((String) row[1])
@@ -255,5 +249,10 @@ public class PartyService {
                 .waitingNumber(waitingNumber)
                 .acceptedNumber(acceptedNumber)
                 .competitionRate(competitionRate);
+    }
+
+    private static float getCompetitionRate(int recruit, int waiting, int accepted) {
+        if (recruit == accepted) return 0f;
+        return (float) waiting / (recruit - accepted);
     }
 }
