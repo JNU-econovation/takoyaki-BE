@@ -10,7 +10,7 @@ import jakarta.validation.constraints.Pattern;
 import java.lang.annotation.*;
 
 @NotBlank(message = ValidationMessage.NOT_BLANK)
-@Pattern(regexp = "^[a-zA-Z0-9가-힣]{4,16}$", message = "4~16자리의 숫자, 영어, 한글만 허용됩니다.")
+@Pattern(regexp = "^[a-zA-Z0-9가-힣]{2,16}$", message = "2~16자리의 숫자, 영어, 한글만 허용됩니다.")
 @Constraint(validatedBy = {})
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
