@@ -22,7 +22,6 @@ public class PartyInfoResDTO {
     private String contactMethod;
     private String title;
     private String body;
-    private int viewCount;
     private int recruitNumber;
     private String activityDuration;
     private LocalDate plannedStartDate;
@@ -33,6 +32,7 @@ public class PartyInfoResDTO {
     //추가된 키값
     private UserType userType; //사용자 타입 (meta로 제공)
     private Long partyId;
+    private int viewCount;
     private String nickname;
     @JsonInclude(JsonInclude.Include.ALWAYS)
     private LocalDate closedDate;

@@ -16,10 +16,13 @@ import java.util.List;
 
 @Repository
 public interface PartyRepository extends JpaRepository<Party, Long> {
-    @Query("SELECT p.id, p.title, p.category, p.activityLocation, p.recruitNumber, p.plannedClosingDate, " +
+    /********  모든 팟 조회  ********/
+    //row[10] bookmarked임
+    @Query("SELECT p.id, p.title, p.category, p.activityLocation, p.recruitNumber, p.plannedClosingDate, p.viewCount, " +
             "(SELECT COUNT(*) FROM Yaki y WHERE y.party = p AND y.status = 'WAITING') AS waitingNumber, " +
             "(SELECT COUNT(*) FROM Yaki y WHERE y.party = p AND y.status = 'ACCEPTED') AS acceptedNumber, " +
-            "CASE WHEN b.user IS NOT NULL THEN true ELSE false END AS bookmarked " +
+            "CASE WHEN p.closedAt != p.createdAt THEN p.closedAt END AS closedDate, " +
+            "CASE WHEN b.user IS NOT NULL THEN true ELSE false END AS bookmarked " + //로그인 시에만 제공
             "FROM Party p " +
             "LEFT JOIN Bookmark b ON b.party = p AND b.user = :user " +
             "WHERE p.deletedAt IS NULL " +
@@ -29,10 +32,13 @@ public interface PartyRepository extends JpaRepository<Party, Long> {
             "ORDER BY p.id DESC")
     Page<Object[]> getPartiesByFilteringAndPagination(Pageable pageable, @Nullable User user, Category category, ActivityLocation activityLocation);
 
-    @Query("SELECT p.id, p.title, p.category, p.activityLocation, p.recruitNumber, p.plannedClosingDate," +
+    /********  특정 팟 조회  ********/
+    //row[10] bookmarked임
+    @Query("SELECT p.id, p.title, p.category, p.activityLocation, p.recruitNumber, p.plannedClosingDate, p.viewCount, " +
             "(SELECT COUNT(*) FROM Yaki y WHERE y.party = p AND y.status = 'WAITING') AS waitingNumber," +
             "(SELECT COUNT(*) FROM Yaki y WHERE y.party = p AND y.status = 'ACCEPTED') AS acceptedNumber, " +
-            "CASE WHEN b.user IS NOT NULL THEN true ELSE false END AS bookmarked " +
+            "CASE WHEN p.closedAt != p.createdAt THEN p.closedAt END AS closedDate, " +
+            "CASE WHEN b.user IS NOT NULL THEN true ELSE false END AS bookmarked " + //두가지 경우에만 제공
             "FROM Party p " +
             "LEFT JOIN Bookmark b ON b.party = p AND b.user = :user " +
             "WHERE p.deletedAt IS NULL " +
@@ -41,9 +47,11 @@ public interface PartyRepository extends JpaRepository<Party, Long> {
             "ORDER BY p.id DESC")
     List<Object[]> getNotClosedParties(User user, YakiStatus status);
 
-    @Query("SELECT p.id, p.title, p.category, p.activityLocation, p.recruitNumber, p.plannedClosingDate," +
+    //row[10] 없음
+    @Query("SELECT p.id, p.title, p.category, p.activityLocation, p.recruitNumber, p.plannedClosingDate, p.viewCount, " +
             "(SELECT COUNT(*) FROM Yaki y WHERE y.party = p AND y.status = 'WAITING') AS waitingNumber," +
-            "(SELECT COUNT(*) FROM Yaki y WHERE y.party = p AND y.status = 'ACCEPTED') AS acceptedNumber " +
+            "(SELECT COUNT(*) FROM Yaki y WHERE y.party = p AND y.status = 'ACCEPTED') AS acceptedNumber, " +
+            "CASE WHEN p.closedAt != p.createdAt THEN p.closedAt END AS closedDate " +
             "FROM Party p " +
             "WHERE p.deletedAt IS NULL " +
             "AND p.createdAt != p.closedAt "+
@@ -51,18 +59,22 @@ public interface PartyRepository extends JpaRepository<Party, Long> {
             "ORDER BY p.id DESC")
     List<Object[]> getClosedParties(User user);
 
-    @Query("SELECT p.id, p.title, p.category, p.activityLocation, p.recruitNumber, p.plannedClosingDate," +
+    //row[10] 없음
+    @Query("SELECT p.id, p.title, p.category, p.activityLocation, p.recruitNumber, p.plannedClosingDate, p.viewCount, " +
             "(SELECT COUNT(*) FROM Yaki y WHERE y.party = p AND y.status = 'WAITING') AS waitingNumber," +
-            "(SELECT COUNT(*) FROM Yaki y WHERE y.party = p AND y.status = 'ACCEPTED') AS acceptedNumber " +
+            "(SELECT COUNT(*) FROM Yaki y WHERE y.party = p AND y.status = 'ACCEPTED') AS acceptedNumber, " +
+            "CASE WHEN p.closedAt != p.createdAt THEN p.closedAt END AS closedDate " +
             "FROM Party p " +
             "INNER JOIN Bookmark b ON b.party = p AND b.user = :user " +
             "WHERE p.deletedAt IS NULL " +
             "ORDER BY p.id DESC")
     List<Object[]> getBookmarkedParties(User user);
-    @Query("SELECT p.id, p.title, p.category, p.activityLocation, p.recruitNumber, p.plannedClosingDate, " +
+
+    //row[10] 없음
+    @Query("SELECT p.id, p.title, p.category, p.activityLocation, p.recruitNumber, p.plannedClosingDate, p.viewCount, " +
             "(SELECT COUNT(*) FROM Yaki y WHERE y.party = p AND y.status = 'WAITING') AS waitingNumber, " +
             "(SELECT COUNT(*) FROM Yaki y WHERE y.party = p AND y.status = 'ACCEPTED') AS acceptedNumber, " +
-            "CASE WHEN p.closedAt != p.createdAt THEN true ELSE false END AS closed " +
+            "CASE WHEN p.closedAt != p.createdAt THEN p.closedAt END AS closedDate " +
             "FROM Party p " +
             "WHERE p.deletedAt IS NULL " +
             "AND p.user = :user " +

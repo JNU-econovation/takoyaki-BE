@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -148,7 +149,7 @@ public class PartyService {
 
         for (Object[] row : partyList) {
             PartyListResDTO.PartyListResDTOBuilder builder = initializePartyListBuilder(row);
-            if (isLogin) builder.bookmarked((boolean) row[8]);
+            if (isLogin) builder.bookmarked((boolean) row[10]); //row[10] == bookmarked
             partyDTOList.add(builder.build());
         }
 
@@ -160,30 +161,28 @@ public class PartyService {
     public List<PartyListResDTO> getPartiesInfoForLoginUser(Long id, String partyListType) {
         User user = userService.getUserOrThrow(id);
 
-        List<Object[]> partyList;
+        List<Object[]> partyList = new ArrayList<>();
         List<PartyListResDTO> partyDTOList = new ArrayList<>();
 
         PartyListType type = PartyListType.fromName(partyListType.replace("-", "_"));
 
         switch (type) {
             case NOT_CLOSED_WAITING ->
-                    partyList = partyRepository.getNotClosedParties(user, YakiStatus.WAITING);
+                    partyList = partyRepository.getNotClosedParties(user, YakiStatus.WAITING); //row[10] == bookmarked
             case NOT_CLOSED_ACCEPTED ->
-                    partyList = partyRepository.getNotClosedParties(user, YakiStatus.ACCEPTED);
+                    partyList = partyRepository.getNotClosedParties(user, YakiStatus.ACCEPTED); //row[10] == bookmarked
             case CLOSED ->
-                    partyList = partyRepository.getClosedParties(user);
+                    partyList = partyRepository.getClosedParties(user); //row[10] 없음
             case WROTE ->
-                    partyList = partyRepository.getWroteParties(user);
+                    partyList = partyRepository.getWroteParties(user); //row[10] 없음
             case BOOKMARKED ->
-                    partyList = partyRepository.getBookmarkedParties(user);
-            default ->
-                    partyList = new ArrayList<>(); //오류 없애려고 씀, 실행될 일 절대 없음
+                    partyList = partyRepository.getBookmarkedParties(user); //row[10] 없음
         }
+
         for (Object[] row : partyList) {
             PartyListResDTO.PartyListResDTOBuilder builder = initializePartyListBuilder(row);
             if (type == PartyListType.NOT_CLOSED_ACCEPTED || type == PartyListType.NOT_CLOSED_WAITING)
-                builder.bookmarked((boolean) row[8]);
-            if (type == PartyListType.WROTE) builder.closed((boolean) row[8]);
+                builder.bookmarked((boolean) row[10]);
             partyDTOList.add(builder.build());
         }
 
@@ -264,8 +263,8 @@ public class PartyService {
 
     private PartyListResDTO.PartyListResDTOBuilder initializePartyListBuilder(Object[] row) {
         int recruitNumber = (int) row[4]; //모집인원
-        int waitingNumber = ((Long) row[6]).intValue(); //신청했고 대기중인 야끼
-        int acceptedNumber = ((Long) row[7]).intValue(); //신청했고 수락된 야끼
+        int waitingNumber = ((Long) row[7]).intValue(); //신청했고 대기중인 야끼
+        int acceptedNumber = ((Long) row[8]).intValue(); //신청했고 수락된 야끼
         float competitionRate = getCompetitionRate(recruitNumber, waitingNumber, acceptedNumber);
         return PartyListResDTO.builder()
                 .partyId((Long) row[0])
@@ -274,8 +273,10 @@ public class PartyService {
                 .activityLocation(((ActivityLocation) row[3]).getName())
                 .recruitNumber(recruitNumber)
                 .plannedClosingDate((LocalDate) row[5])
+                .viewCount((Long) row[6])
                 .waitingNumber(waitingNumber)
                 .acceptedNumber(acceptedNumber)
+                .closedDate(row[9] == null ? null : ((LocalDateTime)row[9]).toLocalDate())
                 .competitionRate(competitionRate);
     }
 

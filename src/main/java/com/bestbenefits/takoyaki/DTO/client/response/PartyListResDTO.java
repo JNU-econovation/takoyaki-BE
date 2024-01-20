@@ -7,35 +7,28 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
+@Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PartyListResDTO {
+    //기본 제공(11개)
     private final Long partyId;
     private final String title;
     private final String category;
     private final String activityLocation;
-    private final int recruitNumber;
-    private final LocalDate plannedClosingDate;
+    private final Long viewCount;
     private final int waitingNumber;
     private final int acceptedNumber;
+    private final int recruitNumber;
+    private final LocalDate plannedClosingDate;
     private final float competitionRate;
-    private final Boolean bookmarked;
-    private final Boolean closed;
+    @JsonInclude(JsonInclude.Include.ALWAYS)
+    private final LocalDate closedDate;
 
-    @Builder
-    public PartyListResDTO(Long partyId, String title, String category, int waitingNumber, int acceptedNumber, int recruitNumber, float competitionRate, String activityLocation, LocalDate plannedClosingDate, Boolean bookmarked, Boolean closed) {
-        this.partyId = partyId;
-        this.title = title;
-        this.category = category;
-        this.waitingNumber = waitingNumber;
-        this.acceptedNumber = acceptedNumber;
-        this.recruitNumber = recruitNumber;
-        this.competitionRate = competitionRate;
-        this.activityLocation = activityLocation;
-        this.plannedClosingDate = plannedClosingDate;
-        this.bookmarked = bookmarked;
-        this.closed = closed;
-    }
+    //로그인 시 제공
+    private final Boolean bookmarked;
+
 }
