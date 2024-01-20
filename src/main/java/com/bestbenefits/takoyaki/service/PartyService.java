@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -271,7 +272,7 @@ public class PartyService {
                 .category(((Category) row[2]).getName())
                 .activityLocation(((ActivityLocation) row[3]).getName())
                 .recruitNumber(recruitNumber)
-                .plannedClosingDate((LocalDate) row[5])
+                .plannedClosingDate(((LocalDate)row[5]).format(DateTimeFormatter.ofPattern("yyyy/MM/dd")))
                 .viewCount((Long) row[6])
                 .waitingNumber(waitingNumber)
                 .acceptedNumber(acceptedNumber)

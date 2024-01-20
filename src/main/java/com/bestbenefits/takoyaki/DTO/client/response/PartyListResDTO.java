@@ -23,7 +23,7 @@ public class PartyListResDTO {
     private final int waitingNumber;
     private final int acceptedNumber;
     private final int recruitNumber;
-    private final LocalDate plannedClosingDate;
+    private final String plannedClosingDate;
     private final String competitionRate;
     @JsonInclude(JsonInclude.Include.ALWAYS)
     private final LocalDate closedDate;
