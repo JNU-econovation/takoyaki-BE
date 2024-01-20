@@ -276,6 +276,7 @@ public class PartyService {
                 .viewCount((Long) row[6])
                 .waitingNumber(waitingNumber)
                 .acceptedNumber(acceptedNumber)
+                .occupationRate(String.format("%d/%d", acceptedNumber, recruitNumber))
                 .closedDate(row[9] == null ? null : ((LocalDateTime)row[9]).toLocalDate())
                 .competitionRate(String.format("%.1f", getCompetitionRate(recruitNumber, waitingNumber, acceptedNumber)));
     }

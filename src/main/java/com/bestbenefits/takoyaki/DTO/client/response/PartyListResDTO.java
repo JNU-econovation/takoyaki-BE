@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PartyListResDTO {
-    //기본 제공(11개)
+    //기본 제공(12개)
     private final Long partyId;
     private final String title;
     private final String category;
@@ -22,6 +22,7 @@ public class PartyListResDTO {
     private final Long viewCount;
     private final int waitingNumber;
     private final int acceptedNumber;
+    private final String occupationRate; // 수락인원/모집인원
     private final int recruitNumber;
     private final String plannedClosingDate;
     private final String competitionRate;
