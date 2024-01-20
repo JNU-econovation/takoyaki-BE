@@ -45,7 +45,7 @@ public interface PartyRepository extends JpaRepository<Party, Long> {
             "AND p.createdAt = p.closedAt "+
             "AND EXISTS (SELECT 1 FROM Yaki y WHERE y.party = p AND y.user = :user AND y.status = :status)" +
             "ORDER BY p.id DESC")
-    List<Object[]> getNotClosedParties(User user, YakiStatus status);
+    Page<Object[]> getNotClosedParties(Pageable pageable, User user, YakiStatus status);
 
     //row[10] 없음
     @Query("SELECT p.id, p.title, p.category, p.activityLocation, p.recruitNumber, p.plannedClosingDate, p.viewCount, " +
@@ -57,7 +57,7 @@ public interface PartyRepository extends JpaRepository<Party, Long> {
             "AND p.createdAt != p.closedAt "+
             "AND EXISTS (SELECT 1 FROM Yaki y WHERE y.party = p AND y.user = :user AND y.status = 'ACCEPTED')" +
             "ORDER BY p.id DESC")
-    List<Object[]> getClosedParties(User user);
+    Page<Object[]> getClosedParties(Pageable pageable, User user);
 
     //row[10] 없음
     @Query("SELECT p.id, p.title, p.category, p.activityLocation, p.recruitNumber, p.plannedClosingDate, p.viewCount, " +
@@ -68,7 +68,7 @@ public interface PartyRepository extends JpaRepository<Party, Long> {
             "INNER JOIN Bookmark b ON b.party = p AND b.user = :user " +
             "WHERE p.deletedAt IS NULL " +
             "ORDER BY p.id DESC")
-    List<Object[]> getBookmarkedParties(User user);
+    Page<Object[]> getBookmarkedParties(Pageable pageable, User user);
 
     //row[10] 없음
     @Query("SELECT p.id, p.title, p.category, p.activityLocation, p.recruitNumber, p.plannedClosingDate, p.viewCount, " +
@@ -79,5 +79,5 @@ public interface PartyRepository extends JpaRepository<Party, Long> {
             "WHERE p.deletedAt IS NULL " +
             "AND p.user = :user " +
             "ORDER BY p.id DESC")
-    List<Object[]> getWroteParties(User user);
+    Page<Object[]> getWroteParties(Pageable pageable, User user);
 }

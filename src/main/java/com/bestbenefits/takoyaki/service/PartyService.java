@@ -20,6 +20,7 @@ import com.bestbenefits.takoyaki.repository.PartyRepository;
 import com.bestbenefits.takoyaki.repository.YakiRepositoy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -159,26 +160,28 @@ public class PartyService {
 
     //TODO: row[] 인덱스 하드코딩 개선
     @Transactional(readOnly = true)
-    public List<PartyListResDTO> getPartiesInfoForLoginUser(Long id, String partyListType) {
+    public List<PartyListResDTO> getPartiesInfoForLoginUser(Long id, String partyListType, int number, int pageNumber) {
         User user = userService.getUserOrThrow(id);
 
-        List<Object[]> partyList = new ArrayList<>();
-        List<PartyListResDTO> partyDTOList = new ArrayList<>();
+        Page<Object[]> page = null;
 
         PartyListType type = PartyListType.fromName(partyListType.replace("-", "_"));
 
         switch (type) {
             case NOT_CLOSED_WAITING ->
-                    partyList = partyRepository.getNotClosedParties(user, YakiStatus.WAITING); //row[10] == bookmarked
+                    page = partyRepository.getNotClosedParties(PageRequest.of(pageNumber, number), user, YakiStatus.WAITING); //row[10] == bookmarked
             case NOT_CLOSED_ACCEPTED ->
-                    partyList = partyRepository.getNotClosedParties(user, YakiStatus.ACCEPTED); //row[10] == bookmarked
+                    page = partyRepository.getNotClosedParties(PageRequest.of(pageNumber, number), user, YakiStatus.ACCEPTED); //row[10] == bookmarked
             case CLOSED ->
-                    partyList = partyRepository.getClosedParties(user); //row[10] 없음
+                    page = partyRepository.getClosedParties(PageRequest.of(pageNumber, number), user); //row[10] 없음
             case WROTE ->
-                    partyList = partyRepository.getWroteParties(user); //row[10] 없음
+                    page = partyRepository.getWroteParties(PageRequest.of(pageNumber, number), user); //row[10] 없음
             case BOOKMARKED ->
-                    partyList = partyRepository.getBookmarkedParties(user); //row[10] 없음
+                    page = partyRepository.getBookmarkedParties(PageRequest.of(pageNumber, number), user); //row[10] 없음
         }
+
+        List<Object[]> partyList = page.getContent();
+        List<PartyListResDTO> partyDTOList = new ArrayList<>();
 
         for (Object[] row : partyList) {
             PartyListResDTO.PartyListResDTOBuilder builder = initializePartyListBuilder(row);

@@ -86,12 +86,14 @@ public class PartyCrudController {
     @GetMapping("/parties/{party-type:\\D+}") //non-numeric url
     public ApiResponse<?> getSpecificParty(
             @Session(attribute = SessionConst.ID) Long id,
-            @PathVariable(name = "party-type") String partyListType) {
+            @PathVariable(name = "party-type") String partyListType,
+            @RequestParam int number,
+            @RequestParam(name = "page-number") int pageNumber) {
 
         Map<String, Object> meta = new HashMap<>();
         Map<String, List<PartyListResDTO>> data = new HashMap<>();
 
-        data.put("card_list", partyService.getPartiesInfoForLoginUser(id, partyListType));
+        data.put("card_list", partyService.getPartiesInfoForLoginUser(id, partyListType, number, pageNumber - 1));
         meta.put("count", data.get("card_list").size());
 
         return ApiResponseCreator.success(meta, data);
