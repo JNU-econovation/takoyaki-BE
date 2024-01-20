@@ -265,7 +265,6 @@ public class PartyService {
         int recruitNumber = (int) row[4]; //모집인원
         int waitingNumber = ((Long) row[7]).intValue(); //신청했고 대기중인 야끼
         int acceptedNumber = ((Long) row[8]).intValue(); //신청했고 수락된 야끼
-        float competitionRate = getCompetitionRate(recruitNumber, waitingNumber, acceptedNumber);
         return PartyListResDTO.builder()
                 .partyId((Long) row[0])
                 .title((String) row[1])
@@ -277,7 +276,7 @@ public class PartyService {
                 .waitingNumber(waitingNumber)
                 .acceptedNumber(acceptedNumber)
                 .closedDate(row[9] == null ? null : ((LocalDateTime)row[9]).toLocalDate())
-                .competitionRate(competitionRate);
+                .competitionRate(String.format("%.1f", getCompetitionRate(recruitNumber, waitingNumber, acceptedNumber)));
     }
 
     private static float getCompetitionRate(int recruit, int waiting, int accepted) {
