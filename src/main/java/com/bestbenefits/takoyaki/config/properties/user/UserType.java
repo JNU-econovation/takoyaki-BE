@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum UserType {
     TAKO("tako"),
     YAKI("yaki"),
-    OTHER("other");
+    OTHER("other"); //로그인 안된 사용자거나 로그인인데 타코도 야끼도 아닌경우
 
     private String name; //아직 사용은 안됨, 혹시 몰라서 추가
 

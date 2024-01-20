@@ -22,7 +22,6 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final LoginChecker loginChecker;
 
     @Transactional(readOnly = true)
     public User tempLogin(Long id){

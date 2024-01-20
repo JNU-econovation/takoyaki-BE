@@ -29,6 +29,11 @@ public class WebConfig implements WebMvcConfigurer {
                         "/users/nickname",
                         "/users/info",
 
+                        "/parties/not-closed-accepted",
+                        "/parties/not-closed-waiting",
+                        "/parties/closed",
+                        "/parties/wrote",
+                        "/parties/bookmarked",
 
                         "/parties/{party-id:\\d+}", //GET 제외
                         "/parties/{party-id:\\d+}/closing",

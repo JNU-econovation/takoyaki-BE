@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public enum PartyListType {
-    ALL, //모든 팟
     NOT_CLOSED_WAITING, //마감되지 않은 대기 팟
     NOT_CLOSED_ACCEPTED, //마감되지 않은 수락 팟
     CLOSED, //마감된 수락 팟
@@ -27,5 +26,4 @@ public enum PartyListType {
                 .map(PartyListType::name)
                 .collect(Collectors.toList());
     }
-
 }

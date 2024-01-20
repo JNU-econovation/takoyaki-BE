@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public class PartiesResDTO {
+public class PartiesPaginationResDTO {
     private final List<PartyListResDTO> partyDTOlist;
     private final int totalPages;
 }

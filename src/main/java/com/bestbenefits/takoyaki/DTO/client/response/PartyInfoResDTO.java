@@ -16,48 +16,38 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PartyInfoResDTO {
-    private Long partyId;
-    private String title;
-    private String nickname;
-    private String body;
+    //기본 값
     private String category;
     private String activityLocation;
     private String contactMethod;
+    private String title;
+    private String body;
+    private int viewCount;
+    private int recruitNumber;
+    private String activityDuration;
+    private LocalDate plannedStartDate;
+    private LocalDate plannedClosingDate;
+    //제거된 키값
+    //private String activityDurationUnit;
+
+    //추가된 키값
+    private UserType userType; //사용자 타입 (meta로 제공)
+    private Long partyId;
+    private String nickname;
     @JsonInclude(JsonInclude.Include.ALWAYS)
     private LocalDate closedDate;
-    private LocalDate plannedStartDate;
-    private String activityDuration;
-    private LocalDate plannedClosingDate;
-    private int recruitNumber;
-    private int viewCount;
 
-    private UserType userType; //로그인 유저
     //타코
     private List<PartyYakiListResDTO> waitingList;
     private List<PartyYakiListResDTO> acceptedList;
     //야끼
     private YakiStatus yakiStatus;
-    private String contact; //수락, 마감
+    //수락됨 & 마감된 야끼 or 타코
+    private String contact;
 
-    @Builder
-    public PartyInfoResDTO(Long partyId, String title, String nickname, String body, String category, String activityLocation, String contactMethod, LocalDate closedDate, LocalDate plannedStartDate, String activityDuration, LocalDate plannedClosingDate, int recruitNumber, int viewCount, UserType userType, List<PartyYakiListResDTO> waitingList, List<PartyYakiListResDTO> acceptedList, YakiStatus yakiStatus, String contact) {
-        this.partyId = partyId;
-        this.title = title;
-        this.nickname = nickname;
-        this.body = body;
-        this.category = category;
-        this.activityLocation = activityLocation;
-        this.contactMethod = contactMethod;
-        this.closedDate = closedDate;
-        this.plannedStartDate = plannedStartDate;
-        this.activityDuration = activityDuration;
-        this.plannedClosingDate = plannedClosingDate;
-        this.recruitNumber = recruitNumber;
-        this.viewCount = viewCount;
-        this.userType = userType;
-        this.waitingList = waitingList;
-        this.acceptedList = acceptedList;
-        this.yakiStatus = yakiStatus;
-        this.contact = contact;
+    public UserType moveUserType() {
+        UserType ret = this.userType;
+        this.userType = null;
+        return ret;
     }
 }

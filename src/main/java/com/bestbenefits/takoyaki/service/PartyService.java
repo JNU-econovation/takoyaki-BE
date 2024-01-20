@@ -1,7 +1,7 @@
 package com.bestbenefits.takoyaki.service;
 
 import com.bestbenefits.takoyaki.DTO.client.request.PartyCreationEditReqDTO;
-import com.bestbenefits.takoyaki.DTO.client.response.PartiesResDTO;
+import com.bestbenefits.takoyaki.DTO.client.response.PartiesPaginationResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyIdResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyInfoResDTO;
 import com.bestbenefits.takoyaki.DTO.client.response.PartyListResDTO;
@@ -139,7 +139,7 @@ public class PartyService {
     }
 
     @Transactional(readOnly = true)
-    public PartiesResDTO getPartiesInfoForPagination(boolean isLogin, Long id, int number, int pageNumber, Category category, ActivityLocation activityLocation) {
+    public PartiesPaginationResDTO getPartiesInfoForPagination(boolean isLogin, Long id, int number, int pageNumber, Category category, ActivityLocation activityLocation) {
         User user = isLogin ? userService.getUserOrThrow(id) : null;
         Page<Object[]> page = partyRepository.getPartiesByFilteringAndPagination(PageRequest.of(pageNumber, number), user, category, activityLocation);
 
@@ -152,31 +152,38 @@ public class PartyService {
             partyDTOList.add(builder.build());
         }
 
-        return new PartiesResDTO(partyDTOList, page.getTotalPages());
+        return new PartiesPaginationResDTO(partyDTOList, page.getTotalPages());
     }
 
+    //TODO: row[] 인덱스 하드코딩 개선
     @Transactional(readOnly = true)
-    public List<PartyListResDTO> getPartiesInfoForLoginUser(Long id, PartyListType partyListType) {
+    public List<PartyListResDTO> getPartiesInfoForLoginUser(Long id, String partyListType) {
         User user = userService.getUserOrThrow(id);
 
         List<Object[]> partyList;
         List<PartyListResDTO> partyDTOList = new ArrayList<>();
 
-        //TODO: row[] 인덱스 하드코딩 개선
+        PartyListType type = PartyListType.fromName(partyListType.replace("-", "_"));
 
-        switch (partyListType) {
-            case NOT_CLOSED_WAITING -> partyList = partyRepository.getNotClosedParties(user, YakiStatus.WAITING);
-            case NOT_CLOSED_ACCEPTED -> partyList = partyRepository.getNotClosedParties(user, YakiStatus.ACCEPTED);
-            case CLOSED -> partyList = partyRepository.getClosedParties(user);
-            case WROTE -> partyList = partyRepository.getWroteParties(user);
-            case BOOKMARKED -> partyList = partyRepository.getBookmarkedParties(user);
-            default -> partyList = new ArrayList<>(); //오류 없애려고 씀, 실행될 일 절대 없음
+        switch (type) {
+            case NOT_CLOSED_WAITING ->
+                    partyList = partyRepository.getNotClosedParties(user, YakiStatus.WAITING);
+            case NOT_CLOSED_ACCEPTED ->
+                    partyList = partyRepository.getNotClosedParties(user, YakiStatus.ACCEPTED);
+            case CLOSED ->
+                    partyList = partyRepository.getClosedParties(user);
+            case WROTE ->
+                    partyList = partyRepository.getWroteParties(user);
+            case BOOKMARKED ->
+                    partyList = partyRepository.getBookmarkedParties(user);
+            default ->
+                    partyList = new ArrayList<>(); //오류 없애려고 씀, 실행될 일 절대 없음
         }
         for (Object[] row : partyList) {
             PartyListResDTO.PartyListResDTOBuilder builder = initializePartyListBuilder(row);
-            if (PartyListType.NOT_CLOSED_ACCEPTED == partyListType || PartyListType.NOT_CLOSED_WAITING == partyListType)
+            if (type == PartyListType.NOT_CLOSED_ACCEPTED || type == PartyListType.NOT_CLOSED_WAITING)
                 builder.bookmarked((boolean) row[8]);
-            if (PartyListType.WROTE == partyListType) builder.closed((boolean) row[8]);
+            if (type == PartyListType.WROTE) builder.closed((boolean) row[8]);
             partyDTOList.add(builder.build());
         }
 
@@ -185,50 +192,69 @@ public class PartyService {
 
     @Transactional(readOnly = true)
     public PartyInfoResDTO getPartyInfo(boolean isLogin, Long id, Long partyId) {
+        User user = isLogin ? userService.getUserOrThrow(id) : null;
         Party party = partyRepository.findById(partyId)
                 .filter(p -> p.getDeletedAt() == null)
                 .orElseThrow(PartyNotFoundException::new);
 
-        User user = isLogin ? userService.getUserOrThrow(id) : null;
-
+        //조회수 업데이트
         party.updateViewCount();
 
-        PartyInfoResDTO.PartyInfoResDTOBuilder builder =
-                PartyInfoResDTO.builder().partyId(partyId)
-                        .title(party.getTitle())
-                        .nickname(party.getUser().getNickname())
-                        .body(party.getBody())
-                        .category(party.getCategory().getName())
-                        .activityLocation(party.getActivityLocation().getName())
-                        .plannedStartDate(party.getPlannedStartDate())
-                        .activityDuration(DurationUnit.calculateDuration(party.getActivityDuration()))
-                        .contactMethod(party.getContactMethod().getName())
-                        .viewCount(party.getViewCount().intValue())
-                        .closedDate(party.getClosedAt().isEqual(party.getCreatedAt()) ? null : party.getClosedAt().toLocalDate()) //
-                        .recruitNumber(party.getRecruitNumber())
-                        .plannedClosingDate(party.getPlannedClosingDate());
+        //공통 제공 항목
+        PartyInfoResDTO.PartyInfoResDTOBuilder builder = PartyInfoResDTO.builder()
+                .partyId(partyId)
+                .title(party.getTitle())
+                .nickname(party.getUser().getNickname())
+                .body(party.getBody())
+                .category(party.getCategory().getName())
+                .activityLocation(party.getActivityLocation().getName())
+                .plannedStartDate(party.getPlannedStartDate())
+                .activityDuration(DurationUnit.calculateDuration(party.getActivityDuration()))
+                .contactMethod(party.getContactMethod().getName())
+                .viewCount(party.getViewCount().intValue())
+                .closedDate(party.getClosedAt().isEqual(party.getCreatedAt()) ? null : party.getClosedAt().toLocalDate()) //TODO:
+                .recruitNumber(party.getRecruitNumber())
+                .plannedClosingDate(party.getPlannedClosingDate());
 
-        if (isLogin) {
-            UserType userType;
-            if (party.getUser() == user) {
-                userType = UserType.TAKO;
-                builder.waitingList(yakiRepository.findWaitingList(party))
-                        .acceptedList(yakiRepository.findAcceptedList(party))
-                        .contact(party.getContact());
-            } else {
-                Yaki yaki = yakiRepository.findYakiByPartyAndUser(party, user).orElse(null);
-                if (yaki != null) {
-                    userType = UserType.YAKI;
-                    builder.yakiStatus(yaki.getStatus());
-                    if (party.getClosedAt() != null && yaki.getStatus() == YakiStatus.ACCEPTED)
-                        builder.contact(party.getContact());
-                } else
-                    userType = UserType.OTHER;
+        //요청한 유저가...
+        //비로그인이면서 마감 안된 경우
+        if (!isLogin) {
+            if (!party.isClosed()) {
+                return builder.userType(UserType.OTHER)
+                        .build();
             }
-            builder.userType(userType);
+            else throw new PartyNotFoundException();
         }
 
-        return builder.build();
+        //타코인 경우
+        if (party.getUser() == user) {
+            return builder.userType(UserType.TAKO)
+                    .waitingList(yakiRepository.findWaitingList(party))
+                    .acceptedList(yakiRepository.findAcceptedList(party))
+                    .contact(party.getContact())
+                    .build();
+        }
+
+        //야끼인 경우
+        Yaki yaki = yakiRepository.findYakiByPartyAndUser(party, user).orElse(null);
+        if (yaki != null) {
+            if (party.isClosed()) {
+                switch(yaki.getStatus()) {
+                    case ACCEPTED -> builder.contact(party.getContact());
+                    case WAITING -> throw new PartyNotFoundException();
+                }
+            }
+
+            return builder.userType(UserType.YAKI)
+                    .yakiStatus(yaki.getStatus())
+                    .build();
+        }
+
+        //타코도 야끼도 아닌 경우
+        if (party.isClosed())
+            throw new PartyNotFoundException();
+        else
+            return builder.userType(UserType.OTHER) .build();
     }
 
     @Transactional(readOnly = true)
