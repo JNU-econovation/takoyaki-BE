@@ -58,7 +58,15 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://3.34.197.43:3000", "http://localhost:3000", "http://3.34.197.43:8080", "http://localhost:8080")
+                .allowedOrigins(
+                        "http://3.34.197.43:3000",
+                        "http://localhost:3000",
+                        "http://3.34.197.43:8080",
+                        "http://localhost:8080",
+                        "https://takoyaki.store",
+                        "https://www.takoyaki.store",
+                        "https://d33m8jh2u1lel2.cloudfront.net"
+                )
                 .allowedMethods("*")
                 .allowedHeaders("*")
                 .allowCredentials(true);
