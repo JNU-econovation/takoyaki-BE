@@ -87,7 +87,7 @@ public class PartyCrudController {
             @Session(attribute = SessionConst.ID) Long id,
             @PathVariable(name = "party-type") String partyListType,
             @RequestParam int number,
-            @RequestParam(name = "page-number") int pageNumber) {
+            @RequestParam(name = "page_number") int pageNumber) {
 
         Map<String, Object> meta = new HashMap<>();
         Map<String, List<PartyListResDTO>> data = new HashMap<>();
