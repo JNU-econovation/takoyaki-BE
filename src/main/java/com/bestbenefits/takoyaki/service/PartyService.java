@@ -163,7 +163,7 @@ public class PartyService {
     public PartiesPaginationResDTO getPartiesInfoForLoginUser(Long id, String partyListType, int number, int pageNumber) {
         User user = userService.getUserOrThrow(id);
 
-        Page<Object[]> page = null;
+        Page<Object[]> page;
 
         PartyListType type = PartyListType.fromName(partyListType.replace("-", "_"));
 
@@ -178,6 +178,8 @@ public class PartyService {
                     page = partyRepository.getWroteParties(PageRequest.of(pageNumber, number), user); //row[10] 없음
             case BOOKMARKED ->
                     page = partyRepository.getBookmarkedParties(PageRequest.of(pageNumber, number), user); //row[10] 없음
+            default ->
+                    page = null;
         }
 
         List<Object[]> partyList = page.getContent();
