@@ -15,16 +15,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.net.URLDecoder;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 @Aspect
 public class LoggingAspect {
-
-    @Pointcut("execution(* com.bestbenefits.takoyaki.service..*.*(..))")
-    public void loggingPointCutAtService() {}
-
     @Pointcut("within(com.bestbenefits.takoyaki.controller..*)")
     public void loggingPointCutAtController(){}
 
@@ -50,30 +45,42 @@ public class LoggingAspect {
         } catch (Exception e) {
             log.error("LoggerAspect error", e);
         }
-        log.info("------------------------------------");
-        log.info("[Called Controller] [{}] {}", params.get("http_method"), params.get("request_uri"));
+        log.info("---------------------------------------------------");
+        log.info("[>>>> Called Controller] [{}] {}", params.get("http_method"), params.get("request_uri"));
         log.info("method: {}.{}", params.get("controller") ,params.get("method"));
         log.info("params: {}", params.get("params"));
 
         Object proceed = joinPoint.proceed();
+        log.info("[<<<< Returned Controller] [{}] {}", params.get("http_method"), params.get("request_uri"));
         log.info("");
 
         return proceed;
     }
 
-    @Before(value = "loggingPointCutAtService()")
-    public void beforeService(JoinPoint joinPoint) {
+    @Pointcut("execution(* com.bestbenefits.takoyaki.service..*.*(..)) ||" +
+            "execution(* com.bestbenefits.takoyaki.DTO..*.*(..)) ||" +
+            "execution(* com.bestbenefits.takoyaki.entity..*.*(..)) ||" +
+            "execution(* com.bestbenefits.takoyaki.repository..*.*(..))")
+    public void loggingPointCutAtMethod() {}
+
+    @Before(value = "loggingPointCutAtMethod()")
+    public void beforeMethod(JoinPoint joinPoint) {
         Method method = getMethod(joinPoint);
         // 메서드 정보 받아오기
+        String typeNames = Arrays.stream(method.getParameters())
+                .map(p -> p.getType().getSimpleName())
+                .toList().toString();
+        typeNames = typeNames.substring(1, typeNames.length() - 1);
 
-        log.info(">>>> Called {}.{}({})", method.getDeclaringClass().getSimpleName(), method.getName(), getMethodParams(joinPoint));
+        log.info(">>>> Called {}.{}({})", method.getDeclaringClass().getSimpleName(), method.getName(), typeNames);
+        logParams(joinPoint);
     }
 
     // Poincut에 의해 필터링된 경로로 들어오는 경우 메서드 리턴 후에 적용
-    @AfterReturning(value = "loggingPointCutAtService()", returning = "returnObj")
+    @AfterReturning(value = "loggingPointCutAtMethod()", returning = "returnObj")
     public void afterReturnLog(JoinPoint joinPoint, Object returnObj) {
         Method method = getMethod(joinPoint);
-        log.info("<<<< Returned {}", returnObj.getClass().getSimpleName());
+        log.info("    <<<< Returned {}", returnObj == null ? "null" : returnObj.getClass().getSimpleName());
     }
 
     private static JSONObject getParams(HttpServletRequest request) {
@@ -91,15 +98,16 @@ public class LoggingAspect {
         return ((MethodSignature)jp.getSignature()).getMethod();
     }
 
-    private static String getMethodParams(JoinPoint joinPoint) {
-        List<String> typeName = Arrays.stream(getMethod(joinPoint).getParameters())
+    private static void logParams(JoinPoint joinPoint) {
+        Method method = getMethod(joinPoint);
+        List<String> paramType = Arrays.stream(method.getParameters()).map(p -> p.getType().getSimpleName()).toList();
+        List<String> paramName = Arrays.stream(method.getParameters())
                 .map(Parameter::getName).toList();
         Object[] args = joinPoint.getArgs();
 
         StringBuilder sb = new StringBuilder(" ");
-        for (int i = 0; i < typeName.size(); i++) {
-            sb.append(typeName.get(i)).append("(").append(args[i] == null ? "null" : args[i]).append("); ");
+        for (int i = 0; i < paramName.size(); i++) {
+            log.info("        param({}): {} {} = {}", i, paramType.get(i), paramName.get(i), args[i] == null ? "null" : args[i]);
         }
-        return sb.toString();
     }
 }

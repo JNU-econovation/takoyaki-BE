@@ -33,6 +33,12 @@ public class TestController {
     private final UserService userService;
     private final LoginChecker loginChecker;
 
+    @GetMapping("logging")
+    public ApiResponse<?> loggingTest() {
+        userService.test(4);
+        return ApiResponseCreator.success();
+    }
+
     @NeedNoAuthentication
     @PostMapping("/users/login/{id}")
     public ApiResponse<?> tempLogin(HttpServletRequest request, @PathVariable Long id){
