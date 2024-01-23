@@ -1,7 +1,7 @@
 package com.bestbenefits.takoyaki.config;
 
 import com.bestbenefits.takoyaki.config.annotation.SessionMethodArgumentResolver;
-import com.bestbenefits.takoyaki.interceptor.AuthenticationCheckInterceptor;
+import com.bestbenefits.takoyaki.util.interceptor.AuthenticationCheckInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -52,8 +52,6 @@ public class WebConfig implements WebMvcConfigurer {
         resolvers.add(new SessionMethodArgumentResolver());
     }
 
-
-
     //TODO: CORS 범위 지정
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -71,7 +69,4 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders("*")
                 .allowCredentials(true);
     }
-
-
-
 }

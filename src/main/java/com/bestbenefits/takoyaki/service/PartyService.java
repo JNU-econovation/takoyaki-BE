@@ -19,8 +19,8 @@ import com.bestbenefits.takoyaki.repository.BookmarkRepository;
 import com.bestbenefits.takoyaki.repository.PartyRepository;
 import com.bestbenefits.takoyaki.repository.YakiRepositoy;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +31,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PartyService {
@@ -198,7 +199,6 @@ public class PartyService {
 
     @Transactional
     public PartyInfoResDTO getPartyInfo(boolean isLogin, Long id, Long partyId) {
-        System.out.println("PartyService.getPartyInfo();");
         User user = isLogin ? userService.getUserOrThrow(id) : null;
         Party party = partyRepository.findById(partyId)
                 .filter(p -> p.getDeletedAt() == null)
@@ -206,8 +206,6 @@ public class PartyService {
 
         //조회수 업데이트
         party.updateViewCount();
-        System.out.println("로그인 여부: " + isLogin);
-        System.out.println("조회수 업데이트 완료; 현재 조회수: " + party.getViewCount());
 
         //공통 제공 항목
         PartyInfoResDTO.PartyInfoResDTOBuilder builder = PartyInfoResDTO.builder()

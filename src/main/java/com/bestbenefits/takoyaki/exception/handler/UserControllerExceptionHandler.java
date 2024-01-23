@@ -4,16 +4,23 @@ import com.bestbenefits.takoyaki.config.apiresponse.ApiResponse;
 import com.bestbenefits.takoyaki.config.apiresponse.ApiResponseCreator;
 import com.bestbenefits.takoyaki.exception.*;
 import com.bestbenefits.takoyaki.exception.user.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Slf4j
 @RestControllerAdvice
 public class UserControllerExceptionHandler {
     //로그인 필요한 API를 비로그인 상태에서 요청
     @ExceptionHandler(UnauthorizedException.class)
-    public ApiResponse<?> handleUnauthorizedException() {
-        return ApiResponseCreator.fail(ExceptionCode.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+    public ApiResponse<?> handleUnauthorizedException(UnauthorizedException e) {
+        if (e.getCaused() == null)
+            return ApiResponseCreator.fail(ExceptionCode.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+        else {
+            log.warn(">>>>>>>> UnauthorizedException in {}", e.getCaused());
+            return ApiResponseCreator.fail(ExceptionCode.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+        }
     }
 
     //로그아웃 필요한 API를 로그인 상태에서 요청

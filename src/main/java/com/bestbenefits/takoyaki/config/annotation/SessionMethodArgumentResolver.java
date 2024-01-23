@@ -29,8 +29,7 @@ public class SessionMethodArgumentResolver implements HandlerMethodArgumentResol
             if (nullable) return null;
             else {
                 //return null;
-                System.out.println(">>>>> UnauthorizedException in Argument Resolver");
-                throw new UnauthorizedException();
+                throw new UnauthorizedException("Session Argument Resolver");
             }
         } else
             return session.getAttribute(attribute);
