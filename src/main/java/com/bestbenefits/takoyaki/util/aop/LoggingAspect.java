@@ -50,13 +50,12 @@ public class LoggingAspect {
         } catch (Exception e) {
             log.error("LoggerAspect error", e);
         }
-        log.info("------------------------ [Controller Called] ------------------------");
-        log.info("[{}] {}", params.get("http_method"), params.get("request_uri"));
+        log.info("[Called Controller] [{}] {}", params.get("http_method"), params.get("request_uri"));
         log.info("method: {}.{}", params.get("controller") ,params.get("method"));
         log.info("params: {}", params.get("params"));
 
         Object proceed = joinPoint.proceed();
-        log.info("/////////////////////////////////////////////////////////////////////");
+        log.info("");
 
         return proceed;
     }
