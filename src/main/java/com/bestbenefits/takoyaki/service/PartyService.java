@@ -196,8 +196,9 @@ public class PartyService {
         return new PartiesPaginationResDTO(partyDTOList, page.getTotalPages());
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public PartyInfoResDTO getPartyInfo(boolean isLogin, Long id, Long partyId) {
+        System.out.println("PartyService.getPartyInfo();");
         User user = isLogin ? userService.getUserOrThrow(id) : null;
         Party party = partyRepository.findById(partyId)
                 .filter(p -> p.getDeletedAt() == null)
@@ -205,6 +206,8 @@ public class PartyService {
 
         //조회수 업데이트
         party.updateViewCount();
+        System.out.println("로그인 여부: " + isLogin);
+        System.out.println("조회수 업데이트 완료; 현재 조회수: " + party.getViewCount());
 
         //공통 제공 항목
         PartyInfoResDTO.PartyInfoResDTOBuilder builder = PartyInfoResDTO.builder()
@@ -260,7 +263,7 @@ public class PartyService {
         if (party.isClosed())
             throw new PartyNotFoundException();
         else
-            return builder.userType(UserType.OTHER) .build();
+            return builder.userType(UserType.OTHER).build();
     }
 
     @Transactional(readOnly = true)
