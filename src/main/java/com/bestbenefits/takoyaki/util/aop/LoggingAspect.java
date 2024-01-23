@@ -50,6 +50,7 @@ public class LoggingAspect {
         } catch (Exception e) {
             log.error("LoggerAspect error", e);
         }
+        log.info("------------------------------------");
         log.info("[Called Controller] [{}] {}", params.get("http_method"), params.get("request_uri"));
         log.info("method: {}.{}", params.get("controller") ,params.get("method"));
         log.info("params: {}", params.get("params"));
@@ -60,13 +61,18 @@ public class LoggingAspect {
         return proceed;
     }
 
+    @Before(value = "loggingPointCutAtService()")
+    public void beforeService(JoinPoint joinPoint) {
+        Method method = getMethod(joinPoint);
+        // 메서드 정보 받아오기
+
+        log.info(">>>> Called {}.{}({})", method.getDeclaringClass().getSimpleName(), method.getName(), getMethodParams(joinPoint));
+    }
+
     // Poincut에 의해 필터링된 경로로 들어오는 경우 메서드 리턴 후에 적용
     @AfterReturning(value = "loggingPointCutAtService()", returning = "returnObj")
     public void afterReturnLog(JoinPoint joinPoint, Object returnObj) {
-        // 메서드 정보 받아오기
-        Method method = ((MethodSignature)joinPoint.getSignature()).getMethod();
-
-        log.info(">>>> Called {}.{}({})", method.getDeclaringClass(), method.getName(), getMethodParams(method));
+        Method method = getMethod(joinPoint);
         log.info("<<<< Returned {}", returnObj.getClass().getSimpleName());
     }
 
@@ -81,11 +87,18 @@ public class LoggingAspect {
         return jsonObject;
     }
 
-    private static String getMethodParams(Method method) {
-        List<String> collect = Arrays.stream(method.getParameters()).map(Parameter::getName).toList();
+    private static Method getMethod(JoinPoint jp) {
+        return ((MethodSignature)jp.getSignature()).getMethod();
+    }
+
+    private static String getMethodParams(JoinPoint joinPoint) {
+        List<String> typeName = Arrays.stream(getMethod(joinPoint).getParameters())
+                .map(Parameter::getName).toList();
+        Object[] args = joinPoint.getArgs();
+
         StringBuilder sb = new StringBuilder(" ");
-        for (String p: collect) {
-            sb.append(p).append("; ");
+        for (int i = 0; i < typeName.size(); i++) {
+            sb.append(typeName.get(i)).append("(").append(args[i] == null ? "null" : args[i]).append("); ");
         }
         return sb.toString();
     }
