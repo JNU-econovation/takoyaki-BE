@@ -23,10 +23,6 @@ import java.util.Random;
 public class UserService {
     private final UserRepository userRepository;
 
-    @Transactional
-    public void test(int k) {
-    }
-
     @Transactional(readOnly = true)
     public User tempLogin(Long id){
         return getUserOrThrow(id);

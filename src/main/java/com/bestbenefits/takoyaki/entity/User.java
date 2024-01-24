@@ -19,7 +19,7 @@ public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true) @Size(min=4, max=16)  private String nickname; // nullable = false
+    @Column(unique = true) @Size(min=2, max=16)  private String nickname; // nullable = false
     @Column(length = 100, nullable = false)      private String email;
     @Column @Enumerated(value = EnumType.STRING) private OAuthSocialType social;
     @Column(nullable = false)                    private LocalDate nicknameUpdatedAt;
